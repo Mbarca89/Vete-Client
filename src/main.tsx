@@ -1,12 +1,40 @@
 import React from "react"
-import * as bootstrap from 'bootstrap'
+import "bootstrap/dist/css/bootstrap.min.css"
 import { createRoot } from "react-dom/client"
-import { Provider } from "react-redux"
 import { BrowserRouter } from "react-router-dom"
 import App from "./App"
-import { store } from "./app/store"
+import { RecoilRoot } from "recoil"
 import "./index.css"
 import '../src/scss/styles.scss'
+import axios from 'axios'
+
+const token = localStorage.getItem('token')
+
+const axiosWithToken = axios.create();
+
+axiosWithToken.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+const axiosWithoutToken = axios.create();
+
+axiosWithToken.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 403) {
+      window.location.href = '/';
+    }
+    return Promise.reject(error);
+  }
+);
+
 
 const container = document.getElementById("root")
 
@@ -15,11 +43,11 @@ if (container) {
 
   root.render(
     <React.StrictMode>
-      <BrowserRouter>
-        <Provider store={store}>
+      <RecoilRoot>
+        <BrowserRouter>
           <App />
-        </Provider>
-      </BrowserRouter>
+        </BrowserRouter>
+      </RecoilRoot>
     </React.StrictMode>,
   )
 } else {
