@@ -1,0 +1,16 @@
+
+.custom-bg {
+    background-color: #632f6b;
+  }
+
+.custom-bg:hover {
+    background-color: #77285a;
+  }
+
+.custom-border {
+    border: none;
+}
+
+.custom-font {
+    color:rgb(186, 186, 186)
+}

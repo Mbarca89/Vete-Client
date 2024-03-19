@@ -1,5 +1,23 @@
 export interface userData {
-    userName: String;
-    password: String;
-    role: String;
+    id: string;
+    name: string;
+    surname: string;
+    userName: string;
+    password: string;
+    role: string;
+}
+
+export interface createUserformValues {
+    name: string,
+    surname: string,
+    userName: string,
+    password: string,
+    repeatPassword: string,
+    role: string
+}
+
+export interface userLogin {
+    userName: string;
+    password: string;
+    remember: boolean;
 }
