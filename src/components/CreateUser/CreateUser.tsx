@@ -44,21 +44,30 @@ const CreateUser = () => {
 
     const formik = useFormik({
         initialValues: {
+            id: "",
             name: "",
             surname: "",
             userName: "",
             password: "",
             repeatPassword: "",
-            role: "Elegir..."
+            role: "Usuario"
         },
         validate,
         onSubmit: async values => {
+            const createUser = {
+                name: values.name,
+                surname: values.surname,
+                userName: values.userName,
+                password: values.password,
+                role: values.role
+            }
             let res
             try {
-                res = await axiosWithToken.post(`${SERVER_URL}/api/v1/users/create`, formik.values)
+                res = await axiosWithToken.post(`${SERVER_URL}/api/v1/users/create`, createUser)
                 notifySuccess(res.data)
-            } catch (error:any) {
-                if(error.response) {
+                window.location.reload()
+            } catch (error: any) {
+                if (error.response) {
                     notifyError(error.response.data)
                 }
             }
@@ -138,9 +147,8 @@ const CreateUser = () => {
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                     >
-                        <option>Elegir...</option>
-                        <option>Administrador</option>
-                        <option>Estandar</option>
+                        <option value="Usuario">Estandar</option>
+                        <option value="Administrador">Administrador</option>
                     </Form.Select>
                     {formik.touched.role && formik.errors.role ? <div>{formik.errors.role}</div> : null}
                 </Form.Group>
@@ -156,8 +164,7 @@ const CreateUser = () => {
                 </Form.Group>
             </Row>
         </Form>
-    );
-
+    )
 }
 
 export default CreateUser

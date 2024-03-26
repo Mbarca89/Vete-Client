@@ -1,23 +1,24 @@
 import { useFormik } from 'formik';
 import { createUserformValues } from "../../types";
-import { notifyError, notifySuccess } from "../../components/Toaster/Toaster";
+import { notifyError, notifySuccess } from "../Toaster/Toaster";
 import { userData } from "../../types";
-import { useState, useEffect } from "react";
 import { axiosWithToken } from "../../utils/axiosInstances";
-import { useNavigate } from 'react-router-dom';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
+import { modalState } from "../../app/store"
+import { useRecoilState } from "recoil"
 
-interface EditUserlProps {
+interface EditUserProps {
     user: userData;
+    onUpdateUser: (updatedUser: userData) => void;
 }
 
-const EditUser = ({ user }: EditUserlProps) => {
+const EditUser: React.FC<EditUserProps> = ({ user, onUpdateUser }) => {
 
-    const navigate = useNavigate()
+    const [show, setShow] = useRecoilState(modalState)
 
     const validate = (values: createUserformValues): createUserformValues => {
         const errors: any = {};
@@ -37,14 +38,7 @@ const EditUser = ({ user }: EditUserlProps) => {
         if (!values.userName.trim()) {
             errors.userName = 'Ingrese el nombre de usuario';
         }
-
-        if (!values.password.trim()) {
-            errors.password = 'Ingrese la contraseña';
-        }
-
-        if (!values.repeatPassword.trim()) {
-            errors.repeatPassword = 'Ingrese nuevamente la contraseña';
-        } else if (values.repeatPassword !== values.password) {
+        if (values.repeatPassword !== values.password) {
             errors.repeatPassword = "Las contraseñas no coinciden";
         }
         return errors;
@@ -52,6 +46,7 @@ const EditUser = ({ user }: EditUserlProps) => {
 
     const formik = useFormik({
         initialValues: {
+            id: user.id,
             name: user.name,
             surname: user.surname,
             userName: user.userName,
@@ -60,14 +55,15 @@ const EditUser = ({ user }: EditUserlProps) => {
             role: user.role
         },
         validate,
-        onSubmit: async values => {
-            let res
+        onSubmit: async (values) => {
             try {
-                res = await axiosWithToken.post(`${SERVER_URL}/api/v1/users/create`, formik.values)
-                notifySuccess(res.data)
-            } catch (error: any) {
+                const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/users/edit`, values);
+                notifySuccess(res.data);
+                onUpdateUser(values); // Update user in parent component's state
+                setShow(false)
+            } catch (error:any) {
                 if (error.response) {
-                    notifyError(error.response.data)
+                    notifyError(error.response.data);
                 }
             }
         },
@@ -141,11 +137,17 @@ const EditUser = ({ user }: EditUserlProps) => {
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                     >
-                        <option>Elegir...</option>
-                        <option>Administrador</option>
                         <option>Estandar</option>
+                        <option>Administrador</option>
                     </Form.Select>
                     {formik.touched.role && formik.errors.role ? <div>{formik.errors.role}</div> : null}
+                </Form.Group>
+            </Row>
+            <Row>
+                <Form.Group as={Col} className="d-flex justify-content-center">
+                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" type="submit">
+                        Actualizar
+                    </Button>
                 </Form.Group>
             </Row>
         </Form>

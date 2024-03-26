@@ -8,6 +8,7 @@ export interface userData {
 }
 
 export interface createUserformValues {
+    id: string,
     name: string,
     surname: string,
     userName: string,

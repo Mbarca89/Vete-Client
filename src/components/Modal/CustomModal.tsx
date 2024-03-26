@@ -1,31 +1,36 @@
 import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import { modalState } from "../../app/store"
+import { useRecoilState } from "recoil"
 
-function CustomModal({ children, showModal, setShowModal }: any) {
+
+
+function CustomModal({ children, title }: any) {
+
+  let [show, setShow] = useRecoilState(modalState)
   
-  const handleClose = () => setShowModal(false);
-  const handleShow = () => setShowModal(true);
+  const handleClose = () => setShow(false);
   
   return (
     <>
-      <Modal show={showModal} onHide={handleClose} size="lg"
+      <Modal backdrop="static" show={show} onHide={handleClose} size="lg"
       aria-labelledby="contained-modal-title-vcenter"
       centered>
         <Modal.Header closeButton>
-          <Modal.Title>Editar usuario</Modal.Title>
+          <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
             {children}
         </Modal.Body>
-        <Modal.Footer>
+        {/* <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Cancelar
           </Button>
           <Button variant="primary" onClick={handleClose}>
             Guardar
           </Button>
-        </Modal.Footer>
+        </Modal.Footer> */}
       </Modal>
     </>
   );

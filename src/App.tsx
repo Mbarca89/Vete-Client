@@ -4,20 +4,28 @@ import Landing from "./views/landing/Landing"
 import Home from "./views/home/Home"
 import NavBar from "./components/Nav/NavBar"
 import Users from "./views/Users/Users"
-import PrivateRoute from "./utils/PrivateRoutes"
-import { useEffect } from "react"
+import Products from "./views/Products/Products"
+import { useState, useEffect } from "react"
 import { useRecoilState } from "recoil"
-import { userState, logState } from "./app/store"
+import { logState } from "./app/store"
 import { Toaster } from 'react-hot-toast';
 
 const App = () => {
   let [isLogged, setLogged] = useRecoilState(logState)
 
+  const [initialCheckDone, setInitialCheckDone] = useState(false); // State to track initial check completion
+
   useEffect(() => {
-    if (localStorage.getItem("userName")) {
-      setLogged(true)
+    if (!initialCheckDone) {
+      if (localStorage.getItem("userName")) {
+        setLogged(true);
+      }
+      setInitialCheckDone(true);
     }
-  }, [])
+  }, [initialCheckDone, setLogged]);
+  if (!initialCheckDone) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="App align-items-center d-flex flex-column">
@@ -31,6 +39,7 @@ const App = () => {
         )}>
           <Route path="/home" element={isLogged ? <Home /> : <Navigate to="/"/>} />
           <Route path="/users" element={isLogged ? <Users /> : <Navigate to="/"/>} />
+          <Route path="/products" element={isLogged ? <Products /> : <Navigate to="/"/>} />
         </Route>
         <Route path="/" element={<Landing />} />
       </Routes>

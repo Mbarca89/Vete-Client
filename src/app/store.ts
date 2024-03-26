@@ -17,4 +17,9 @@ const logState = atom({
   default: false
 })
 
-export { userState, logState }
+const modalState = atom({
+  key: "modalState",
+  default: false
+})
+
+export { userState, logState, modalState }
