@@ -5,7 +5,7 @@ const Home = () => {
 
     return (
         <div className='container flex-grow-1 d-flex align-items-center justify-content-center'>
-                <img className='w-50' src={logo} alt="" />
+                <img className='w-50 custom-img' src={logo} alt="" />
         </div>
 
     )

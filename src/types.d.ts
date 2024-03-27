@@ -22,3 +22,29 @@ export interface userLogin {
     password: string;
     remember: boolean;
 }
+
+export interface product {
+    id: number;
+    name: string;
+    description: string;
+    barCode: number;
+    cost: number;
+    price: number;
+    stock: number;
+    categoryId: number;
+    categoryName: string;
+    seller: string;
+    provider: string;
+    image: string | null;
+}
+
+export interface createProductformValues {
+    name: string;
+    description: string;
+    barCode: number;
+    cost: number;
+    price: number;
+    stock: number;
+    categoryName: string;
+    provider: string;
+}
