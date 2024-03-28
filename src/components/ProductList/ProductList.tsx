@@ -11,6 +11,7 @@ import { notifyError, notifySuccess } from "../Toaster/Toaster";
 import noImage from '../../assets/noImage.png'
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
+
 const ProductList = () => {
     const [products, setProducts] = useState<product[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -21,19 +22,20 @@ const ProductList = () => {
         setCurrentPage(pageNumber);
     };
 
-    useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/getProductsPaginated?page=${currentPage}&size=${pageSize}`)
-                if (res.data) {
-                    setTotalPages(Math.ceil(res.data.length / pageSize));
-                    setProducts(res.data);
-                }
-            } catch (error: any) {
-                notifyError(error.response.data)
+    const fetchProducts = async () => {
+        try {
+            const count = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/getProductCount`)
+            const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/getProductsPaginated?page=${currentPage}&size=${pageSize}`)
+            if (res.data) {
+                setTotalPages(Math.ceil(count.data / pageSize));
+                setProducts(res.data);
             }
-        };
+        } catch (error: any) {
+            notifyError(error.response.data)
+        }
+    };
 
+    useEffect(() => {
         fetchProducts();
     }, [currentPage]);
 

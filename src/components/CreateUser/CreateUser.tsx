@@ -9,7 +9,11 @@ import { axiosWithToken } from "../../utils/axiosInstances";
 import { notifyError, notifySuccess } from "../Toaster/Toaster";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
-const CreateUser = () => {
+interface CreateUserProps {
+    updateList: () => void;
+}
+
+const CreateUser: React.FC<CreateUserProps> = ({ updateList }) => {
 
     const validate = (values: createUserformValues): createUserformValues => {
         const errors: any = {};
@@ -65,7 +69,7 @@ const CreateUser = () => {
             try {
                 res = await axiosWithToken.post(`${SERVER_URL}/api/v1/users/create`, createUser)
                 notifySuccess(res.data)
-                window.location.reload()
+                updateList()
             } catch (error: any) {
                 if (error.response) {
                     notifyError(error.response.data)

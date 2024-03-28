@@ -6,6 +6,10 @@ import { useState } from "react";
 
 const Users = () => {
 
+    const setTab = () => {
+        setCurrentTab("users")
+    }
+
     const [currentTab, setCurrentTab] = useState("users")
 
     return (
@@ -20,7 +24,7 @@ const Users = () => {
             </Nav>
             <div className="mt-3">
                 {currentTab == "users" ? <UserList /> : null}
-                {currentTab == "create" ? <CreateUser /> : null}
+                {currentTab == "create" ? <CreateUser updateList={setTab}/> : null}
             </div>
         </div>
     )

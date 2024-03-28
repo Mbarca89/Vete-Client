@@ -10,7 +10,12 @@ import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
-const CreateProduct = () => {
+
+interface CreateProductProps {
+    updateList: () => void;
+}
+
+const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
 
     const inputRef = useRef<HTMLInputElement>(null)
 
@@ -101,6 +106,7 @@ const CreateProduct = () => {
                 });
                 if (res.data) {
                     notifySuccess(res.data)
+                    updateList()
                 }
             } catch (error: any) {
                 notifyError(error.response.data)
