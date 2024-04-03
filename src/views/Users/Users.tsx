@@ -14,7 +14,7 @@ const Users = () => {
 
     return (
         <div className='container flex-grow-1 p-5 m-2 rounded custom'>
-            <Nav variant="tabs" defaultActiveKey="users">
+            <Nav variant="tabs" defaultActiveKey="users" activeKey={currentTab}>
                 <Nav.Item>
                     <Nav.Link eventKey="users" onClick={() => setCurrentTab("users")}>Usuarios</Nav.Link>
                 </Nav.Item>

@@ -40,6 +40,8 @@ const Landing = () => {
         try {
             const res = await axiosWithoutToken.post(`${SERVER_URL}/auth/login`, userData)
             if (res.data) {
+                console.log(res.data);
+                
                 setUser({
                     id: res.data.id,
                     name: res.data.name,

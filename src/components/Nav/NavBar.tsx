@@ -47,7 +47,7 @@ const NavBar = () => {
                                 Separated link
                             </NavDropdown.Item> */}
                             </NavDropdown>
-                            <Nav.Link href="#link">Proveedores</Nav.Link>
+                            <Nav.Link onClick={() => navigate("/providers")}>Proveedores</Nav.Link>
                             <Nav.Link onClick={() => navigate("/products")}>Productos</Nav.Link>
                             <Nav.Link href="#link">Clientes</Nav.Link>
                             <Nav.Link href="#link">Mascotas</Nav.Link>

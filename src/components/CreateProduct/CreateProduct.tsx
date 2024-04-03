@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { axiosWithToken } from '../../utils/axiosInstances';
 import { notifyError, notifySuccess } from "../Toaster/Toaster";
 import { product } from '../../types';
@@ -18,6 +18,22 @@ interface CreateProductProps {
 const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
 
     const inputRef = useRef<HTMLInputElement>(null)
+
+    const [providers, setProviders] = useState<string[]>([])
+    const [categories, setCategories] = useState<string[]>([])
+
+    const getInfo = async () => {
+        try {
+            const providersResponse = await axiosWithToken.get(`${SERVER_URL}/api/v1/providers/getProvidersNames`)
+            const categoriesResponse = await axiosWithToken.get(`${SERVER_URL}/api/v1/category/getCategoriesNames`)
+            if (providersResponse.data && categoriesResponse.data) {
+                setCategories(categoriesResponse.data)
+                setProviders(providersResponse.data)
+            }
+        } catch (error: any) {
+            notifyError(error.response.data)
+        }
+    }
 
     const [product, setProduct] = useState<createProductformValues>({
         name: "",
@@ -92,7 +108,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                 price: values.price,
                 stock: values.stock,
                 categoryName: "test",
-                provider: "proveedor1"
+                provider: values.provider
             }
             const formData = new FormData();
             if (image) formData.append('file', image);
@@ -123,6 +139,10 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
             inputRef.current.value = ''
         }
     }
+
+    useEffect(() => {
+        getInfo()
+    }, [])
 
     return (
         <Form className='' onSubmit={formik.handleSubmit} noValidate>
@@ -207,9 +227,10 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                     >
-                        <option value="configurar despues">Configurar</option>
+                        {categories.map(category =>
+                            <option key={category} value={category}>{category}</option>
+                        )}
                     </Form.Select>
-                    {formik.touched.categoryName && formik.errors.categoryName ? <div>{formik.errors.categoryName}</div> : null}
                 </Form.Group>
                 <Form.Group className="mb-3" as={Col} xs={12}>
                     <Form.Label>Proveedor</Form.Label>
@@ -220,7 +241,9 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                     >
-                        <option value="configurar despues">Configurar</option>
+                        {providers.map(provider =>
+                            <option key={provider} value={provider}>{provider}</option>
+                        )}
                     </Form.Select>
                     {formik.touched.provider && formik.errors.provider ? <div>{formik.errors.provider}</div> : null}
                 </Form.Group>
@@ -249,6 +272,6 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
             </Row>
         </Form>
     );
-};
+}
 
 export default CreateProduct;

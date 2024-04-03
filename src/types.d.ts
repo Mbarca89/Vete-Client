@@ -48,3 +48,9 @@ export interface createProductformValues {
     categoryName: string;
     provider: string;
 }
+
+export interface provider {
+    name: string;
+    contactName: string;
+    phone: string;
+}
