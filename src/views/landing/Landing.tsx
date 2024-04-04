@@ -5,6 +5,7 @@ import { useState, useEffect, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from "recoil"
 import { userState, logState } from "../../app/store"
+import { notifyError } from '../../components/Toaster/Toaster';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 const Landing = () => {
@@ -39,9 +40,7 @@ const Landing = () => {
         event.preventDefault()
         try {
             const res = await axiosWithoutToken.post(`${SERVER_URL}/auth/login`, userData)
-            if (res.data) {
-                console.log(res.data);
-                
+            if (res.data) {             
                 setUser({
                     id: res.data.id,
                     name: res.data.name,
@@ -58,8 +57,8 @@ const Landing = () => {
                 navigate("/home")
             }
 
-        } catch (error) {
-            console.log(error)
+        } catch (error:any) {
+            notifyError(error.response.data)
         }
 
     }

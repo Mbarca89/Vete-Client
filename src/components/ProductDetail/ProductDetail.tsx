@@ -173,7 +173,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                             </Form.Group>
                             <Form.Group className="mb-3" as={Col} xs={12} md={6}>
                                 <Form.Label>Descripción</Form.Label>
-                                <Form.Control type="text" placeholder="Descripción"
+                                <Form.Control type="text" placeholder="No hay descripción"
                                     id="description"
                                     name="description"
                                     value={formik.values.description}

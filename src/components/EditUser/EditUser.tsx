@@ -57,9 +57,9 @@ const EditUser: React.FC<EditUserProps> = ({ user, onUpdateUser }) => {
         validate,
         onSubmit: async (values) => {
             try {
-                const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/users/edit`, values);
-                notifySuccess(res.data);
-                onUpdateUser(values); // Update user in parent component's state
+                const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/users/edit`, values)
+                notifySuccess(res.data)
+                onUpdateUser(values)
                 setShow(false)
             } catch (error:any) {
                 if (error.response) {
