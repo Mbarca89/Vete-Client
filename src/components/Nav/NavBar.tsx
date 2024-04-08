@@ -49,7 +49,7 @@ const NavBar = () => {
                             </NavDropdown>
                             <Nav.Link onClick={() => navigate("/providers")}>Proveedores</Nav.Link>
                             <Nav.Link onClick={() => navigate("/products")}>Productos</Nav.Link>
-                            <Nav.Link href="#link">Clientes</Nav.Link>
+                            <Nav.Link onClick={() => navigate("/clients")}>Clientes</Nav.Link>
                             <Nav.Link href="#link">Mascotas</Nav.Link>
                         </Nav>
                         <Navbar.Text>

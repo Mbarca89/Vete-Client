@@ -6,6 +6,7 @@ import NavBar from "./components/Nav/NavBar"
 import Users from "./views/Users/Users"
 import Products from "./views/Products/Products"
 import Providers from "./views/Providers/Providers"
+import Clients from "./views/Clients/Clients"
 import { useState, useEffect } from "react"
 import { useRecoilState } from "recoil"
 import { logState } from "./app/store"
@@ -42,6 +43,7 @@ const App = () => {
           <Route path="/users" element={isLogged ? <Users /> : <Navigate to="/"/>} />
           <Route path="/products" element={isLogged ? <Products /> : <Navigate to="/"/>} />
           <Route path="/providers" element={isLogged ? <Providers /> : <Navigate to="/"/>} />
+          <Route path="/clients" element={isLogged ? <Clients /> : <Navigate to="/"/>} />
         </Route>
         <Route path="/" element={<Landing />} />
       </Routes>

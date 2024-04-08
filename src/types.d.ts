@@ -54,3 +54,10 @@ export interface provider {
     contactName: string;
     phone: string;
 }
+
+export interface client {
+    id: string;
+    name: string;
+    surname: string;
+    phone: string;
+}
