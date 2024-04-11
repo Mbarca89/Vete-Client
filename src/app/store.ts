@@ -12,6 +12,16 @@ const userState = atom({
   }
 })
 
+const clientState = atom ({
+  key: "clientState",
+  default: {
+    id: "",
+    name: "",
+    surname: "",
+    phone: ""
+  }
+})
+
 const logState = atom({
   key: "logState",
   default: false
@@ -22,4 +32,4 @@ const modalState = atom({
   default: false
 })
 
-export { userState, logState, modalState }
+export { userState, clientState, logState, modalState }
