@@ -25,8 +25,6 @@ const DeleteCategory: React.FC<DeleteCategoryProps> = ({ category, getCategory }
                 setShow(false)
             }
         } catch (error:any) {
-            console.log(error.message);
-            
             if(error.response) notifyError(error.response.data)
             else notifyError(error.message)
         }

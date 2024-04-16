@@ -50,7 +50,7 @@ const NavBar = () => {
                             <Nav.Link onClick={() => navigate("/providers")}>Proveedores</Nav.Link>
                             <Nav.Link onClick={() => navigate("/products")}>Productos</Nav.Link>
                             <Nav.Link onClick={() => navigate("/clients")}>Clientes</Nav.Link>
-                            <Nav.Link href="#link">Mascotas</Nav.Link>
+                            <Nav.Link onClick={() => navigate("/pets")}>Mascotas</Nav.Link>
                         </Nav>
                         <Navbar.Text>
                             Bienvenido {user.userName}!

@@ -61,3 +61,19 @@ export interface client {
     surname: string;
     phone: string;
 }
+
+export interface pet {
+    id: number;
+    name: string;
+    race: string;
+    weight: number;
+    born: date;
+    photo: string | null;
+}
+
+export interface createPetformValues {
+    name: string;
+    race: string;
+    weight: number;
+    born: string;
+}

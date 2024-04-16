@@ -130,14 +130,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                 }
             } catch (error: any) {
                 notifyError(error.response.data)
-                console.log(error.response.data);
-
             }
         },
     });
 
     const resetForm = () => {
-        console.log("valores antes", formik.values);
         formik.resetForm({values: {
             name: product.name,
             description: product.description,
@@ -152,10 +149,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         if (inputRef.current) {
             inputRef.current.value = ''
         }
-        setEdit(false)
-        console.log("valores despues", formik.values);
-        console.log("producto", product);
-        
+        setEdit(false)        
     }
 
     useEffect(() => {

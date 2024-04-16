@@ -9,6 +9,7 @@ import CustomModal from '../Modal/CustomModal';
 import { modalState, clientState } from "../../app/store"
 import { useRecoilState } from "recoil"
 import DeleteClient from '../DeleteClient/DeleteClient';
+import { notifyError } from '../Toaster/Toaster';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 const ClientList = () => {
@@ -28,9 +29,13 @@ const ClientList = () => {
     const [modal, setModal] = useState<string>("")
 
     const getClients = async () => {
-        const res = await axiosWithToken(`${SERVER_URL}/api/v1/clients/getClients`)
-        if (res.data) {
-            setClients(res.data)
+        try {
+            const res = await axiosWithToken(`${SERVER_URL}/api/v1/clients/getClients`)
+            if (res.data) {
+                setClients(res.data)
+            }
+        } catch (error:any) {
+            notifyError(error.response.data)
         }
     }
 
@@ -40,7 +45,7 @@ const ClientList = () => {
 
     const handleDetail = (client: client) => {
         setSelectedClient(client);
-        navigate("/clients/detail")
+        navigate(`/clients/detail/${client.id}`)
     };
 
     const handleEdit = (client: client) => {

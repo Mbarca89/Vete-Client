@@ -126,8 +126,6 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                 }
             } catch (error: any) {
                 notifyError(error.response.data)
-                console.log(error.response.data);
-
             }
         },
     });

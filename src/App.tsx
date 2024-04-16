@@ -8,6 +8,7 @@ import Products from "./views/Products/Products"
 import Providers from "./views/Providers/Providers"
 import Clients from "./views/Clients/Clients"
 import ClientDetail from "./components/ClientDetail/ClientDetail"
+import Pets from "./views/Pets/Pets"
 import { useState, useEffect } from "react"
 import { useRecoilState } from "recoil"
 import { logState } from "./app/store"
@@ -45,7 +46,8 @@ const App = () => {
           <Route path="/products" element={isLogged ? <Products /> : <Navigate to="/"/>} />
           <Route path="/providers" element={isLogged ? <Providers /> : <Navigate to="/"/>} />
           <Route path="/clients" element={isLogged ? <Clients /> : <Navigate to="/"/>} />
-          <Route path="/clients/detail" element={isLogged ? <ClientDetail /> : <Navigate to="/"/>} />
+          <Route path="/clients/detail/:clientId" element={isLogged ? <ClientDetail /> : <Navigate to="/"/>} />
+          <Route path="/pets" element={isLogged ? <Pets /> : <Navigate to="/"/>} />
         </Route>
         <Route path="/" element={<Landing />} />
       </Routes>
