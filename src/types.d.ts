@@ -63,7 +63,7 @@ export interface client {
 }
 
 export interface pet {
-    id: number;
+    id: string;
     name: string;
     race: string;
     weight: number;
@@ -76,4 +76,21 @@ export interface createPetformValues {
     race: string;
     weight: number;
     born: string;
+}
+
+export interface medicalHistory {
+    id: string;
+    date: date;
+    type: string;
+    notes: string;
+    description: string;
+    medicine: string;
+}
+
+export interface createMedicalHistoryFormValues {
+    date: string;
+    type: string;
+    notes: string;
+    description: string;
+    medicine: string;
 }

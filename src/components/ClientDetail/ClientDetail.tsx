@@ -10,7 +10,7 @@ import CreatePet from "../CreatePet/CreatePet";
 import CustomModal from "../Modal/CustomModal";
 import { axiosWithToken } from "../../utils/axiosInstances";
 import { notifyError, notifySuccess } from "../Toaster/Toaster";
-import PetDetail from "../PetDetail/PetDetail";
+import PetDetail from "../PetDetailCard/PetDetailCard";
 import { client } from "../../types";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
@@ -29,7 +29,7 @@ const ClientDetail = () => {
         phone: ""
     })
     const [currentPet, setCurrentPet] = useState<pet>({
-        id: 0,
+        id: "",
         name: "",
         race: "",
         weight: 0,

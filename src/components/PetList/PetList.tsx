@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import PetDetail from '../PetDetail/PetDetail';
+import PetDetail from '../PetDetailCard/PetDetailCard';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -19,7 +19,7 @@ const PetList = () => {
     const [show, setShow] = useRecoilState(modalState)
     const [pets, setPets] = useState<pet[]>([]);
     const [selectedPet, setSelectedPet] = useState<pet>({
-        id: 0,
+        id: "",
         name: "",
         race: "",
         weight: 0,
