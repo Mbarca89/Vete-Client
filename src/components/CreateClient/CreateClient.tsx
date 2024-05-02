@@ -21,6 +21,11 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
         if (!values.name.trim()) {
             errors.name = 'Ingrese el nombre';
         }
+        if (values.email) {
+            if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
+                errors.email = 'Ingrese un Email válido';
+            }
+        }
         return errors;
     };
 
@@ -29,14 +34,20 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
             id: "",
             name: "",
             surname: "",
-            phone: ""
+            phone: "",
+            email: "",
+            social: "",
+            userName: ""
         },
         validate,
         onSubmit: async values => {
             const createClient = {
                 name: values.name,
                 surname: values.surname,
-                phone: values.phone
+                phone: values.phone,
+                email: values.email,
+                social: values.social,
+                userName: values.userName
             }
             let res
             try {
@@ -58,8 +69,8 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
     return (
         <Form onSubmit={formik.handleSubmit} noValidate>
             <h2 className="mb-5">Alta Cliente</h2>
-            <Row className="mb-5">
-                <Form.Group as={Col}>
+            <Row className="mb-2">
+                <Form.Group as={Col} xs={12} md={6}>
                     <Form.Label>Nombre</Form.Label>
                     <Form.Control type="text" placeholder="Nombre"
                         id="name"
@@ -70,7 +81,7 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
                     />
                     {formik.touched.name && formik.errors.name ? <div>{formik.errors.name}</div> : null}
                 </Form.Group>
-                <Form.Group as={Col}>
+                <Form.Group as={Col} xs={12} md={6}>
                     <Form.Label>Apellido</Form.Label>
                     <Form.Control type="text" placeholder="Apellido"
                         id="surname"
@@ -81,13 +92,51 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
                     />
                 </Form.Group>
             </Row>
-            <Row className="mb-5">
+            <Row className="mb-2">
                 <Form.Group as={Col} xs={12} md={6}>
                     <Form.Label>Teléfono</Form.Label>
                     <Form.Control placeholder="Teléfono"
                         id="phone"
                         name="phone"
                         value={formik.values.phone}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                    />
+                </Form.Group>
+                <Form.Group as={Col} xs={12} md={6}>
+                    <Form.Label>Email</Form.Label>
+                    <Form.Control placeholder="Email"
+                        id="email"
+                        name="email"
+                        value={formik.values.email}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                    />
+                    {formik.touched.email && formik.errors.email ? <div>{formik.errors.email}</div> : null}
+                </Form.Group>
+            </Row>
+            <Row className="mb-5">
+                <Form.Group as={Col} xs={12} md={6}>
+                    <Form.Label>Red Social</Form.Label>
+                    <Form.Select
+                        id="social"
+                        name="social"
+                        value={formik.values.social}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                    >
+                        <option value="">Seleccionar...</option>
+                        <option value="Facebook">Facebook</option>
+                        <option value="Instagram">Instagram</option>
+                        <option value="X">X (twitter)</option>
+                    </Form.Select>
+                </Form.Group>
+                <Form.Group as={Col} xs={12} md={6}>
+                    <Form.Label>Usuario</Form.Label>
+                    <Form.Control placeholder="Usuario"
+                        id="userName"
+                        name="userName"
+                        value={formik.values.userName}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                     />

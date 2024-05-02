@@ -3,49 +3,55 @@ import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
-import { provider } from "../../types";
+import { CreateVaccineformValues } from "../../types";
 import { useFormik } from 'formik';
 import { axiosWithToken } from "../../utils/axiosInstances";
 import { notifyError, notifySuccess } from "../Toaster/Toaster";
+import { useState } from "react";
+import { useRecoilState } from "recoil";
+import { modalState } from "../../app/store";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
-interface CreateProviderProps {
-    updateList: () => void;
+interface CreateVaccineProps {
+    petId: string
+    updateList: () => void
 }
 
-const CreateProvider: React.FC<CreateProviderProps> = ({ updateList }) => {
+const CreateVaccine: React.FC<CreateVaccineProps> = ({ petId, updateList }) => {
 
-    const validate = (values: provider): provider => {
+    const [show, setShow] = useRecoilState(modalState)
+
+    const validate = (values: CreateVaccineformValues): CreateVaccineformValues => {
         const errors: any = {};
 
         if (!values.name.trim()) {
             errors.name = 'Ingrese el nombre';
-        }
-        if (!values.contactName.trim()) {
-            errors.contactName = 'Ingrese el apellido';
         }
         return errors;
     };
 
     const formik = useFormik({
         initialValues: {
-            id: "",
             name: "",
-            contactName: "",
-            phone: ""
+            date: "",
+            notes: "",
+            id: "",
+            petId: ""
         },
         validate,
         onSubmit: async values => {
-            const createProvider = {
+            const createVaccine = {
                 name: values.name,
-                contactName: values.contactName,
-                phone: values.phone
+                date: values.date,
+                notes: values.notes,
+                petId: petId,
             }
-            let res
+
             try {
-                res = await axiosWithToken.post(`${SERVER_URL}/api/v1/providers/create`, createProvider)
+                const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/vaccines/create`, createVaccine)
                 notifySuccess(res.data)
                 updateList()
+                setShow(false)
             } catch (error: any) {
                 if (error.response) {
                     notifyError(error.response.data)
@@ -60,9 +66,8 @@ const CreateProvider: React.FC<CreateProviderProps> = ({ updateList }) => {
 
     return (
         <Form onSubmit={formik.handleSubmit} noValidate>
-            <h2 className="mb-5">Alta Proveedor</h2>
             <Row className="mb-2">
-                <Form.Group as={Col} xs={12} lg={6}>
+                <Form.Group as={Col} xs={12} md={6}>
                     <Form.Label>Nombre</Form.Label>
                     <Form.Control type="text" placeholder="Nombre"
                         id="name"
@@ -73,25 +78,24 @@ const CreateProvider: React.FC<CreateProviderProps> = ({ updateList }) => {
                     />
                     {formik.touched.name && formik.errors.name ? <div>{formik.errors.name}</div> : null}
                 </Form.Group>
-                <Form.Group as={Col} xs={12} lg={6}>
-                    <Form.Label>Nombre de contacto</Form.Label>
-                    <Form.Control type="text" placeholder="Nombre de contacto"
-                        id="contactName"
-                        name="contactName"
-                        value={formik.values.contactName}
+                <Form.Group as={Col} xs={12} md={6}>
+                    <Form.Label>Fecha</Form.Label>
+                    <Form.Control type="date"
+                        id="date"
+                        name="date"
+                        value={formik.values.date}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                     />
-                    {formik.touched.contactName && formik.errors.contactName ? <div>{formik.errors.contactName}</div> : null}
                 </Form.Group>
             </Row>
-            <Row className="mb-5">
+            <Row className="mb-2">
                 <Form.Group as={Col} xs={12} md={6}>
-                    <Form.Label>Teléfono</Form.Label>
-                    <Form.Control placeholder="Teléfono"
-                        id="phone"
-                        name="phone"
-                        value={formik.values.phone}
+                    <Form.Label>Notas</Form.Label>
+                    <Form.Control type="text"
+                        id="notes"
+                        name="notes"
+                        value={formik.values.notes}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                     />
@@ -111,4 +115,4 @@ const CreateProvider: React.FC<CreateProviderProps> = ({ updateList }) => {
     )
 }
 
-export default CreateProvider
+export default CreateVaccine

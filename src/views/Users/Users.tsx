@@ -13,7 +13,7 @@ const Users = () => {
     const [currentTab, setCurrentTab] = useState("users")
 
     return (
-        <div className='container flex-grow-1 p-5 m-2 rounded custom'>
+        <div className='container flex-grow-1 p-lg-3 p-sm-0 rounded custom m-2 overflow-auto'>
             <Nav variant="tabs" defaultActiveKey="users" activeKey={currentTab}>
                 <Nav.Item>
                     <Nav.Link eventKey="users" onClick={() => setCurrentTab("users")}>Usuarios</Nav.Link>

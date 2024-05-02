@@ -18,7 +18,10 @@ const clientState = atom ({
     id: "",
     name: "",
     surname: "",
-    phone: ""
+    phone: "",
+    email: "",
+    social: "",
+    userName: ""
   }
 })
 

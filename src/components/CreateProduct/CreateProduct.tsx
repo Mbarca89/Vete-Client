@@ -43,14 +43,14 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
         price: 0,
         stock: 0,
         categoryName: "",
-        provider: ""
+        providerName: ""
     });
 
     const [image, setImage] = useState<File | null>(null);
 
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setProduct({ ...product, [event.target.name]: event.target.value });
-    };
+    // const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     setProduct({ ...product, [event.target.name]: event.target.value });
+    // };
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
@@ -81,8 +81,8 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
             errors.categoryName = 'Seleccione una categoria';
         }
 
-        if (!values.categoryName.trim()) {
-            errors.provider = 'Seleccione un proveedor';
+        if (!values.providerName.trim()) {
+            errors.providerName = 'Seleccione un proveedor';
         }
         return errors;
     };
@@ -95,8 +95,8 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
             cost: 0,
             price: 0,
             stock: 0,
-            categoryName: "test",
-            provider: "proveedor1"
+            categoryName: "",
+            providerName: ""
         },
         validate,
         onSubmit: async values => {
@@ -107,8 +107,8 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                 cost: values.cost,
                 price: values.price,
                 stock: values.stock,
-                categoryName: "test",
-                provider: values.provider
+                categoryName: values.categoryName,
+                providerName: values.providerName
             }
             const formData = new FormData();
             if (image) formData.append('file', image);
@@ -217,7 +217,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
             </Row>
             <Row>
                 <Form.Group className="mb-3" as={Col} xs={12}>
-                    <Form.Label>Categoria</Form.Label>
+                    <Form.Label>Categoría</Form.Label>
                     <Form.Select
                         id="categoryName"
                         name="categoryName"
@@ -225,25 +225,28 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                     >
+                        <option>Seleccionar...</option>
                         {categories.map(category =>
                             <option key={category} value={category}>{category}</option>
                         )}
                     </Form.Select>
+                    {formik.touched.categoryName && formik.errors.categoryName ? <div>{formik.errors.categoryName}</div> : null}
                 </Form.Group>
                 <Form.Group className="mb-3" as={Col} xs={12}>
                     <Form.Label>Proveedor</Form.Label>
                     <Form.Select
-                        id="provider"
-                        name="provider"
-                        value={formik.values.provider}
+                        id="providerName"
+                        name="providerName"
+                        value={formik.values.providerName}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                     >
+                        <option>Seleccionar...</option>
                         {providers.map(provider =>
                             <option key={provider} value={provider}>{provider}</option>
                         )}
                     </Form.Select>
-                    {formik.touched.provider && formik.errors.provider ? <div>{formik.errors.provider}</div> : null}
+                    {formik.touched.providerName && formik.errors.providerName ? <div>{formik.errors.providerName}</div> : null}
                 </Form.Group>
             </Row>
             <Row>
@@ -254,6 +257,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                         name="image"
                         onChange={handleImageChange}
                         accept="image/*"
+                        capture="user"
                         ref={inputRef}
                     />
                 </Form.Group>

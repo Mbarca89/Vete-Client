@@ -14,7 +14,7 @@ const Clients = () => {
     const [modal, setModal] = useState<string>("")
 
     return (
-        <div className='container flex-grow-1 p-5 m-2 rounded custom'>
+        <div className='container flex-grow-1 p-lg-3 p-sm-0 rounded custom m-2 overflow-auto'>
             <Nav variant="tabs" defaultActiveKey="clients" activeKey={currentTab}>
                 <Nav.Item>
                     <Nav.Link eventKey="clients" onClick={() => setCurrentTab("clients")}>Clientes</Nav.Link>

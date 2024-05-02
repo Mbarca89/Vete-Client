@@ -6,6 +6,9 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card'
 import Pagination from 'react-bootstrap/Pagination';
+import Navbar from 'react-bootstrap/Navbar';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
 import { product } from '../../types';
 import { axiosWithToken } from "../../utils/axiosInstances";
 import { notifyError, notifySuccess } from "../Toaster/Toaster";
@@ -30,7 +33,7 @@ const ProductList = () => {
         categoryId: 0,
         categoryName: "",
         seller: "",
-        provider: "",
+        providerName: "",
         image: ""
     })
     const [currentPage, setCurrentPage] = useState(1);
@@ -47,7 +50,7 @@ const ProductList = () => {
             if (count.data) {
                 setTotalPages(Math.ceil(count.data / pageSize));
             }
-        } catch (error:any) {
+        } catch (error: any) {
             notifyError(error.response.data)
         }
     }
@@ -68,6 +71,26 @@ const ProductList = () => {
         setShow(!show)
     }
 
+    const handleSearch = async (event:any) => {
+        let searchTerm
+        event.preventDefault()
+        try {
+            if(event.type == "submit") searchTerm = event.target[0].value 
+            else event.target.value ? searchTerm = event.target.value : searchTerm = ""
+            let res
+            if(searchTerm == "") {
+                 res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/getProductsPaginated?page=${currentPage}&size=${pageSize}`)
+            } else {
+                 res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/searchProduct?searchTerm=${searchTerm}`)
+            }
+            if (res.data) {
+                setProducts(res.data);
+            }
+        } catch (error:any) {
+            notifyError(error.response.data)
+        }
+    }
+
     useEffect(() => {
         fetchProducts();
     }, [currentPage]);
@@ -79,6 +102,23 @@ const ProductList = () => {
     return (
         <div>
             <Container>
+                <Navbar className="justify-content-between">
+                    <Form onSubmit={handleSearch}>
+                        <Row>
+                            <Col xs="auto">
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Buscar"
+                                    className=" mr-sm-2"
+                                    onChange={handleSearch}
+                                />
+                            </Col>
+                            <Col xs="auto">
+                                <Button type="submit">Buscar</Button>
+                            </Col>
+                        </Row>
+                    </Form>
+                </Navbar>
                 <Row xs={2} md={3} lg={6} className="g-4">
                     {products.map(product => (
                         <Col key={product.id}>
@@ -90,7 +130,8 @@ const ProductList = () => {
                                 </Card.Body>
                             </Card>
                         </Col>
-                    ))}
+                    ))
+                    }
                 </Row>
                 <div className='d-flex m-auto justify-content-center'>
                     <Pagination className='mt-5'>
@@ -111,7 +152,7 @@ const ProductList = () => {
             </Container>
             {show &&
                 <CustomModal title={selectedProduct.name}>
-                    <ProductDetail product={selectedProduct} />
+                    <ProductDetail product={selectedProduct} updateList={fetchProducts} />
                 </CustomModal>
             }
         </div>

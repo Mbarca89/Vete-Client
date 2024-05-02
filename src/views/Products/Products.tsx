@@ -17,7 +17,7 @@ const Products = () => {
     const [currentTab, setCurrentTab] = useState("products")
 
     return (
-        <div className='container flex-grow-1 p-5 m-2 rounded custom overflow-auto'>
+        <div className='container flex-grow-1 p-lg-3 p-sm-0 rounded custom m-2 overflow-auto'>
             <Nav variant="tabs" defaultActiveKey="products" activeKey={currentTab}>
                 <Nav.Item>
                     <Nav.Link eventKey="products" onClick={() => setCurrentTab("products")}>Productos</Nav.Link>

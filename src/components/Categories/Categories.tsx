@@ -36,7 +36,7 @@ const Categories = () => {
         categoryId: 0,
         categoryName: "",
         seller: "",
-        provider: "",
+        providerName: "",
         image: ""
     })
     const [currentPage, setCurrentPage] = useState(1);
@@ -87,7 +87,7 @@ const Categories = () => {
         setShow(!show)
     }
 
-    const deleteCategoryHandler = (category:string) => {
+    const deleteCategoryHandler = (category: string) => {
         setDeleteCategory(category)
         setModal("deleteCategory")
         setShow(!show)
@@ -114,12 +114,12 @@ const Categories = () => {
     }, [])
 
     return (
-        currentCategory && <div>
+        <div>
             <Container>
                 <Row>
-                    <DropdownButton id="dropdown-basic-button" title={`${currentCategory}`}>
+                    <DropdownButton id="dropdown-basic-button" title={currentCategory ? currentCategory : "No hay categorías"}>
                         <Dropdown.Item onClick={createCategoryHandler} className='d-flex justify-content-between align-items-center px-2'>
-                            <svg width="15" height="15" viewBox="0 0 512 512" style={{color:"#632f6b"}} xmlns="http://www.w3.org/2000/svg" className="h-full w-full"><rect width="512" height="512" x="0" y="0" rx="30" fill="transparent" stroke="transparent" strokeWidth="0" strokeOpacity="100%" paintOrder="stroke"></rect><svg width="512px" height="512px" viewBox="0 0 24 24" fill="#632f6b" x="0" y="0" role="img" style={{display:"inline-block;vertical-align:middle"}} xmlns="http://www.w3.org/2000/svg"><g fill="#632f6b"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="M12 20v-8m0 0V4m0 8h8m-8 0H4"/></g></svg></svg>
+                            <svg width="15" height="15" viewBox="0 0 512 512" style={{ color: "#632f6b" }} xmlns="http://www.w3.org/2000/svg" className="h-full w-full"><rect width="512" height="512" x="0" y="0" rx="30" fill="transparent" stroke="transparent" strokeWidth="0" strokeOpacity="100%" paintOrder="stroke"></rect><svg width="512px" height="512px" viewBox="0 0 24 24" fill="#632f6b" x="0" y="0" role="img" style={{ display: "inline-block;vertical-align:middle" }} xmlns="http://www.w3.org/2000/svg"><g fill="#632f6b"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="M12 20v-8m0 0V4m0 8h8m-8 0H4" /></g></svg></svg>
                             <span>Nueva categoria</span>
                         </Dropdown.Item>
                         <Dropdown.Divider />
@@ -163,17 +163,17 @@ const Categories = () => {
             </Container>
             {show && modal == "productDetail" &&
                 <CustomModal title={selectedProduct.name}>
-                    <ProductDetail product={selectedProduct}/>
+                    <ProductDetail product={selectedProduct} updateList={fetchProducts} />
                 </CustomModal>
             }
-            {show && modal == "createCategory" && 
+            {show && modal == "createCategory" &&
                 <CustomModal title={"Crear categoría"}>
-                    <CreateCategory getCategory={getCategory}/>
+                    <CreateCategory getCategory={getCategory} />
                 </CustomModal>
             }
-            {show && modal == "deleteCategory" && 
+            {show && modal == "deleteCategory" &&
                 <CustomModal title={"Eliminar categoría"}>
-                    <DeleteCategory category={deleteCategory} getCategory={getCategory}/>
+                    <DeleteCategory category={deleteCategory} getCategory={getCategory} />
                 </CustomModal>
             }
         </div>

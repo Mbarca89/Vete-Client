@@ -3,21 +3,22 @@ import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
-import { createPetformValues } from "../../types";
+import { createPetformValues, pet } from "../../types";
 import { useFormik } from 'formik';
 import { axiosWithToken } from "../../utils/axiosInstances";
 import { notifyError, notifySuccess } from "../Toaster/Toaster";
 import { useRef, useState } from "react";
 import { useRecoilState } from "recoil";
 import { modalState } from "../../app/store";
+import noImage from "../../assets/noImage.png"
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
-interface CreatePetProps {
-    clientId: string
+interface EditPetProps {
+    currentPet: pet
     updateList: () => void;
 }
 
-const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
+const EditPet: React.FC<EditPetProps> = ({ updateList, currentPet }) => {
 
     const inputRef = useRef<HTMLInputElement>(null)
     const [image, setImage] = useState<File | null>(null);
@@ -34,30 +35,26 @@ const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
 
     const formik = useFormik({
         initialValues: {
-            name: "",
-            race: "",
-            gender: "",
-            species: "",
-            weight: 0,
-            born: ""
+            name: currentPet.name,
+            race: currentPet.race,
+            weight: currentPet.weight,
+            born: currentPet.born
         },
         validate,
         onSubmit: async values => {
-            const createPet = {
+            const editPet = {
+                id: currentPet.id,
                 name: values.name,
                 race: values.race,
-                gender: values.gender,
-                species: values.species,
                 weight: values.weight,
                 born: values.born,
             }
             const formData = new FormData();
             if (image) formData.append('file', image);
-            formData.append('pet', JSON.stringify(createPet));
-            formData.append("clientId", clientId)
+            formData.append('pet', JSON.stringify(editPet));
             
             try {
-                const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/pets/create`, formData)
+                const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/pets/edit`, formData)
                 notifySuccess(res.data)
                 updateList()
                 setShow(false)
@@ -75,6 +72,7 @@ const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
         if (inputRef.current) {
             inputRef.current.value = ''
         }
+        setShow(false)
     }
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,8 +83,11 @@ const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
 
     return (
         <Form onSubmit={formik.handleSubmit} noValidate>
-            <Row className="mb-2">
-                <Form.Group as={Col} xs={12} md={6}>
+            <Row>
+            <img className="m-auto w-50" src={currentPet.photo ? `data:image/jpeg;base64,${currentPet.photo}` : noImage} alt="" />
+            </Row>
+            <Row className="mb-5">
+                <Form.Group as={Col}>
                     <Form.Label>Nombre</Form.Label>
                     <Form.Control type="text" placeholder="Nombre"
                         id="name"
@@ -97,7 +98,7 @@ const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
                     />
                     {formik.touched.name && formik.errors.name ? <div>{formik.errors.name}</div> : null}
                 </Form.Group>
-                <Form.Group as={Col} xs={12} md={6}>
+                <Form.Group as={Col}>
                     <Form.Label>Raza</Form.Label>
                     <Form.Control type="text" placeholder="Raza"
                         id="race"
@@ -108,38 +109,8 @@ const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
                     />
                 </Form.Group>
             </Row>
-            <Row className="mb-2">
-            <Form.Group as={Col} xs={12} md={6}>
-                    <Form.Label>Especie</Form.Label>
-                    <Form.Select
-                        id="species"
-                        name="species"
-                        value={formik.values.species}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                    >
-                        <option value="">Seleccionar...</option>
-                        <option value="Canino">Canino</option>
-                        <option value="Felino">Felino</option>
-                    </Form.Select>
-                </Form.Group>
-                <Form.Group as={Col} xs={12} md={6}>
-                    <Form.Label>Género</Form.Label>
-                    <Form.Select
-                        id="gender"
-                        name="gender"
-                        value={formik.values.gender}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                    >
-                        <option value="">Seleccionar...</option>
-                        <option value="Femenino">Femenino</option>
-                        <option value="Masculino">Masculino</option>
-                    </Form.Select>
-                </Form.Group>
-            </Row>
-            <Row className="mb-2">
-                <Form.Group as={Col} xs={12} md={6}>
+            <Row className="mb-5">
+                <Form.Group as={Col}>
                     <Form.Label>Peso (kg)</Form.Label>
                     <Form.Control type="number"
                         id="weight"
@@ -149,7 +120,7 @@ const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
                         onBlur={formik.handleBlur}
                     />
                 </Form.Group>
-                <Form.Group as={Col} xs={12} md={6}>
+                <Form.Group as={Col}>
                     <Form.Label>Fecha de Nacimiento</Form.Label>
                     <Form.Control type="date"
                         id="born"
@@ -161,7 +132,7 @@ const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
                 </Form.Group>
             </Row>
             <Row>
-                <Form.Group className="mb-5 m-auto" as={Col} xs={12} md={6}>
+                <Form.Group className="mb-3 m-auto" as={Col} xs={12} md={6}>
                     <Form.Label>Imagen</Form.Label>
                     <Form.Control type="file"
                         id="image"
@@ -176,10 +147,10 @@ const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
             <Row>
                 <Form.Group as={Col} className="d-flex justify-content-center">
                     <Button className="custom-bg custom-border custom-font m-3" variant="primary" onClick={resetForm}>
-                        Reiniciar
+                        Cancelar
                     </Button>
                     <Button className="custom-bg custom-border custom-font m-3" variant="primary" type="submit">
-                        Crear
+                        Guardar
                     </Button>
                 </Form.Group>
             </Row>
@@ -187,4 +158,4 @@ const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
     )
 }
 
-export default CreatePet
+export default EditPet

@@ -22,6 +22,8 @@ const PetList = () => {
         id: "",
         name: "",
         race: "",
+        gender: "",
+        species: "",
         weight: 0,
         born: "",
         photo: ""
@@ -52,7 +54,6 @@ const PetList = () => {
                 setPets(res.data);
             }
         } catch (error: any) {
-            console.log(error.response.data)
             notifyError(error.response.data)
         }
     };

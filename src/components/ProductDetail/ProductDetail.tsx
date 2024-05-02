@@ -18,13 +18,15 @@ const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface ProductDetailProps {
     product: product;
+    updateList: () => void;
 }
 
-const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
+const ProductDetail: React.FC<ProductDetailProps> = ({ product, updateList }) => {
 
     const [show, setShow] = useRecoilState(modalState)
 
     const [edit, setEdit] = useState(false)
+    const [deleteProduct, setDeleteProduct] = useState(false)
 
     const inputRef = useRef<HTMLInputElement>(null)
 
@@ -44,14 +46,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         }
     }
 
-    const [editProduct, setEditProduct] = useState<createProductformValues>(product);
-
     const [image, setImage] = useState<File | null>(null);
-
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setEditProduct({ ...product, [event.target.name]: event.target.value });
-    };
-    
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
@@ -86,8 +81,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
             errors.categoryName = 'Seleccione una categoria';
         }
 
-        if (!values.categoryName.trim()) {
-            errors.provider = 'Seleccione un proveedor';
+        if (!values.providerName.trim()) {
+            errors.providerName = 'Seleccione un proveedor';
         }
         return errors;
     };
@@ -101,11 +96,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
             price: product.price,
             stock: product.stock,
             categoryName: product.categoryName,
-            provider: product.provider
+            providerName: product.providerName
         },
         validate,
         onSubmit: async values => {
             const createProduct = {
+                id: product.id,
                 name: values.name,
                 description: values.description,
                 barCode: values.barCode,
@@ -113,20 +109,22 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                 price: values.price,
                 stock: values.stock,
                 categoryName: values.categoryName,
-                provider: values.provider
+                providerName: values.providerName
             }
             const formData = new FormData();
             if (image) formData.append('file', image);
             formData.append('product', JSON.stringify(createProduct));
-
             try {
-                const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/products/create`, formData, {
+                const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/products/edit`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
                 });
                 if (res.data) {
                     notifySuccess(res.data)
+                    setEdit(false)
+                    setShow(false)
+                    updateList()
                 }
             } catch (error: any) {
                 notifyError(error.response.data)
@@ -135,21 +133,42 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     });
 
     const resetForm = () => {
-        formik.resetForm({values: {
-            name: product.name,
-            description: product.description,
-            barCode: product.barCode,
-            cost: product.cost,
-            price: product.price,
-            stock: product.stock,
-            categoryName: product.categoryName,
-            provider: product.provider
-        }})
+        formik.resetForm({
+            values: {
+                name: product.name,
+                description: product.description,
+                barCode: product.barCode,
+                cost: product.cost,
+                price: product.price,
+                stock: product.stock,
+                categoryName: product.categoryName,
+                providerName: product.providerName
+            }
+        })
         setImage(null)
         if (inputRef.current) {
             inputRef.current.value = ''
         }
-        setEdit(false)        
+        setEdit(false)
+    }
+
+    const handleDelete = () => {
+        setDeleteProduct(true)
+    }
+
+    const deleteProductHandler = async () => {
+        try {
+            const res = await axiosWithToken.delete(`${SERVER_URL}/api/v1/products/delete?productId=${product.id}`)
+            if (res.data) {
+                notifySuccess(res.data)
+                setDeleteProduct(false)
+                setShow(false)
+                updateList()
+            }
+        } catch (error: any) {
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.response)
+        }
     }
 
     useEffect(() => {
@@ -157,14 +176,14 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     }, [])
 
     return (
-        <div>
+        !deleteProduct ? <div>
             <Row>
                 <Col lg={6}>
                     <Image className="custom-detail-img" src={product.image ? `data:image/jpeg;base64,${product.image}` : noImage}></Image>
                 </Col>
                 <Col className="d-flex justify-content-end">
-                    <svg onClick={handleEdit} role="button" width="25" height="25" viewBox="0 0 512 512" style={{ color: "#632f6b" }} xmlns="http://www.w3.org/2000/svg" className="h-full w-full cursor-pointer mx-3"><rect width="512" height="512" x="0" y="0" rx="0" fill="transparent" stroke="transparent" strokeWidth="0" strokeOpacity="100%" paintOrder="stroke"></rect><svg width="512px" height="512px" viewBox="0 0 1024 1024" fill="#D040EE" x="0" y="0" role="img" style={{ display: "inline-block;vertical-align:middle" }} xmlns="http://www.w3.org/2000/svg"><g fill="#D040EE"><path fill="currentColor" d="M257.7 752c2 0 4-.2 6-.5L431.9 722c2-.4 3.9-1.3 5.3-2.8l423.9-423.9a9.96 9.96 0 0 0 0-14.1L694.9 114.9c-1.9-1.9-4.4-2.9-7.1-2.9s-5.2 1-7.1 2.9L256.8 538.8c-1.5 1.5-2.4 3.3-2.8 5.3l-29.5 168.2a33.5 33.5 0 0 0 9.4 29.8c6.6 6.4 14.9 9.9 23.8 9.9zm67.4-174.4L687.8 215l73.3 73.3l-362.7 362.6l-88.9 15.7l15.6-89zM880 836H144c-17.7 0-32 14.3-32 32v36c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-36c0-17.7-14.3-32-32-32z" /></g></svg></svg>
-                    <svg role="button" width="25" height="25" viewBox="0 0 512 512" style={{ color: "#632f6b" }} xmlns="http://www.w3.org/2000/svg" className="h-full w-full cursor-pointer"><rect width="512" height="512" x="0" y="0" rx="30" fill="transparent" stroke="transparent" strokeWidth="0" strokeOpacity="100%" paintOrder="stroke"></rect><svg width="512px" height="512px" viewBox="0 0 1024 1024" fill="#632f6b" x="0" y="0" role="img" style={{ display: "inline-block;vertical-align:middle" }} xmlns="http://www.w3.org/2000/svg"><g fill="#632f6b"><path fill="currentColor" fillRule="evenodd" d="M799.855 166.312c.023.007.043.018.084.059l57.69 57.69c.041.041.052.06.059.084a.118.118 0 0 1 0 .069c-.007.023-.018.042-.059.083L569.926 512l287.703 287.703c.041.04.052.06.059.083a.118.118 0 0 1 0 .07c-.007.022-.018.042-.059.083l-57.69 57.69c-.041.041-.06.052-.084.059a.118.118 0 0 1-.069 0c-.023-.007-.042-.018-.083-.059L512 569.926L224.297 857.629c-.04.041-.06.052-.083.059a.118.118 0 0 1-.07 0c-.022-.007-.042-.018-.083-.059l-57.69-57.69c-.041-.041-.052-.06-.059-.084a.118.118 0 0 1 0-.069c.007-.023.018-.042.059-.083L454.073 512L166.371 224.297c-.041-.04-.052-.06-.059-.083a.118.118 0 0 1 0-.07c.007-.022.018-.042.059-.083l57.69-57.69c.041-.041.06-.052.084-.059a.118.118 0 0 1 .069 0c.023.007.042.018.083.059L512 454.073l287.703-287.702c.04-.041.06-.052.083-.059a.118.118 0 0 1 .07 0Z" /></g></svg></svg>
+                    <svg onClick={handleEdit} role="button" width="25" height="25" viewBox="0 0 512 512" style={{ color: "#632f6b" }} xmlns="http://www.w3.org/2000/svg" className="h-full w-full cursor-pointer mx-3"><rect width="512" height="512" x="0" y="0" rx="30" fill="transparent" stroke="transparent" strokeWidth="0" strokeOpacity="100%" paintOrder="stroke"></rect><svg width="512px" height="512px" viewBox="0 0 1024 1024" fill="#D040EE" x="0" y="0" style={{ display: "inline-block;vertical-align:middle" }} xmlns="http://www.w3.org/2000/svg"><g fill="#D040EE"><path fill="currentColor" d="M257.7 752c2 0 4-.2 6-.5L431.9 722c2-.4 3.9-1.3 5.3-2.8l423.9-423.9a9.96 9.96 0 0 0 0-14.1L694.9 114.9c-1.9-1.9-4.4-2.9-7.1-2.9s-5.2 1-7.1 2.9L256.8 538.8c-1.5 1.5-2.4 3.3-2.8 5.3l-29.5 168.2a33.5 33.5 0 0 0 9.4 29.8c6.6 6.4 14.9 9.9 23.8 9.9zm67.4-174.4L687.8 215l73.3 73.3l-362.7 362.6l-88.9 15.7l15.6-89zM880 836H144c-17.7 0-32 14.3-32 32v36c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-36c0-17.7-14.3-32-32-32z" /></g></svg></svg>
+                    <svg onClick={handleDelete} role="button" width="25" height="25" viewBox="0 0 512 512" style={{ color: "#632f6b" }} xmlns="http://www.w3.org/2000/svg" className="h-full w-full"><rect width="512" height="512" x="0" y="0" rx="30" fill="transparent" stroke="transparent" stroke-width="0" stroke-opacity="100%" paint-order="stroke"></rect><svg width="512px" height="512px" viewBox="0 0 24 24" fill="#632f6b" x="0" y="0" style={{ display: "inline-block;vertical-align:middle" }} xmlns="http://www.w3.org/2000/svg"><g fill="#632f6b"><path fill="currentColor" d="M14.12 10.47L12 12.59l-2.13-2.12l-1.41 1.41L10.59 14l-2.12 2.12l1.41 1.41L12 15.41l2.12 2.12l1.41-1.41L13.41 14l2.12-2.12zM15.5 4l-1-1h-5l-1 1H5v2h14V4zM6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9z" /></g></svg></svg>
                 </Col>
             </Row>
             <Form className='' onSubmit={formik.handleSubmit} noValidate>
@@ -265,7 +284,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                         <Form.Select
                             id="provider"
                             name="provider"
-                            value={formik.values.provider}
+                            value={formik.values.providerName}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             disabled={!edit}
@@ -274,7 +293,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                 <option key={provider} value={provider}>{provider}</option>
                             )}
                         </Form.Select>
-                        {formik.touched.provider && formik.errors.provider ? <div>{formik.errors.provider}</div> : null}
+                        {formik.touched.providerName && formik.errors.providerName ? <div>{formik.errors.providerName}</div> : null}
                     </Form.Group>
                 </Row>
                 {edit && <Row>
@@ -301,7 +320,18 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                     </Form.Group>
                 </Row>}
             </Form>
-        </div>
+        </div> :
+            <div className="d-flex flex-column align-items-center">
+                <span>Esta seguro que quiere eliminar el producto?</span>
+                <Form.Group as={Col} className="d-flex justify-content-center">
+                    <Button className="custom-bg custom-border custom-font m-3" variant="danger" onClick={()=>setDeleteProduct(false)}>
+                        Cancelar
+                    </Button>
+                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" onClick={deleteProductHandler}>
+                        Eliminar
+                    </Button>
+                </Form.Group>
+            </div>
     )
 }
 

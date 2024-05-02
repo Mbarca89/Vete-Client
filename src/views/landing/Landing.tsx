@@ -40,7 +40,7 @@ const Landing = () => {
         event.preventDefault()
         try {
             const res = await axiosWithoutToken.post(`${SERVER_URL}/auth/login`, userData)
-            if (res.data) {             
+            if (res.data) {      
                 setUser({
                     id: res.data.id,
                     name: res.data.name,
@@ -52,6 +52,9 @@ const Landing = () => {
                     localStorage.setItem("token", res.data.token)
                     localStorage.setItem("userName", res.data.userName)
                     localStorage.setItem("role", res.data.role[0].authority)
+                    localStorage.setItem("id", res.data.id)
+                    localStorage.setItem("name", res.data.name)
+                    localStorage.setItem("surname", res.data.surname)
                 }
                 setLogged(true)
                 navigate("/home")

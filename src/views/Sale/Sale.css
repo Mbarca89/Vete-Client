@@ -1,0 +1,20 @@
+@media print {
+    body {
+        margin: 0;
+    }
+    body * {
+        visibility: hidden;
+    }
+    .print-table, .print-table * {
+        visibility: visible;
+    }
+    .print-table {
+        position: absolute;
+        margin: auto;
+        left: 0;
+        top: 0;
+    }
+    .exclude-print, .exclude-print * {
+        display: none !important;
+    }
+}

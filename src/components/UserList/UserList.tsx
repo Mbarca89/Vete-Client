@@ -65,8 +65,8 @@ const UserList = () => {
     };
 
     return (
-        <div className='overflow-auto'>
-            <Table striped bordered hover>
+        <div className='text-nowrap'>
+            <Table striped bordered hover size="sm">
                 <thead>
                     <tr>
                         <th>ID</th>

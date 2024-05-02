@@ -85,8 +85,8 @@ const CreateUser: React.FC<CreateUserProps> = ({ updateList }) => {
     return (
         <Form onSubmit={formik.handleSubmit} noValidate>
             <h2 className="mb-5">Crear Usuario</h2>
-            <Row className="mb-5">
-                <Form.Group as={Col}>
+            <Row className="mb-2">
+                <Form.Group as={Col} xs={12} lg={6}>
                     <Form.Label>Nombre</Form.Label>
                     <Form.Control type="text" placeholder="Nombre"
                         id="name"
@@ -97,7 +97,7 @@ const CreateUser: React.FC<CreateUserProps> = ({ updateList }) => {
                     />
                     {formik.touched.name && formik.errors.name ? <div>{formik.errors.name}</div> : null}
                 </Form.Group>
-                <Form.Group as={Col}>
+                <Form.Group as={Col} xs={12} lg={6}>
                     <Form.Label>Apellido</Form.Label>
                     <Form.Control type="text" placeholder="Apellido"
                         id="surname"
@@ -109,8 +109,8 @@ const CreateUser: React.FC<CreateUserProps> = ({ updateList }) => {
                     {formik.touched.surname && formik.errors.surname ? <div>{formik.errors.surname}</div> : null}
                 </Form.Group>
             </Row>
-            <Row className="mb-5">
-                <Form.Group as={Col}>
+            <Row className="mb-2">
+                <Form.Group as={Col} xs={12} lg={6}>
                     <Form.Label>Nombre de usuario</Form.Label>
                     <Form.Control placeholder="Nombre de usuario"
                         id="userName"
@@ -121,7 +121,9 @@ const CreateUser: React.FC<CreateUserProps> = ({ updateList }) => {
                     />
                     {formik.touched.userName && formik.errors.userName ? <div>{formik.errors.userName}</div> : null}
                 </Form.Group>
-                <Form.Group as={Col}>
+            </Row>
+            <Row className="mb-2">
+                <Form.Group as={Col} xs={12} lg={6}>
                     <Form.Label>Contraseña</Form.Label>
                     <Form.Control type="password" placeholder="Contraseña"
                         id="password"
@@ -131,7 +133,7 @@ const CreateUser: React.FC<CreateUserProps> = ({ updateList }) => {
                         onBlur={formik.handleBlur}
                     />
                 </Form.Group>
-                <Form.Group as={Col}>
+                <Form.Group as={Col} xs={12} lg={6}>
                     <Form.Label>Repetir contraseña</Form.Label>
                     <Form.Control type="password" placeholder="Repetir contraseña"
                         id="repeatPassword"
@@ -142,7 +144,9 @@ const CreateUser: React.FC<CreateUserProps> = ({ updateList }) => {
                     />
                     {formik.touched.repeatPassword && formik.errors.repeatPassword ? <div>{formik.errors.repeatPassword}</div> : null}
                 </Form.Group>
-                <Form.Group as={Col}>
+                </Row>
+                <Row className="mb-5">
+                <Form.Group as={Col} xs={12} lg={6}>
                     <Form.Label>Rol</Form.Label>
                     <Form.Select
                         id="role"

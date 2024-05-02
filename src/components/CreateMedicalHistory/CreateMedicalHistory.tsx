@@ -7,6 +7,8 @@ import { createMedicalHistoryFormValues } from "../../types";
 import { useFormik } from 'formik';
 import { axiosWithToken } from "../../utils/axiosInstances";
 import { notifyError, notifySuccess } from "../Toaster/Toaster";
+import { modalState } from "../../app/store"
+import { useRecoilState } from "recoil"
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface CreateMedicalHistoryProps {
@@ -14,7 +16,9 @@ interface CreateMedicalHistoryProps {
     updateList: () => void
 }
 
-const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({updateList, petId}) => {
+const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({ updateList, petId }) => {
+
+    const [show, setShow] = useRecoilState(modalState)
 
     const validate = (values: createMedicalHistoryFormValues): createMedicalHistoryFormValues => {
         const errors: any = {};
@@ -41,12 +45,14 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({updateList, 
                 notes: values.notes,
                 description: values.description,
                 medicine: values.medicine,
+                petId: petId
             }
             let res
             try {
-                res = await axiosWithToken.post(`${SERVER_URL}/api/v1/medicalHistory/create`, {CreateMedicalHistory, petId})
+                res = await axiosWithToken.post(`${SERVER_URL}/api/v1/medicalHistory/create`, CreateMedicalHistory)
                 notifySuccess(res.data)
                 updateList()
+                setShow(false)
             } catch (error: any) {
                 if (error.response) {
                     notifyError(error.response.data)
@@ -61,23 +67,25 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({updateList, 
 
     return (
         <Form onSubmit={formik.handleSubmit} noValidate>
-            <Row className="mb-5">
-                <Form.Group as={Col}>
+            <Row className="mb-2">
+                <Form.Group as={Col} xs={12} md={6}>
                     <Form.Label>Tipo</Form.Label>
                     <Form.Select
-                        id="role"
-                        name="role"
+                        id="type"
+                        name="type"
                         value={formik.values.type}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                     >
+                        <option value="">Seleccionar...</option>
                         <option value="Consulta">Consulta</option>
-                        <option value="Medicación">Medicación</option>
                         <option value="Cirugía">Cirugía</option>
+                        <option value="Medicación">Medicación</option>
+                        <option value="Vacuna">Vacuna</option>
                     </Form.Select>
                     {formik.touched.type && formik.errors.type ? <div>{formik.errors.type}</div> : null}
                 </Form.Group>
-                <Form.Group as={Col}>
+                <Form.Group as={Col} xs={12} md={6}>
                     <Form.Label>Notas</Form.Label>
                     <Form.Control type="text" placeholder="Notas"
                         id="notes"
@@ -88,10 +96,11 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({updateList, 
                     />
                 </Form.Group>
             </Row>
-            <Row className="mb-5">
-                <Form.Group as={Col}>
+            <Row className="mb-2">
+                <Form.Group as={Col} xs={12} md={12}>
                     <Form.Label>Descripción</Form.Label>
                     <Form.Control placeholder="Descripción"
+                        as="textarea"
                         id="description"
                         name="description"
                         value={formik.values.description}
@@ -99,7 +108,9 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({updateList, 
                         onBlur={formik.handleBlur}
                     />
                 </Form.Group>
-                <Form.Group as={Col}>
+            </Row>
+            <Row>
+                <Form.Group as={Col} xs={12} md={12}>
                     <Form.Label>Medicación</Form.Label>
                     <Form.Control type="text" placeholder="Medicación"
                         id="medicine"

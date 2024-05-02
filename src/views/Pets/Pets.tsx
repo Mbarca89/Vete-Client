@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import PetDetail from '../../components/PetDetailCard/PetDetailCard';
+import PetDetailCard from '../../components/PetDetailCard/PetDetailCard';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -25,6 +25,8 @@ const Pets = () => {
         id: "",
         name: "",
         race: "",
+        gender: "",
+        species: "",
         weight: 0,
         born: "",
         photo: ""
@@ -55,7 +57,6 @@ const Pets = () => {
                 setPets(res.data);
             }
         } catch (error: any) {
-            console.log(error.response.data)
             notifyError(error.response.data)
         }
     };
@@ -73,7 +74,6 @@ const Pets = () => {
                 setPets(res.data);
             }
         } catch (error:any) {
-            console.log(error.response.data)
             notifyError(error.response.data)
         }
     }
@@ -87,7 +87,7 @@ const Pets = () => {
     }, []);
 
     return (
-        <div className='container flex-grow-1 p-5 m-2 rounded custom overflow-auto'>
+        <div className='container flex-grow-1 p-lg-3 p-sm-0 rounded custom m-2 overflow-auto'>
             <Container>
             <Navbar className="justify-content-between">
                 <Form onSubmit={handleSearch}>
@@ -140,7 +140,7 @@ const Pets = () => {
             </Container>
             {show &&
                 <CustomModal title={selectedPet.name}>
-                    <PetDetail pet={selectedPet} />
+                    <PetDetailCard pet={selectedPet} />
                 </CustomModal>
             }
         </div>

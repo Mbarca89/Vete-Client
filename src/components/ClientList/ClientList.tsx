@@ -22,7 +22,10 @@ const ClientList = () => {
         id: "",
         name: "",
         surname: "",
-        phone: ""
+        phone: "",
+        email: "",
+        social: "",
+        userName: ""
     }]);
 
     const [show, setShow] = useRecoilState(modalState)
@@ -65,7 +68,7 @@ const ClientList = () => {
     };
 
     return (
-        <div className='overflow-auto'>
+        <div className='text-nowrap'>
                 <Table striped bordered hover>
                     <thead>
                         <tr>

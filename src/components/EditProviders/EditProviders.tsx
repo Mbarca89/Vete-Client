@@ -7,13 +7,18 @@ import { provider } from "../../types";
 import { useFormik } from 'formik';
 import { axiosWithToken } from "../../utils/axiosInstances";
 import { notifyError, notifySuccess } from "../Toaster/Toaster";
+import { modalState } from "../../app/store"
+import { useRecoilState } from "recoil"
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
-interface CreateProviderProps {
+interface EditProviderProps {
+    provider: provider
     updateList: () => void;
 }
 
-const CreateProvider: React.FC<CreateProviderProps> = ({ updateList }) => {
+const EditProvider: React.FC<EditProviderProps> = ({ provider, updateList }) => {
+
+    const [show, setShow] = useRecoilState(modalState)
 
     const validate = (values: provider): provider => {
         const errors: any = {};
@@ -21,31 +26,30 @@ const CreateProvider: React.FC<CreateProviderProps> = ({ updateList }) => {
         if (!values.name.trim()) {
             errors.name = 'Ingrese el nombre';
         }
-        if (!values.contactName.trim()) {
-            errors.contactName = 'Ingrese el apellido';
-        }
         return errors;
     };
 
     const formik = useFormik({
         initialValues: {
-            id: "",
-            name: "",
-            contactName: "",
-            phone: ""
+            id: provider.id,
+            name: provider.name,
+            contactName: provider.contactName,
+            phone: provider.phone
         },
         validate,
         onSubmit: async values => {
-            const createProvider = {
+            const EditProvider = {
+                id: provider.id,
                 name: values.name,
                 contactName: values.contactName,
                 phone: values.phone
             }
             let res
             try {
-                res = await axiosWithToken.post(`${SERVER_URL}/api/v1/providers/create`, createProvider)
+                res = await axiosWithToken.post(`${SERVER_URL}/api/v1/providers/edit`, EditProvider)
                 notifySuccess(res.data)
                 updateList()
+                setShow(false)
             } catch (error: any) {
                 if (error.response) {
                     notifyError(error.response.data)
@@ -55,12 +59,12 @@ const CreateProvider: React.FC<CreateProviderProps> = ({ updateList }) => {
     });
 
     const resetForm = () => {
-        formik.resetForm();
+        formik.resetForm()
+        setShow(false)
     }
 
     return (
         <Form onSubmit={formik.handleSubmit} noValidate>
-            <h2 className="mb-5">Alta Proveedor</h2>
             <Row className="mb-2">
                 <Form.Group as={Col} xs={12} lg={6}>
                     <Form.Label>Nombre</Form.Label>
@@ -82,7 +86,6 @@ const CreateProvider: React.FC<CreateProviderProps> = ({ updateList }) => {
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                     />
-                    {formik.touched.contactName && formik.errors.contactName ? <div>{formik.errors.contactName}</div> : null}
                 </Form.Group>
             </Row>
             <Row className="mb-5">
@@ -100,10 +103,10 @@ const CreateProvider: React.FC<CreateProviderProps> = ({ updateList }) => {
             <Row>
                 <Form.Group as={Col} className="d-flex justify-content-center">
                     <Button className="custom-bg custom-border custom-font m-3" variant="primary" onClick={resetForm}>
-                        Reiniciar
+                        Cancelar
                     </Button>
                     <Button className="custom-bg custom-border custom-font m-3" variant="primary" type="submit">
-                        Crear
+                        Guardar
                     </Button>
                 </Form.Group>
             </Row>
@@ -111,4 +114,4 @@ const CreateProvider: React.FC<CreateProviderProps> = ({ updateList }) => {
     )
 }
 
-export default CreateProvider
+export default EditProvider

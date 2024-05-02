@@ -61,7 +61,7 @@ const EditUser: React.FC<EditUserProps> = ({ user, onUpdateUser }) => {
                 notifySuccess(res.data)
                 onUpdateUser(values)
                 setShow(false)
-            } catch (error:any) {
+            } catch (error: any) {
                 if (error.response) {
                     notifyError(error.response.data);
                 }
@@ -71,8 +71,8 @@ const EditUser: React.FC<EditUserProps> = ({ user, onUpdateUser }) => {
 
     return (
         <Form onSubmit={formik.handleSubmit} noValidate>
-            <Row className="mb-5">
-                <Form.Group as={Col}>
+            <Row className="mb-2">
+                <Form.Group as={Col} xs={12} lg={6}>
                     <Form.Label>Nombre</Form.Label>
                     <Form.Control type="text" placeholder="Nombre"
                         id="name"
@@ -83,7 +83,7 @@ const EditUser: React.FC<EditUserProps> = ({ user, onUpdateUser }) => {
                     />
                     {formik.touched.name && formik.errors.name ? <div>{formik.errors.name}</div> : null}
                 </Form.Group>
-                <Form.Group as={Col}>
+                <Form.Group as={Col} xs={12} lg={6}>
                     <Form.Label>Apellido</Form.Label>
                     <Form.Control type="text" placeholder="Apellido"
                         id="surname"
@@ -94,9 +94,7 @@ const EditUser: React.FC<EditUserProps> = ({ user, onUpdateUser }) => {
                     />
                     {formik.touched.surname && formik.errors.surname ? <div>{formik.errors.surname}</div> : null}
                 </Form.Group>
-            </Row>
-            <Row className="mb-5">
-                <Form.Group as={Col}>
+                <Form.Group as={Col} xs={12} lg={6}>
                     <Form.Label>Nombre de usuario</Form.Label>
                     <Form.Control placeholder="Nombre de usuario"
                         id="userName"
@@ -107,7 +105,9 @@ const EditUser: React.FC<EditUserProps> = ({ user, onUpdateUser }) => {
                     />
                     {formik.touched.userName && formik.errors.userName ? <div>{formik.errors.userName}</div> : null}
                 </Form.Group>
-                <Form.Group as={Col}>
+            </Row>
+            <Row className="mb-2">
+                <Form.Group as={Col} xs={12} lg={6}>
                     <Form.Label>Contraseña</Form.Label>
                     <Form.Control type="password" placeholder="Contraseña"
                         id="password"
@@ -117,7 +117,7 @@ const EditUser: React.FC<EditUserProps> = ({ user, onUpdateUser }) => {
                         onBlur={formik.handleBlur}
                     />
                 </Form.Group>
-                <Form.Group as={Col}>
+                <Form.Group as={Col} xs={12} lg={6}>
                     <Form.Label>Repetir contraseña</Form.Label>
                     <Form.Control type="password" placeholder="Repetir contraseña"
                         id="repeatPassword"
@@ -128,7 +128,9 @@ const EditUser: React.FC<EditUserProps> = ({ user, onUpdateUser }) => {
                     />
                     {formik.touched.repeatPassword && formik.errors.repeatPassword ? <div>{formik.errors.repeatPassword}</div> : null}
                 </Form.Group>
-                <Form.Group as={Col}>
+            </Row>
+            <Row className='mb-5'>
+                <Form.Group as={Col} xs={12} lg={6}>
                     <Form.Label>Rol</Form.Label>
                     <Form.Select
                         id="role"

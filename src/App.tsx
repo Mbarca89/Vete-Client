@@ -10,13 +10,18 @@ import Clients from "./views/Clients/Clients"
 import ClientDetail from "./components/ClientDetail/ClientDetail"
 import Pets from "./views/Pets/Pets"
 import PetDetail from "./components/PetDetail/PetDetail"
+import Sale from "./views/Sale/Sale"
+import Reports from "./views/Reports/Reports"
+import Order from "./views/Order/Order"
 import { useState, useEffect } from "react"
 import { useRecoilState } from "recoil"
-import { logState } from "./app/store"
+import { logState, userState } from "./app/store"
 import { Toaster } from 'react-hot-toast';
 
 const App = () => {
+
   let [isLogged, setLogged] = useRecoilState(logState)
+  const [user, setUser] = useRecoilState(userState)
 
   const [initialCheckDone, setInitialCheckDone] = useState(false)
 
@@ -24,6 +29,13 @@ const App = () => {
     if (!initialCheckDone) {
       if (localStorage.getItem("userName")) {
         setLogged(true)
+        setUser({
+          name: localStorage.getItem("name") || "",
+          surname: localStorage.getItem("surname") || "",
+          id: localStorage.getItem("id") || "",
+          userName: localStorage.getItem("userName") || "",
+          role: localStorage.getItem("role") || ""
+        })
       }
       setInitialCheckDone(true)
     }
@@ -33,8 +45,8 @@ const App = () => {
   }
 
   return (
-    <div className="App align-items-center d-flex flex-column">
-      <Toaster/>
+    <div className="App align-items-center d-flex flex-column flex-grow-1" style={{height: "100vh"}}>
+      <Toaster />
       <Routes>
         <Route element={(
           <>
@@ -42,14 +54,17 @@ const App = () => {
             <Outlet />
           </>
         )}>
-          <Route path="/home" element={isLogged ? <Home /> : <Navigate to="/"/>} />
-          <Route path="/users" element={isLogged ? <Users /> : <Navigate to="/"/>} />
-          <Route path="/products" element={isLogged ? <Products /> : <Navigate to="/"/>} />
-          <Route path="/providers" element={isLogged ? <Providers /> : <Navigate to="/"/>} />
-          <Route path="/clients" element={isLogged ? <Clients /> : <Navigate to="/"/>} />
-          <Route path="/clients/detail/:clientId" element={isLogged ? <ClientDetail /> : <Navigate to="/"/>} />
-          <Route path="/pets" element={isLogged ? <Pets /> : <Navigate to="/"/>} />
-          <Route path="/pets/detail/:petId" element={isLogged ? <PetDetail /> : <Navigate to="/"/>} />
+          <Route path="/home" element={isLogged ? <Home /> : <Navigate to="/" />} />
+          <Route path="/users" element={isLogged ? <Users /> : <Navigate to="/" />} />
+          <Route path="/products" element={isLogged ? <Products /> : <Navigate to="/" />} />
+          <Route path="/providers" element={isLogged ? <Providers /> : <Navigate to="/" />} />
+          <Route path="/clients" element={isLogged ? <Clients /> : <Navigate to="/" />} />
+          <Route path="/clients/detail/:clientId" element={isLogged ? <ClientDetail /> : <Navigate to="/" />} />
+          <Route path="/pets" element={isLogged ? <Pets /> : <Navigate to="/" />} />
+          <Route path="/pets/detail/:petId" element={isLogged ? <PetDetail /> : <Navigate to="/" />} />
+          <Route path="/sale" element={isLogged ? <Sale /> : <Navigate to="/" />} />
+          <Route path="/reports" element={isLogged && user.role == "Administrador" ? <Reports /> : <Navigate to="/" />} />
+          <Route path="/order" element={isLogged && user.role == "Administrador" ? <Order /> : <Navigate to="/" />} />
         </Route>
         <Route path="/" element={<Landing />} />
       </Routes>
