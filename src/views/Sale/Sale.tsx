@@ -15,11 +15,13 @@ import { axiosWithToken } from "../../utils/axiosInstances";
 import { notifyError, notifySuccess } from "../../components/Toaster/Toaster";
 import { useRecoilState } from "recoil"
 import { userState } from "../../app/store"
+import { Spinner } from "react-bootstrap";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 
 const Sale = () => {
-
+    const [loading, setLoading] = useState<boolean>(false)
+    const [searching, setSearching] = useState<boolean>(false)
     const [products, setProducts] = useState<product[]>([])
     const [saleProducts, setSaleProducts] = useState<saleProduct[]>([])
     const searchRef = useRef<HTMLInputElement>(null)
@@ -34,6 +36,7 @@ const Sale = () => {
 
     const handleSearch = async (event: any) => {
         event.preventDefault()
+        setSearching(true)
         try {
             let searchTerm
             if (event.type == "submit") searchTerm = event.target[0].value
@@ -41,9 +44,14 @@ const Sale = () => {
             if (searchTerm.length > 1) {
                 const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/searchProduct?searchTerm=${searchTerm}`)
                 if (res.data) {
-                    setProducts(res.data);
+                    if (res.data.length == 1) {
+                        addProduct(res.data[0])
+                    } else {
+                        setProducts(res.data);
+                    }
                 }
             }
+            setSearching(false)
         } catch (error: any) {
             if (error.response) notifyError(error.response.data)
         }
@@ -66,6 +74,10 @@ const Sale = () => {
             }
             setOptionSelected(false)
         }, 100)
+    }
+
+    const handleClearList = (event: any) => {
+        if (event.target.value == "") clearList()
     }
 
     const addProduct = (product: product) => {
@@ -126,6 +138,7 @@ const Sale = () => {
     }
 
     const handleSale = async () => {
+        setLoading(true)
         const saleRequestDto = {
             seller: user.name + " " + user.surname,
             amount: saleProducts.reduce((total, product) => total + (product.quantity * product.productPrice), 0),
@@ -138,6 +151,7 @@ const Sale = () => {
                 notifySuccess(res.data)
                 handleClearSale()
             }
+            setLoading(false)
         } catch (error: any) {
             notifyError(error.response.data)
         }
@@ -153,13 +167,17 @@ const Sale = () => {
                     <Row>
                         <Col lg={6} xs={10}>
                             <Form.Control
-                                onKeyDown={handleEsc}
                                 onBlur={clearList}
-                                type="text"
+                                type="search"
                                 placeholder="Buscar producto"
                                 className="mr-sm-2"
-                                onChange={handleSearch}
+                                onChange={handleClearList}
                                 ref={searchRef}
+                                onKeyDown={(event) => {
+                                    if (event.key === 'Enter') {
+                                        handleSearch(event);
+                                    } else handleEsc(event as React.KeyboardEvent<HTMLInputElement>)
+                                }}
                             />
                         </Col>
                         <Col lg={1} xs={2}>
@@ -173,13 +191,19 @@ const Sale = () => {
                     </Row>
                     <Row className='position-relative'>
                         <Col xs="auto" lg={6} className='position-absolute'>
-                            <ListGroup>
+                            {!searching ? <ListGroup>
                                 {products.map((product, index) => <ListGroup.Item
                                     key={product.id}
                                     action
                                     onClick={() => addProduct(product)}
                                 >{product.name}</ListGroup.Item>)}
-                            </ListGroup>
+                            </ListGroup> :
+                                <ListGroup>
+                                    <ListGroup.Item>
+                                        <Spinner />
+                                    </ListGroup.Item>
+                                </ListGroup>
+                            }
                         </Col>
                     </Row>
                 </Form>
@@ -215,8 +239,20 @@ const Sale = () => {
                 </Container>
             </div>
             <Container className='d-flex gap-2 justify-content-center p-1'>
-                <Button variant="danger" onClick={handleClearSale}>Limpiar</Button>
-                <Button onClick={handleSale} >Confirmar</Button>
+                <div className='d-flex align-items-center justify-content-center w-25'>
+                    <Button className="" variant="danger" onClick={handleClearSale}>
+                        Limpiar
+                    </Button>
+                </div>
+                {!loading ?
+                    <div className='d-flex align-items-center justify-content-center w-25'>
+                        <Button onClick={handleSale} className="" variant="primary">
+                            Confirmar
+                        </Button>
+                    </div> :
+                    <div className='d-flex align-items-center justify-content-center w-25'>
+                        <Spinner />
+                    </div>}
             </Container>
         </div>
     )

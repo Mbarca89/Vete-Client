@@ -8,6 +8,8 @@ import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import { modalState } from "../../app/store"
 import { useRecoilState } from "recoil"
+import Spinner from 'react-bootstrap/Spinner';
+import { useState } from 'react';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface EditUserProps {
@@ -16,7 +18,7 @@ interface EditUserProps {
 }
 
 const EditClient: React.FC<EditUserProps> = ({ client, onUpdateClient }) => {
-
+    const [loading, setloading] = useState(false)
     const [show, setShow] = useRecoilState(modalState)
 
     const validate = (values: client): client => {
@@ -45,11 +47,13 @@ const EditClient: React.FC<EditUserProps> = ({ client, onUpdateClient }) => {
         },
         validate,
         onSubmit: async (values) => {
+            setloading(true)
             try {
                 const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/clients/edit`, values)
                 notifySuccess(res.data)
                 onUpdateClient(values)
                 setShow(false)
+                setloading(false)
             } catch (error:any) {
                 if (error.response) {
                     notifyError(error.response.data);
@@ -57,6 +61,11 @@ const EditClient: React.FC<EditUserProps> = ({ client, onUpdateClient }) => {
             }
         },
     });
+
+    const resetForm = () => {
+        formik.resetForm();
+        setShow(false)
+    }
 
     return (
         <Form onSubmit={formik.handleSubmit} noValidate>
@@ -134,10 +143,21 @@ const EditClient: React.FC<EditUserProps> = ({ client, onUpdateClient }) => {
                 </Form.Group>
             </Row>
             <Row>
-                <Form.Group as={Col} className="d-flex justify-content-center">
-                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" type="submit">
-                        Actualizar
-                    </Button>
+            <Form.Group as={Col} className="d-flex justify-content-center mt-3">
+                    <div className='d-flex align-items-center justify-content-center w-25'>
+                        <Button className="" variant="danger" onClick={resetForm}>
+                            Cancelar
+                        </Button>
+                    </div>
+                    {!loading ?
+                        <div className='d-flex align-items-center justify-content-center w-25'>
+                            <Button className="" variant="primary" type="submit">
+                                Guardar
+                            </Button>
+                        </div> :
+                        <div className='d-flex align-items-center justify-content-center w-25'>
+                            <Spinner />
+                        </div>}
                 </Form.Group>
             </Row>
         </Form>

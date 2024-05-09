@@ -10,6 +10,7 @@ import { notifyError, notifySuccess } from "../Toaster/Toaster";
 import { useRef, useState } from "react";
 import { useRecoilState } from "recoil";
 import { modalState } from "../../app/store";
+import Spinner from 'react-bootstrap/Spinner';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface CreatePetProps {
@@ -18,7 +19,7 @@ interface CreatePetProps {
 }
 
 const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
-
+    const [loading, setloading] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
     const [image, setImage] = useState<File | null>(null);
     const [show, setShow] = useRecoilState(modalState)
@@ -43,6 +44,7 @@ const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
         },
         validate,
         onSubmit: async values => {
+            setloading(true)
             const createPet = {
                 name: values.name,
                 race: values.race,
@@ -55,15 +57,16 @@ const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
             if (image) formData.append('file', image);
             formData.append('pet', JSON.stringify(createPet));
             formData.append("clientId", clientId)
-            
+
             try {
                 const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/pets/create`, formData)
                 notifySuccess(res.data)
                 updateList()
+                setloading(false)
                 setShow(false)
             } catch (error: any) {
                 if (error.response) {
-                    notifyError(error.response.data)                    
+                    notifyError(error.response.data)
                 }
             }
         },
@@ -109,7 +112,7 @@ const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
                 </Form.Group>
             </Row>
             <Row className="mb-2">
-            <Form.Group as={Col} xs={12} md={6}>
+                <Form.Group as={Col} xs={12} md={6}>
                     <Form.Label>Especie</Form.Label>
                     <Form.Select
                         id="species"
@@ -173,13 +176,21 @@ const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
                 </Form.Group>
             </Row>
             <Row>
-                <Form.Group as={Col} className="d-flex justify-content-center">
-                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" onClick={resetForm}>
-                        Reiniciar
-                    </Button>
-                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" type="submit">
-                        Crear
-                    </Button>
+                <Form.Group as={Col} className="d-flex justify-content-center mt-3">
+                    <div className='d-flex align-items-center justify-content-center w-25'>
+                        <Button className="" variant="danger" onClick={resetForm}>
+                            Reiniciar
+                        </Button>
+                    </div>
+                    {!loading ?
+                        <div className='d-flex align-items-center justify-content-center w-25'>
+                            <Button className="" variant="primary" type="submit">
+                                Crear
+                            </Button>
+                        </div> :
+                        <div className='d-flex align-items-center justify-content-center w-25'>
+                            <Spinner />
+                        </div>}
                 </Form.Group>
             </Row>
         </Form>

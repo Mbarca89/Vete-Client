@@ -15,10 +15,12 @@ import { modalState } from "../../app/store"
 import { useRecoilState } from "recoil"
 import CustomModal from '../../components/Modal/CustomModal';
 import noImage from '../../assets/noImage.png'
+import Spinner from 'react-bootstrap/Spinner';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 
 const Pets = () => {
+    const [loading, setloading] = useState(false)
     const [show, setShow] = useRecoilState(modalState)
     const [pets, setPets] = useState<pet[]>([]);
     const [selectedPet, setSelectedPet] = useState<pet>({
@@ -52,11 +54,13 @@ const Pets = () => {
     }
 
     const fetchPets = async () => {
+        setloading(true)
         try {
             const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/pets/getPets?page=${currentPage}&size=${pageSize}`)
             if (res.data) {
                 setPets(res.data);
             }
+            setloading(false)
         } catch (error: any) {
             notifyError(error.response.data)
         }
@@ -67,16 +71,24 @@ const Pets = () => {
         setShow(!show)
     }
 
-    const handleSearch = async (event:any) => {
+    const handleSearch = async (event: any) => {
+        setloading(true)
+        let searchTerm
         event.preventDefault()
+        if (event.type == "submit") searchTerm = event.target[0].value
         try {
-            const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/pets/getPetsByName?name=${event.target.value}&page=1&size=${pageSize}`)
+            const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/pets/getPetsByName?name=${searchTerm}&page=1&size=${pageSize}`)
             if (res.data) {
                 setPets(res.data);
             }
-        } catch (error:any) {
+            setloading(false)
+        } catch (error: any) {
             notifyError(error.response.data)
         }
+    }
+
+    const handleResetSearch = (event: any) => {
+        if (event.target.value == "") fetchPets()
     }
 
     useEffect(() => {
@@ -90,26 +102,26 @@ const Pets = () => {
     return (
         <div className='container flex-grow-1 p-lg-3 p-sm-0 rounded custom m-2 overflow-auto'>
             <Container>
-            <Navbar className="justify-content-between">
-                <Form onSubmit={handleSearch}>
-                    <Row>
-                        <Col xs="auto">
-                            <Form.Control
-                                type="text"
-                                placeholder="Buscar"
-                                className=" mr-sm-2"
-                                onChange={handleSearch}
-                            />
-                        </Col>
-                        <Col xs="auto">
-                            <Button type="submit">Buscar</Button>
-                        </Col>
-                    </Row>
-                </Form>
-            </Navbar>
+                <Navbar className="justify-content-between">
+                    <Form onSubmit={handleSearch}>
+                        <Row>
+                            <Col xs="auto">
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Buscar"
+                                    className=" mr-sm-2"
+                                    onChange={handleResetSearch}
+                                />
+                            </Col>
+                            <Col xs="auto">
+                                <Button type="submit">Buscar</Button>
+                            </Col>
+                        </Row>
+                    </Form>
+                </Navbar>
             </Container>
             <Container>
-                <Row xs={2} md={3} lg={6} className="g-4">
+                {!loading ? <Row xs={2} md={3} lg={6} className="g-4">
                     {pets.map(pet => (
                         <Col key={pet.id}>
                             <Card style={{ height: '100%' }} onClick={() => handleDetail(pet)}>
@@ -121,7 +133,9 @@ const Pets = () => {
                             </Card>
                         </Col>
                     ))}
-                </Row>
+                </Row> : <div className='mt-5'>
+                    <Spinner />
+                </div>}
                 <div className='d-flex m-auto justify-content-center'>
                     <Pagination className='mt-5'>
                         <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />

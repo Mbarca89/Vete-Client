@@ -7,6 +7,8 @@ import { client } from "../../types";
 import { useFormik } from 'formik';
 import { axiosWithToken } from "../../utils/axiosInstances";
 import { notifyError, notifySuccess } from "../Toaster/Toaster";
+import { useState } from "react";
+import { Spinner } from "react-bootstrap";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface CreateClientProps {
@@ -14,7 +16,8 @@ interface CreateClientProps {
 }
 
 const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
-
+    const [loading, setloading] = useState(false)
+    
     const validate = (values: client): client => {
         const errors: any = {};
 
@@ -44,6 +47,7 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
         },
         validate,
         onSubmit: async values => {
+            setloading(true)
             const createClient = {
                 name: values.name,
                 surname: values.surname,
@@ -56,6 +60,7 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
             try {
                 res = await axiosWithToken.post(`${SERVER_URL}/api/v1/clients/create`, createClient)
                 notifySuccess(res.data)
+                setloading(false)
                 updateList()
             } catch (error: any) {
                 if (error.response) {
@@ -147,13 +152,21 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
                 </Form.Group>
             </Row>
             <Row>
-                <Form.Group as={Col} className="d-flex justify-content-center">
-                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" onClick={resetForm}>
-                        Reiniciar
-                    </Button>
-                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" type="submit">
-                        Crear
-                    </Button>
+            <Form.Group as={Col} className="d-flex justify-content-center mt-3">
+                    <div className='d-flex align-items-center justify-content-center w-25'>
+                        <Button className="" variant="danger" onClick={resetForm}>
+                            Reiniciar
+                        </Button>
+                    </div>
+                    {!loading ?
+                        <div className='d-flex align-items-center justify-content-center w-25'>
+                            <Button className="" variant="primary" type="submit">
+                                Crear
+                            </Button>
+                        </div> :
+                        <div className='d-flex align-items-center justify-content-center w-25'>
+                            <Spinner />
+                        </div>}
                 </Form.Group>
             </Row>
         </Form>

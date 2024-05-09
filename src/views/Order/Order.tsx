@@ -15,10 +15,12 @@ import AddProductOrder from "../../components/AddProductOrder/AddProductOrder";
 import { useRecoilState } from "recoil";
 import CustomModal from "../../components/Modal/CustomModal";
 import { modalState } from "../../app/store";
+import { Spinner } from "react-bootstrap";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 const Order = () => {
-
+    const [loading, setLoading] = useState<boolean>(false)
+    const [searching, setSearching] = useState<boolean>(false)
     const [products, setProducts] = useState<product[]>([])
     const [selectedProducts, setSelectedProducts] = useState<orderProduct[]>([])
     const [currentProduct, setCurrentProduct] = useState<orderProduct>({
@@ -48,7 +50,20 @@ const Order = () => {
             if (searchTerm.length > 1) {
                 const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/searchProduct?searchTerm=${searchTerm}`)
                 if (res.data) {
-                    setProducts(res.data);
+                    if (res.data.length == 1) {
+                        console.log(res.data[0])
+                        handleAddProduct({
+                            orderId: "",
+                            productId: res.data[0].id,
+                            productName: res.data[0].name,
+                            productDescription: res.data[0].description,
+                            productPrice: res.data[0].price,
+                            productCost: res.data[0].cost,
+                            quantity: res.data[0].stock
+                        })
+                    } else {
+                        setProducts(res.data);
+                    }
                 }
             }
         } catch (error: any) {
@@ -68,6 +83,10 @@ const Order = () => {
         }, 100)
     }
 
+    const handleClearList = (event: any) => {
+        if (event.target.value == "") clearList()
+    }
+
     const handleEsc = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Escape') {
             clearList()
@@ -79,7 +98,7 @@ const Order = () => {
         setShow(true)
     }
 
-    const addProduct = (product:orderProduct) => {
+    const addProduct = (product: orderProduct) => {
         setSelectedProducts([...selectedProducts, product])
         setOptionSelected(true);
         if (searchRef.current) {
@@ -123,31 +142,43 @@ const Order = () => {
                     <Row>
                         <Col lg={6} xs={10}>
                             <Form.Control
-                                onKeyDown={handleEsc}
+                                onKeyDown={(event) => {
+                                    if (event.key === 'Enter') {
+                                        handleSearch(event);
+                                    } else handleEsc(event as React.KeyboardEvent<HTMLInputElement>)
+                                }}
                                 onBlur={clearList}
                                 type="text"
                                 placeholder="Buscar producto"
                                 className="mr-sm-2"
-                                onChange={handleSearch}
+                                onChange={handleClearList}
                                 ref={searchRef}
                             />
                         </Col>
                     </Row>
                     <Row className='position-relative'>
                         <Col xs="auto" lg={6} className='position-absolute'>
-                            <ListGroup>
+                            {!searching ? <ListGroup>
                                 {products.map((product, index) => <ListGroup.Item
                                     key={product.id}
                                     action
-                                    onClick={() => handleAddProduct({    orderId: "",
+                                    onClick={() => handleAddProduct({
+                                        orderId: "",
                                         productId: product.id,
                                         productName: product.name,
                                         productDescription: product.description,
                                         productPrice: product.price,
                                         productCost: product.cost,
-                                        quantity: product.stock})}
+                                        quantity: product.stock
+                                    })}
                                 >{product.name}</ListGroup.Item>)}
-                            </ListGroup>
+                            </ListGroup> :
+                                <ListGroup>
+                                    <ListGroup.Item>
+                                        <Spinner />
+                                    </ListGroup.Item>
+                                </ListGroup>
+                            }
                         </Col>
                     </Row>
                 </Form>
@@ -178,8 +209,20 @@ const Order = () => {
                 </Container>
             </div>
             <Container className='d-flex gap-2 justify-content-center p-1'>
-                <Button variant="danger" onClick={handleClearOrder}>Limpiar</Button>
-                <Button onClick={handleOrder} >Confirmar</Button>
+            <div className='d-flex align-items-center justify-content-center w-25'>
+                    <Button className="" variant="danger" onClick={handleClearOrder}>
+                        Limpiar
+                    </Button>
+                </div>
+                {!loading ?
+                    <div className='d-flex align-items-center justify-content-center w-25'>
+                        <Button onClick={handleOrder} className="" variant="primary">
+                            Confirmar
+                        </Button>
+                    </div> :
+                    <div className='d-flex align-items-center justify-content-center w-25'>
+                        <Spinner />
+                    </div>}
             </Container>
             {show &&
                 <CustomModal title={"Agregar producto"}>

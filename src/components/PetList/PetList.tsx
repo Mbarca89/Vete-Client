@@ -12,10 +12,12 @@ import { modalState } from "../../app/store"
 import { useRecoilState } from "recoil"
 import CustomModal from '../Modal/CustomModal';
 import noImage from '../../assets/noImage.png'
+import Spinner from 'react-bootstrap/Spinner';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 
 const PetList = () => {
+    const [loading, setloading] = useState(false)
     const [show, setShow] = useRecoilState(modalState)
     const [pets, setPets] = useState<pet[]>([]);
     const [selectedPet, setSelectedPet] = useState<pet>({
@@ -49,11 +51,13 @@ const PetList = () => {
     }
 
     const fetchPets = async () => {
+        setloading(true)
         try {
             const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/pets/getPets?page=${currentPage}&size=${pageSize}`)
             if (res.data) {
                 setPets(res.data);
             }
+            setloading(false)
         } catch (error: any) {
             notifyError(error.response.data)
         }
@@ -75,7 +79,7 @@ const PetList = () => {
     return (
         <div>
             <Container>
-                <Row xs={2} md={3} lg={6} className="g-4">
+                {loading ? <Row xs={2} md={3} lg={6} className="g-4">
                     {pets.map(pet => (
                         <Col key={pet.id}>
                             <Card style={{ height: '100%' }} onClick={() => handleDetail(pet)}>
@@ -87,7 +91,9 @@ const PetList = () => {
                             </Card>
                         </Col>
                     ))}
-                </Row>
+                </Row> : <div className='mt-5'>
+                    <Spinner />
+                </div>}
                 <div className='d-flex m-auto justify-content-center'>
                     <Pagination className='mt-5'>
                         <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />

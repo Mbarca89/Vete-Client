@@ -17,11 +17,8 @@ const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 const ClientDetail = () => {
     const navigate = useNavigate()
-
     const { clientId } = useParams()
-
     const [pets, setPets] = useState<pet[]>([])
-
     const [currentClient, setCurrentClient] = useState<client>({
         id: "",
         name: "",

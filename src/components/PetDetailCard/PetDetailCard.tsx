@@ -6,13 +6,11 @@ import noImage from "../../assets/noImage.png"
 import { useNavigate } from "react-router-dom"
 import { modalState } from "../../app/store"
 import { useRecoilState } from "recoil"
-
 interface PetDetailProps {
     pet: pet
 }
 
 const PetDetailCard: React.FC<PetDetailProps> = ({ pet }) => {
-
     const [show, setShow] = useRecoilState(modalState)
 
     const navigate = useNavigate()

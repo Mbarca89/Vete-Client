@@ -11,6 +11,7 @@ import { useRef, useState } from "react";
 import { useRecoilState } from "recoil";
 import { modalState } from "../../app/store";
 import noImage from "../../assets/noImage.png"
+import Spinner from 'react-bootstrap/Spinner';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface EditPetProps {
@@ -19,7 +20,7 @@ interface EditPetProps {
 }
 
 const EditPet: React.FC<EditPetProps> = ({ updateList, currentPet }) => {
-
+    const [loading, setloading] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
     const [image, setImage] = useState<File | null>(null);
     const [show, setShow] = useRecoilState(modalState)
@@ -44,6 +45,7 @@ const EditPet: React.FC<EditPetProps> = ({ updateList, currentPet }) => {
         },
         validate,
         onSubmit: async values => {
+            setloading(true)
             const editPet = {
                 id: currentPet.id,
                 name: values.name,
@@ -62,6 +64,7 @@ const EditPet: React.FC<EditPetProps> = ({ updateList, currentPet }) => {
                 notifySuccess(res.data)
                 updateList()
                 setShow(false)
+                setloading(false)
             } catch (error: any) {
                 if (error.response) {
                     notifyError(error.response.data)
@@ -178,13 +181,21 @@ const EditPet: React.FC<EditPetProps> = ({ updateList, currentPet }) => {
                 </Form.Group>
             </Row>
             <Row>
-                <Form.Group as={Col} className="d-flex justify-content-center">
-                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" onClick={resetForm}>
-                        Cancelar
-                    </Button>
-                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" type="submit">
-                        Guardar
-                    </Button>
+            <Form.Group as={Col} className="d-flex justify-content-center mt-3">
+                    <div className='d-flex align-items-center justify-content-center w-25'>
+                        <Button className="" variant="danger" onClick={resetForm}>
+                            Cancelar
+                        </Button>
+                    </div>
+                    {!loading ?
+                        <div className='d-flex align-items-center justify-content-center w-25'>
+                            <Button className="" variant="primary" type="submit">
+                                Guardar
+                            </Button>
+                        </div> :
+                        <div className='d-flex align-items-center justify-content-center w-25'>
+                            <Spinner />
+                        </div>}
                 </Form.Group>
             </Row>
         </Form>
