@@ -9,6 +9,8 @@ import { axiosWithToken } from "../../utils/axiosInstances";
 import { notifyError, notifySuccess } from "../Toaster/Toaster";
 import { modalState } from "../../app/store"
 import { useRecoilState } from "recoil"
+import { Spinner } from "react-bootstrap";
+import { useState } from "react";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface EditProviderProps {
@@ -17,7 +19,7 @@ interface EditProviderProps {
 }
 
 const EditProvider: React.FC<EditProviderProps> = ({ provider, updateList }) => {
-
+    const [loading, setloading] = useState(false)
     const [show, setShow] = useRecoilState(modalState)
 
     const validate = (values: provider): provider => {
@@ -38,6 +40,7 @@ const EditProvider: React.FC<EditProviderProps> = ({ provider, updateList }) => 
         },
         validate,
         onSubmit: async values => {
+            setloading(true)
             const EditProvider = {
                 id: provider.id,
                 name: values.name,
@@ -49,6 +52,7 @@ const EditProvider: React.FC<EditProviderProps> = ({ provider, updateList }) => 
                 res = await axiosWithToken.post(`${SERVER_URL}/api/v1/providers/edit`, EditProvider)
                 notifySuccess(res.data)
                 updateList()
+                setloading(false)
                 setShow(false)
             } catch (error: any) {
                 if (error.response) {
@@ -101,13 +105,21 @@ const EditProvider: React.FC<EditProviderProps> = ({ provider, updateList }) => 
                 </Form.Group>
             </Row>
             <Row>
-                <Form.Group as={Col} className="d-flex justify-content-center">
-                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" onClick={resetForm}>
-                        Cancelar
-                    </Button>
-                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" type="submit">
-                        Guardar
-                    </Button>
+            <Form.Group as={Col} className="d-flex justify-content-center">
+                    <div className='d-flex align-items-center justify-content-center w-25'>
+                        <Button className="" variant="danger" onClick={resetForm}>
+                            Cancelar
+                        </Button>
+                    </div>
+                    {!loading ?
+                        <div className='d-flex align-items-center justify-content-center w-25'>
+                            <Button className="" variant="primary" type="submit">
+                                Crear
+                            </Button>
+                        </div> :
+                        <div className='d-flex align-items-center justify-content-center w-25'>
+                            <Spinner />
+                        </div>}
                 </Form.Group>
             </Row>
         </Form>

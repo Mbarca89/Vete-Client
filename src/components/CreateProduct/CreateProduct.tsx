@@ -7,6 +7,7 @@ import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
+import Spinner from 'react-bootstrap/Spinner';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface CreateProductProps {
@@ -14,7 +15,7 @@ interface CreateProductProps {
 }
 
 const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
-
+    const [loading, setloading] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
 
     const [providers, setProviders] = useState<string[]>([])
@@ -90,6 +91,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
         },
         validate,
         onSubmit: async values => {
+            setloading(true)
             const createProduct = {
                 name: values.name,
                 description: values.description,
@@ -112,6 +114,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                 });
                 if (res.data) {
                     notifySuccess(res.data)
+                    setloading(false)
                     updateList()
                 }
             } catch (error: any) {
@@ -251,13 +254,21 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                 </Form.Group>
             </Row>
             <Row>
-                <Form.Group as={Col} className="d-flex justify-content-center">
-                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" onClick={resetForm}>
-                        Reiniciar
-                    </Button>
-                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" type="submit">
-                        Crear
-                    </Button>
+                <Form.Group as={Col} className="d-flex justify-content-center mt-3">
+                    <div className='d-flex align-items-center justify-content-center w-25'>
+                        <Button className="" variant="danger" onClick={resetForm}>
+                            Reiniciar
+                        </Button>
+                    </div>
+                    {!loading ?
+                        <div className='d-flex align-items-center justify-content-center w-25'>
+                            <Button className="" variant="primary" type="submit">
+                                Crear
+                            </Button>
+                        </div> :
+                        <div className='d-flex align-items-center justify-content-center w-25'>
+                            <Spinner />
+                        </div>}
                 </Form.Group>
             </Row>
         </Form>

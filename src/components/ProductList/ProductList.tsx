@@ -22,7 +22,6 @@ const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 const ProductList = () => {
     const [loading, setloading] = useState(false)
-    const [searching, setSearching] = useState(false)
     const [show, setShow] = useRecoilState(modalState)
     const [products, setProducts] = useState<product[]>([]);
     const [selectedProduct, setSelectedProduct] = useState<product>({
@@ -145,7 +144,9 @@ const ProductList = () => {
                         </Col>
                     ))
                     }
-                </Row> : <Spinner />}
+                </Row> : <div className='mt-5'>
+                    <Spinner />
+                </div>}
                 <div className='d-flex m-auto justify-content-center'>
                     <Pagination className='mt-5'>
                         <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />

@@ -12,13 +12,15 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import { product } from '../../types';
 import { axiosWithToken } from "../../utils/axiosInstances";
 import { notifyError } from "../Toaster/Toaster";
-import {  modalState } from "../../app/store"
+import { modalState } from "../../app/store"
 import { useRecoilState } from "recoil"
 import CustomModal from '../Modal/CustomModal';
 import noImage from '../../assets/noImage.png'
+import Spinner from 'react-bootstrap/Spinner';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 const Categories = () => {
+    const [loading, setloading] = useState(false)
     const [show, setShow] = useRecoilState(modalState)
     const [products, setProducts] = useState<product[]>([]);
     const [currentCategory, setCurrentCategory] = useState()
@@ -72,11 +74,13 @@ const Categories = () => {
     }
 
     const fetchProducts = async () => {
+        setloading(true)
         try {
             const productsResponse = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/getByCategory?categoryName=${currentCategory}&page=${currentPage}&size=${pageSize}`)
             if (productsResponse.data) {
                 setProducts(productsResponse.data);
             }
+            setloading(false)
         } catch (error: any) {
             notifyError(error.response.data)
         }
@@ -132,7 +136,7 @@ const Categories = () => {
                         )}
                     </DropdownButton>
                 </Row>
-                <Row xs={2} md={3} lg={6} className="g-4 mt-1">
+                {!loading ? <Row xs={2} md={3} lg={6} className="g-4 mt-1">
                     {products.map(product => (
                         <Col key={product.id}>
                             <Card style={{ height: '100%' }} onClick={() => handleDetail(product)}>
@@ -144,7 +148,9 @@ const Categories = () => {
                             </Card>
                         </Col>
                     ))}
-                </Row>
+                </Row> : <div className='mt-5'>
+                    <Spinner />
+                </div>}
                 <div className='d-flex m-auto justify-content-center'>
                     <Pagination className='mt-5'>
                         <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
