@@ -18,7 +18,7 @@ interface EditUserProps {
 }
 
 const EditClient: React.FC<EditUserProps> = ({ client, onUpdateClient }) => {
-    const [loading, setloading] = useState(false)
+    const [loading, setLoading] = useState(false)
     const [show, setShow] = useRecoilState(modalState)
 
     const validate = (values: client): client => {
@@ -47,17 +47,18 @@ const EditClient: React.FC<EditUserProps> = ({ client, onUpdateClient }) => {
         },
         validate,
         onSubmit: async (values) => {
-            setloading(true)
+            setLoading(true)
             try {
                 const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/clients/edit`, values)
                 notifySuccess(res.data)
                 onUpdateClient(values)
                 setShow(false)
-                setloading(false)
+                setLoading(false)
             } catch (error:any) {
                 if (error.response) {
                     notifyError(error.response.data);
                 }
+                setLoading(false)
             }
         },
     });

@@ -155,6 +155,7 @@ const Sale = () => {
         } catch (error: any) {
             notifyError(error.response.data)
         }
+        setLoading(false)
     }
 
     return (

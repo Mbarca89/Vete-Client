@@ -20,7 +20,7 @@ interface EditPetProps {
 }
 
 const EditPet: React.FC<EditPetProps> = ({ updateList, currentPet }) => {
-    const [loading, setloading] = useState(false)
+    const [loading, setLoading] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
     const [image, setImage] = useState<File | null>(null);
     const [show, setShow] = useRecoilState(modalState)
@@ -45,7 +45,7 @@ const EditPet: React.FC<EditPetProps> = ({ updateList, currentPet }) => {
         },
         validate,
         onSubmit: async values => {
-            setloading(true)
+            setLoading(true)
             const editPet = {
                 id: currentPet.id,
                 name: values.name,
@@ -64,11 +64,12 @@ const EditPet: React.FC<EditPetProps> = ({ updateList, currentPet }) => {
                 notifySuccess(res.data)
                 updateList()
                 setShow(false)
-                setloading(false)
+                setLoading(false)
             } catch (error: any) {
                 if (error.response) {
                     notifyError(error.response.data)
                 }
+                setLoading(false)
             }
         },
     });

@@ -19,7 +19,7 @@ interface EditProviderProps {
 }
 
 const EditProvider: React.FC<EditProviderProps> = ({ provider, updateList }) => {
-    const [loading, setloading] = useState(false)
+    const [loading, setLoading] = useState(false)
     const [show, setShow] = useRecoilState(modalState)
 
     const validate = (values: provider): provider => {
@@ -40,7 +40,7 @@ const EditProvider: React.FC<EditProviderProps> = ({ provider, updateList }) => 
         },
         validate,
         onSubmit: async values => {
-            setloading(true)
+            setLoading(true)
             const EditProvider = {
                 id: provider.id,
                 name: values.name,
@@ -52,12 +52,13 @@ const EditProvider: React.FC<EditProviderProps> = ({ provider, updateList }) => 
                 res = await axiosWithToken.post(`${SERVER_URL}/api/v1/providers/edit`, EditProvider)
                 notifySuccess(res.data)
                 updateList()
-                setloading(false)
+                setLoading(false)
                 setShow(false)
             } catch (error: any) {
                 if (error.response) {
                     notifyError(error.response.data)
                 }
+                setLoading(false)
             }
         },
     });

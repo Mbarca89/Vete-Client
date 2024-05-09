@@ -15,7 +15,7 @@ const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 const ClientList = () => {
 
     const navigate = useNavigate()
-    const [loading, setloading] = useState(false)
+    const [loading, setLoading] = useState(false)
     const [selectedClient, setSelectedClient] = useRecoilState(clientState)
 
     const [clients, setClients] = useState<client[]>([{
@@ -32,15 +32,16 @@ const ClientList = () => {
     const [modal, setModal] = useState<string>("")
 
     const getClients = async () => {
-        setloading(true)
+        setLoading(true)
         try {
             const res = await axiosWithToken(`${SERVER_URL}/api/v1/clients/getClients`)
             if (res.data) {
                 setClients(res.data)
             }
-            setloading(false)
+            setLoading(false)
         } catch (error: any) {
             notifyError(error.response.data)
+            setLoading(false)
         }
     }
 

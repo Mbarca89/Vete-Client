@@ -14,11 +14,11 @@ interface DeletePetProps {
 }
 
 const DeletePet: React.FC<DeletePetProps> = ({ currentPet, updateList }) => {
-    const [loading, setloading] = useState(false)
+    const [loading, setLoading] = useState(false)
     const [show, setShow] = useRecoilState(modalState)
 
     const handleDelete = async () => {
-        setloading(true)
+        setLoading(true)
         try {
             const res = await axiosWithToken.delete(`${SERVER_URL}/api/v1/pets/delete?petId=${currentPet.id}`)
             if (res.data) {
@@ -26,9 +26,10 @@ const DeletePet: React.FC<DeletePetProps> = ({ currentPet, updateList }) => {
                 updateList()
                 setShow(false)
             }
-            setloading(false)
+            setLoading(false)
         } catch (error: any) {
             notifyError(error.response.data)
+            setLoading(false)
         }
     }
 

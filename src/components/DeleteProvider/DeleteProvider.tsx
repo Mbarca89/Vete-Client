@@ -14,11 +14,11 @@ interface DeleteProviderProps {
 }
 
 const DeleteProvider: React.FC<DeleteProviderProps> = ({ provider, updateList }) => {
-    const [loading, setloading] = useState(false)
+    const [loading, setLoading] = useState(false)
     const [show, setShow] = useRecoilState(modalState)
 
     const handleDelete = async () => {
-        setloading(true)
+        setLoading(true)
         try {
             const res = await axiosWithToken.delete(`${SERVER_URL}/api/v1/providers/delete?providerId=${provider.id}`)
             if(res.data) {
@@ -26,9 +26,10 @@ const DeleteProvider: React.FC<DeleteProviderProps> = ({ provider, updateList })
                 updateList()
                 setShow(false)
             }
-            setloading(false)
+            setLoading(false)
         } catch (error:any) {
             notifyError(error.response.data)
+            setLoading(false)
         }
     }
 

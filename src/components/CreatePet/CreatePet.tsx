@@ -19,7 +19,7 @@ interface CreatePetProps {
 }
 
 const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
-    const [loading, setloading] = useState(false)
+    const [loading, setLoading] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
     const [image, setImage] = useState<File | null>(null);
     const [show, setShow] = useRecoilState(modalState)
@@ -44,7 +44,7 @@ const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
         },
         validate,
         onSubmit: async values => {
-            setloading(true)
+            setLoading(true)
             const createPet = {
                 name: values.name,
                 race: values.race,
@@ -62,12 +62,13 @@ const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
                 const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/pets/create`, formData)
                 notifySuccess(res.data)
                 updateList()
-                setloading(false)
+                setLoading(false)
                 setShow(false)
             } catch (error: any) {
                 if (error.response) {
                     notifyError(error.response.data)
                 }
+                setLoading(false)
             }
         },
     });

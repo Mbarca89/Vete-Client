@@ -20,7 +20,7 @@ import Spinner from 'react-bootstrap/Spinner';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 const Categories = () => {
-    const [loading, setloading] = useState(false)
+    const [loading, setLoading] = useState(false)
     const [show, setShow] = useRecoilState(modalState)
     const [products, setProducts] = useState<product[]>([]);
     const [currentCategory, setCurrentCategory] = useState()
@@ -74,15 +74,16 @@ const Categories = () => {
     }
 
     const fetchProducts = async () => {
-        setloading(true)
+        setLoading(true)
         try {
             const productsResponse = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/getByCategory?categoryName=${currentCategory}&page=${currentPage}&size=${pageSize}`)
             if (productsResponse.data) {
                 setProducts(productsResponse.data);
             }
-            setloading(false)
+            setLoading(false)
         } catch (error: any) {
             notifyError(error.response.data)
+            setLoading(false)
         }
     };
 

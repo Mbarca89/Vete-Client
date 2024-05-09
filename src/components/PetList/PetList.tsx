@@ -17,7 +17,7 @@ const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 
 const PetList = () => {
-    const [loading, setloading] = useState(false)
+    const [loading, setLoading] = useState(false)
     const [show, setShow] = useRecoilState(modalState)
     const [pets, setPets] = useState<pet[]>([]);
     const [selectedPet, setSelectedPet] = useState<pet>({
@@ -51,15 +51,16 @@ const PetList = () => {
     }
 
     const fetchPets = async () => {
-        setloading(true)
+        setLoading(true)
         try {
             const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/pets/getPets?page=${currentPage}&size=${pageSize}`)
             if (res.data) {
                 setPets(res.data);
             }
-            setloading(false)
+            setLoading(false)
         } catch (error: any) {
             notifyError(error.response.data)
+            setLoading(false)
         }
     };
 

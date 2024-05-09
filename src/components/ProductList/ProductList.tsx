@@ -21,7 +21,7 @@ const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 
 const ProductList = () => {
-    const [loading, setloading] = useState(false)
+    const [loading, setLoading] = useState(false)
     const [show, setShow] = useRecoilState(modalState)
     const [products, setProducts] = useState<product[]>([]);
     const [selectedProduct, setSelectedProduct] = useState<product>({
@@ -59,7 +59,7 @@ const ProductList = () => {
     }
 
     const fetchProducts = async () => {
-        setloading(true)
+        setLoading(true)
         try {
             const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/getProductsPaginated?page=${currentPage}&size=${pageSize}`)
             if (res.data) {
@@ -69,7 +69,7 @@ const ProductList = () => {
             if (error.response) notifyError(error.response.data)
             else notifyError(error)
         }
-        setloading(false)
+        setLoading(false)
     };
 
     const handleDetail = (product: product) => {
@@ -78,7 +78,7 @@ const ProductList = () => {
     }
 
     const handleSearch = async (event: any) => {
-        setloading(true)
+        setLoading(true)
         let searchTerm
         event.preventDefault()
         try {
@@ -93,9 +93,10 @@ const ProductList = () => {
             if (res.data) {
                 setProducts(res.data);
             }
-            setloading(false)
+            setLoading(false)
         } catch (error: any) {
             notifyError(error.response.data)
+            setLoading(false)
         }
     }
 

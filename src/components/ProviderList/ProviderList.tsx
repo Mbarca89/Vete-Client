@@ -12,7 +12,7 @@ import Spinner from 'react-bootstrap/Spinner';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 const ProviderList = () => {
-    const [loading, setloading] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     const [providers, setProviders] = useState<provider[]>([{
         id: "",
@@ -33,15 +33,16 @@ const ProviderList = () => {
 
 
     const getProviders = async () => {
-        setloading(true)
+        setLoading(true)
         try {
             const res = await axiosWithToken(`${SERVER_URL}/api/v1/providers/getProviders`)
             if (res.data) {
                 setProviders(res.data)
             }
-            setloading(false)
+            setLoading(false)
         } catch (error: any) {
             notifyError(error.response.data)
+            setLoading(false)
         }
     }
 

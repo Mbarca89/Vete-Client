@@ -16,7 +16,7 @@ interface CreateClientProps {
 }
 
 const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
-    const [loading, setloading] = useState(false)
+    const [loading, setLoading] = useState(false)
     
     const validate = (values: client): client => {
         const errors: any = {};
@@ -47,7 +47,7 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
         },
         validate,
         onSubmit: async values => {
-            setloading(true)
+            setLoading(true)
             const createClient = {
                 name: values.name,
                 surname: values.surname,
@@ -60,12 +60,13 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
             try {
                 res = await axiosWithToken.post(`${SERVER_URL}/api/v1/clients/create`, createClient)
                 notifySuccess(res.data)
-                setloading(false)
+                setLoading(false)
                 updateList()
             } catch (error: any) {
                 if (error.response) {
                     notifyError(error.response.data)
                 }
+                setLoading(false)
             }
         },
     });

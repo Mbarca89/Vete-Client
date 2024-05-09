@@ -15,7 +15,7 @@ interface CreateProductProps {
 }
 
 const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
-    const [loading, setloading] = useState(false)
+    const [loading, setLoading] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
 
     const [providers, setProviders] = useState<string[]>([])
@@ -91,7 +91,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
         },
         validate,
         onSubmit: async values => {
-            setloading(true)
+            setLoading(true)
             const createProduct = {
                 name: values.name,
                 description: values.description,
@@ -114,11 +114,12 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                 });
                 if (res.data) {
                     notifySuccess(res.data)
-                    setloading(false)
+                    setLoading(false)
                     updateList()
                 }
             } catch (error: any) {
                 notifyError(error.response.data)
+                setLoading(false)
             }
         },
     });

@@ -20,7 +20,7 @@ const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 
 const Pets = () => {
-    const [loading, setloading] = useState(false)
+    const [loading, setLoading] = useState(false)
     const [show, setShow] = useRecoilState(modalState)
     const [pets, setPets] = useState<pet[]>([]);
     const [selectedPet, setSelectedPet] = useState<pet>({
@@ -54,15 +54,16 @@ const Pets = () => {
     }
 
     const fetchPets = async () => {
-        setloading(true)
+        setLoading(true)
         try {
             const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/pets/getPets?page=${currentPage}&size=${pageSize}`)
             if (res.data) {
                 setPets(res.data);
             }
-            setloading(false)
+            setLoading(false)
         } catch (error: any) {
             notifyError(error.response.data)
+            setLoading(false)
         }
     };
 
@@ -72,7 +73,7 @@ const Pets = () => {
     }
 
     const handleSearch = async (event: any) => {
-        setloading(true)
+        setLoading(true)
         let searchTerm
         event.preventDefault()
         if (event.type == "submit") searchTerm = event.target[0].value
@@ -81,9 +82,10 @@ const Pets = () => {
             if (res.data) {
                 setPets(res.data);
             }
-            setloading(false)
+            setLoading(false)
         } catch (error: any) {
             notifyError(error.response.data)
+            setLoading(false)
         }
     }
 
@@ -125,7 +127,7 @@ const Pets = () => {
                     {pets.map(pet => (
                         <Col key={pet.id}>
                             <Card style={{ height: '100%' }} onClick={() => handleDetail(pet)}>
-                                <Card.Img style={{ height: '150px' }} className='custom-card-img' variant="top" src={pet.photo ? `data:image/jpeg;base64,${pet.photo}` : noImage} alt={pet.name} />
+                                <Card.Img style={{ height: '150px', width: "auto", objectFit: "contain" }} className='rounded' variant="top" src={pet.photo ? `data:image/jpeg;base64,${pet.photo}` : noImage} alt={pet.name} />
                                 <Card.Body className='d-flex flex-column justify-content-end'>
                                     <Card.Title className=''>{pet.name}</Card.Title>
                                     <Card.Text>{pet.ownerName}</Card.Text>
