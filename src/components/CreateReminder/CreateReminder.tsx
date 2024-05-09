@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
-import { CreateVaccineformValues } from "../../types";
+import { CreateReminderformValues } from "../../types";
 import { useFormik } from 'formik';
 import { axiosWithToken } from "../../utils/axiosInstances";
 import { notifyError, notifySuccess } from "../Toaster/Toaster";
@@ -11,20 +11,22 @@ import { useRecoilState } from "recoil";
 import { modalState } from "../../app/store";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
-interface CreateVaccineProps {
-    petId: string
+interface CreateReminderProps {
     updateList: () => void
 }
 
-const CreateVaccine: React.FC<CreateVaccineProps> = ({ petId, updateList }) => {
+const CreateReminder: React.FC<CreateReminderProps> = ({updateList }) => {
 
     const [show, setShow] = useRecoilState(modalState)
 
-    const validate = (values: CreateVaccineformValues): CreateVaccineformValues => {
+    const validate = (values: CreateReminderformValues): CreateReminderformValues => {
         const errors: any = {};
 
         if (!values.name.trim()) {
             errors.name = 'Ingrese el nombre';
+        }
+        if(!values.date) {
+            errors.date = "Ingrese la fecha"
         }
         return errors;
     };
@@ -35,20 +37,17 @@ const CreateVaccine: React.FC<CreateVaccineProps> = ({ petId, updateList }) => {
             date: "",
             notes: "",
             id: "",
-            petId: ""
         },
         validate,
         onSubmit: async values => {
             const [year, month, day] = values.date.split('-').map(Number);
-            const createVaccine = {
+            const createReminder = {
                 name: values.name,
                 date: new Date(year, month - 1, day),
                 notes: values.notes,
-                petId: petId,
             }
-
             try {
-                const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/vaccines/create`, createVaccine)
+                const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/reminders/create`, createReminder)
                 notifySuccess(res.data)
                 updateList()
                 setShow(false)
@@ -62,6 +61,7 @@ const CreateVaccine: React.FC<CreateVaccineProps> = ({ petId, updateList }) => {
 
     const resetForm = () => {
         formik.resetForm();
+        setShow(false)
     }
 
     return (
@@ -87,6 +87,7 @@ const CreateVaccine: React.FC<CreateVaccineProps> = ({ petId, updateList }) => {
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                     />
+                    {formik.touched.date && formik.errors.date ? <div>{formik.errors.date}</div> : null}
                 </Form.Group>
             </Row>
             <Row className="mb-2">
@@ -103,10 +104,10 @@ const CreateVaccine: React.FC<CreateVaccineProps> = ({ petId, updateList }) => {
             </Row>
             <Row>
                 <Form.Group as={Col} className="d-flex justify-content-center">
-                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" onClick={resetForm}>
-                        Reiniciar
+                    <Button className="custom-border m-3" variant="danger" onClick={resetForm}>
+                        Cancelar
                     </Button>
-                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" type="submit">
+                    <Button className="custom-border m-3" variant="primary" type="submit">
                         Crear
                     </Button>
                 </Form.Group>
@@ -115,4 +116,4 @@ const CreateVaccine: React.FC<CreateVaccineProps> = ({ petId, updateList }) => {
     )
 }
 
-export default CreateVaccine
+export default CreateReminder

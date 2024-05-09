@@ -2,7 +2,7 @@ import "./NavBar.css"
 import { useRecoilState } from "recoil"
 import { userState, logState } from "../../app/store"
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';

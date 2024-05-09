@@ -29,7 +29,8 @@ const Pets = () => {
         species: "",
         weight: 0,
         born: "",
-        photo: ""
+        photo: "",
+        ownerName: ""
     })
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -115,7 +116,7 @@ const Pets = () => {
                                 <Card.Img style={{ height: '150px' }} className='custom-card-img' variant="top" src={pet.photo ? `data:image/jpeg;base64,${pet.photo}` : noImage} alt={pet.name} />
                                 <Card.Body className='d-flex flex-column justify-content-end'>
                                     <Card.Title className=''>{pet.name}</Card.Title>
-                                    <Card.Text>{pet.race}</Card.Text>
+                                    <Card.Text>{pet.ownerName}</Card.Text>
                                 </Card.Body>
                             </Card>
                         </Col>

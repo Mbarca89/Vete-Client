@@ -145,6 +145,9 @@ const Sale = () => {
 
     return (
         <div className='container d-flex flex-column flex-grow-1 p-lg-3 p-sm-0 rounded custom m-2 overflow-auto'>
+            <div className="d-flex justify-content-start">
+                <h5>Nueva venta</h5>
+            </div>
             <Container className='p-1'>
                 <Form onSubmit={handleSearch}>
                     <Row>

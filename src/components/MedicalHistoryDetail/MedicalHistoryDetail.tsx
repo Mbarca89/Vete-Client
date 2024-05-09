@@ -1,16 +1,9 @@
 import React from "react"
-import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { modalState } from "../../app/store";
-import Table from 'react-bootstrap/Table';
 import { Form } from "react-bootstrap";
-import { pet, medicalHistory } from "../../types";
+import { medicalHistory } from "../../types";
 import { axiosWithToken } from "../../utils/axiosInstances";
-import { notifyError, notifySuccess } from "../Toaster/Toaster";
-import { useRecoilState } from "recoil";
-import CustomModal from '../Modal/CustomModal';
-import noImage from "../../assets/noImage.png"
-import CreateMedicalHistory from "../CreateMedicalHistory/CreateMedicalHistory";
+import { notifyError } from "../Toaster/Toaster";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface MedicalHistoryDetailProps {

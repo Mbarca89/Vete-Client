@@ -1,19 +1,19 @@
 import "./App.css"
 import { Routes, Route, Outlet, Navigate } from "react-router-dom"
-import Landing from "./views/landing/Landing"
-import Home from "./views/home/Home"
-import NavBar from "./components/Nav/NavBar"
-import Users from "./views/Users/Users"
-import Products from "./views/Products/Products"
-import Providers from "./views/Providers/Providers"
-import Clients from "./views/Clients/Clients"
-import ClientDetail from "./components/ClientDetail/ClientDetail"
-import Pets from "./views/Pets/Pets"
-import PetDetail from "./components/PetDetail/PetDetail"
-import Sale from "./views/Sale/Sale"
-import Reports from "./views/Reports/Reports"
-import Order from "./views/Order/Order"
-import { useState, useEffect } from "react"
+import { useState, useEffect, lazy, Suspense } from "react"
+const Landing = lazy(() => import("./views/landing/Landing"))
+const Home = lazy(() => import("./views/home/Home"))
+const NavBar = lazy(() => import("./components/Nav/NavBar"))
+const Users = lazy(() => import("./views/Users/Users"))
+const Products = lazy(() => import("./views/Products/Products"))
+const Providers = lazy(() => import("./views/Providers/Providers"))
+const Clients = lazy(() => import("./views/Clients/Clients"))
+const ClientDetail = lazy(() => import("./components/ClientDetail/ClientDetail"))
+const Pets = lazy(() => import("./views/Pets/Pets"))
+const PetDetail = lazy(() => import("./components/PetDetail/PetDetail"))
+const Sale = lazy(() => import("./views/Sale/Sale"))
+const Reports = lazy(() => import("./views/Reports/Reports"))
+const Order = lazy(() => import("./views/Order/Order"))
 import { useRecoilState } from "recoil"
 import { logState, userState } from "./app/store"
 import { Toaster } from 'react-hot-toast';
@@ -45,13 +45,15 @@ const App = () => {
   }
 
   return (
-    <div className="App align-items-center d-flex flex-column flex-grow-1" style={{height: "100vh"}}>
+    <div className="App align-items-center d-flex flex-column flex-grow-1" style={{ height: "100vh" }}>
       <Toaster />
       <Routes>
         <Route element={(
           <>
             <NavBar />
-            <Outlet />
+            <Suspense>
+              <Outlet />
+            </Suspense>
           </>
         )}>
           <Route path="/home" element={isLogged ? <Home /> : <Navigate to="/" />} />

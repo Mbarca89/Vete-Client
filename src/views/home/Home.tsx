@@ -1,17 +1,18 @@
 import './Home.css'
 import logo from "../../assets/logook.png"
-import { useRecoilState } from "recoil"
-import { userState, logState } from "../../app/store"
+import Reminders from '../../components/Reminders/Reminders'
+import StockAlerts from '../../components/StockAlerts/StockAlerts'
 
 const Home = () => {
 
-    const [user, setUser] = useRecoilState(userState)
-
     return (
-        <div className='container flex-grow-1 d-flex align-items-center justify-content-center'>
-                <img className='w-50 custom-img' src={logo} alt="" />
+        <div className='container flex-grow-1 d-flex flex-column flex-md-row align-items-center justify-content-center p-lg-3 p-sm-0 m-2'>        
+                <Reminders/>
+            <img className='w-25 custom-img' src={logo} alt="" />
+            <div className='w-100 w-md-25 h-75 custom rounded z-2 p-1'>
+                <StockAlerts/>
+            </div>
         </div>
-
     )
 }
 

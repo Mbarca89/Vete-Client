@@ -1,6 +1,5 @@
 import React from "react"
 import { useRecoilState } from "recoil"
-import { clientState } from "../../app/store"
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { modalState } from "../../app/store";
@@ -9,7 +8,7 @@ import { pet } from "../../types";
 import CreatePet from "../CreatePet/CreatePet";
 import CustomModal from "../Modal/CustomModal";
 import { axiosWithToken } from "../../utils/axiosInstances";
-import { notifyError, notifySuccess } from "../Toaster/Toaster";
+import { notifyError } from "../Toaster/Toaster";
 import PetDetail from "../PetDetailCard/PetDetailCard";
 import DeletePet from "../DeletePet/DeletePet";
 import EditPet from "../EditPet/EditPet";
@@ -23,7 +22,6 @@ const ClientDetail = () => {
 
     const [pets, setPets] = useState<pet[]>([])
 
-    // const [client, setClient] = useRecoilState(clientState)
     const [currentClient, setCurrentClient] = useState<client>({
         id: "",
         name: "",
@@ -41,7 +39,8 @@ const ClientDetail = () => {
         species: "",
         weight: 0,
         born: "",
-        photo: ""
+        photo: "",
+        ownerName: ""
     })
 
     const [show, setShow] = useRecoilState(modalState)

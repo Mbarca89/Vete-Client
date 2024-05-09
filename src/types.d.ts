@@ -33,18 +33,19 @@ export interface product {
     stock: number;
     categoryId: number;
     categoryName: string;
-    seller: string;
     providerName: string;
+    stockAlert: boolean;
+    published: boolean;
     image: string | null;
 }
 
 export interface createProductformValues {
     name: string;
     description: string;
-    barCode: number;
-    cost: number;
-    price: number;
-    stock: number;
+    barCode: number | undefined;
+    cost: number | undefined;
+    price: number | undefined;
+    stock: number | undefined;
     categoryName: string;
     providerName: string;
 }
@@ -75,11 +76,14 @@ export interface pet {
     weight: number;
     born: date;
     photo: string | null;
+    ownerName: string;
 }
 
 export interface createPetformValues {
     name: string;
     race: string;
+    gender: string;
+    species: string;
     weight: number;
     born: string;
 }
@@ -132,4 +136,41 @@ export interface sale {
     date: string,
     seller: string,
     saleProducts: saleProduct[]
+}
+
+export interface order {
+    id: string,
+    amount: number,
+    cost: number,
+    date: string,
+    orderProducts: orderProduct[]
+}
+
+export interface orderProduct {
+    orderId: string,
+    productId: number,
+    productName: string,
+    productDescription: string,
+    productPrice: number,
+    productCost: number,
+    quantity: number
+}
+
+export interface reminder {
+    name: string;
+    notes: string;
+    petName: string;
+    date: date;
+}
+
+export interface CreateReminderformValues {
+    id: string;
+    name: string;
+    date: string;
+    notes: string;
+}
+
+export interface stockAlert {
+    productName: string,
+    stock: number
 }

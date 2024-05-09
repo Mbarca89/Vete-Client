@@ -3,13 +3,13 @@ import { createUserformValues } from "../../types";
 import { notifyError, notifySuccess } from "../Toaster/Toaster";
 import { userData } from "../../types";
 import { axiosWithToken } from "../../utils/axiosInstances";
-const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import { modalState } from "../../app/store"
 import { useRecoilState } from "recoil"
+const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface EditUserProps {
     user: userData;

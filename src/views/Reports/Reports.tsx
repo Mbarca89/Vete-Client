@@ -1,6 +1,7 @@
 import Nav from 'react-bootstrap/Nav';
 import { useState } from "react";
-import SalesList from '../../components/SaleReports/SalesList';
+import SalesList from '../../components/SalesList/SalesList';
+import OrdersList from '../../components/OrdersList/OrdersList';
 import Graphs from '../../components/Graphs/Graphs';
 
 const Reports = () => {
@@ -29,6 +30,7 @@ const Reports = () => {
             </Nav>
             <div className="mt-3">
                 {currentTab == "sales" ? <SalesList /> : null}
+                {currentTab == "orders" ? <OrdersList /> : null}
                 {currentTab == "graphs" ? <Graphs /> : null}
             </div>
         </div>

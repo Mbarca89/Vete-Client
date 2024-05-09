@@ -37,6 +37,8 @@ const EditPet: React.FC<EditPetProps> = ({ updateList, currentPet }) => {
         initialValues: {
             name: currentPet.name,
             race: currentPet.race,
+            species: currentPet.species,
+            gender: currentPet.gender,
             weight: currentPet.weight,
             born: currentPet.born
         },
@@ -46,13 +48,15 @@ const EditPet: React.FC<EditPetProps> = ({ updateList, currentPet }) => {
                 id: currentPet.id,
                 name: values.name,
                 race: values.race,
+                species: values.species,
+                gender: values.gender,
                 weight: values.weight,
                 born: values.born,
             }
             const formData = new FormData();
             if (image) formData.append('file', image);
             formData.append('pet', JSON.stringify(editPet));
-            
+
             try {
                 const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/pets/edit`, formData)
                 notifySuccess(res.data)
@@ -60,7 +64,7 @@ const EditPet: React.FC<EditPetProps> = ({ updateList, currentPet }) => {
                 setShow(false)
             } catch (error: any) {
                 if (error.response) {
-                    notifyError(error.response.data)                    
+                    notifyError(error.response.data)
                 }
             }
         },
@@ -84,10 +88,10 @@ const EditPet: React.FC<EditPetProps> = ({ updateList, currentPet }) => {
     return (
         <Form onSubmit={formik.handleSubmit} noValidate>
             <Row>
-            <img className="m-auto w-50" src={currentPet.photo ? `data:image/jpeg;base64,${currentPet.photo}` : noImage} alt="" />
+                <img className="m-auto w-50" src={currentPet.photo ? `data:image/jpeg;base64,${currentPet.photo}` : noImage} alt="" />
             </Row>
-            <Row className="mb-5">
-                <Form.Group as={Col}>
+            <Row className="mb-2">
+                <Form.Group as={Col} xs={12} md={6}>
                     <Form.Label>Nombre</Form.Label>
                     <Form.Control type="text" placeholder="Nombre"
                         id="name"
@@ -98,7 +102,7 @@ const EditPet: React.FC<EditPetProps> = ({ updateList, currentPet }) => {
                     />
                     {formik.touched.name && formik.errors.name ? <div>{formik.errors.name}</div> : null}
                 </Form.Group>
-                <Form.Group as={Col}>
+                <Form.Group as={Col} xs={12} md={6}>
                     <Form.Label>Raza</Form.Label>
                     <Form.Control type="text" placeholder="Raza"
                         id="race"
@@ -109,8 +113,38 @@ const EditPet: React.FC<EditPetProps> = ({ updateList, currentPet }) => {
                     />
                 </Form.Group>
             </Row>
+            <Row className="mb-2">
+                <Form.Group as={Col} xs={12} md={6}>
+                    <Form.Label>Especie</Form.Label>
+                    <Form.Select
+                        id="species"
+                        name="species"
+                        value={formik.values.species}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                    >
+                        <option value="">Seleccionar...</option>
+                        <option value="Canino">Canino</option>
+                        <option value="Felino">Felino</option>
+                    </Form.Select>
+                </Form.Group>
+                <Form.Group as={Col} xs={12} md={6}>
+                    <Form.Label>Género</Form.Label>
+                    <Form.Select
+                        id="gender"
+                        name="gender"
+                        value={formik.values.gender}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                    >
+                        <option value="">Seleccionar...</option>
+                        <option value="Femenino">Femenino</option>
+                        <option value="Masculino">Masculino</option>
+                    </Form.Select>
+                </Form.Group>
+            </Row>
             <Row className="mb-5">
-                <Form.Group as={Col}>
+                <Form.Group as={Col} xs={12} md={6}>
                     <Form.Label>Peso (kg)</Form.Label>
                     <Form.Control type="number"
                         id="weight"
@@ -120,7 +154,7 @@ const EditPet: React.FC<EditPetProps> = ({ updateList, currentPet }) => {
                         onBlur={formik.handleBlur}
                     />
                 </Form.Group>
-                <Form.Group as={Col}>
+                <Form.Group as={Col} xs={12} md={6}>
                     <Form.Label>Fecha de Nacimiento</Form.Label>
                     <Form.Control type="date"
                         id="born"
@@ -139,7 +173,6 @@ const EditPet: React.FC<EditPetProps> = ({ updateList, currentPet }) => {
                         name="image"
                         onChange={handleImageChange}
                         accept="image/*"
-                        capture="user"
                         ref={inputRef}
                     />
                 </Form.Group>

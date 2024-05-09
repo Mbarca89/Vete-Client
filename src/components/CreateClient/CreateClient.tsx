@@ -26,6 +26,9 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
                 errors.email = 'Ingrese un Email válido';
             }
         }
+        if(!/^\d+$/i.test(values.phone)) {
+            errors.phone = "Ingrese solo números sin espacios ni guiones"
+        }
         return errors;
     };
 
@@ -44,7 +47,7 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
             const createClient = {
                 name: values.name,
                 surname: values.surname,
-                phone: values.phone,
+                phone: "+549" + values.phone,
                 email: values.email,
                 social: values.social,
                 userName: values.userName
@@ -94,7 +97,7 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
             </Row>
             <Row className="mb-2">
                 <Form.Group as={Col} xs={12} md={6}>
-                    <Form.Label>Teléfono</Form.Label>
+                    <Form.Label>Teléfono (+54 9)</Form.Label>
                     <Form.Control placeholder="Teléfono"
                         id="phone"
                         name="phone"
@@ -102,6 +105,7 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                     />
+                    {formik.touched.phone && formik.errors.phone ? <div>{formik.errors.phone}</div> : null}
                 </Form.Group>
                 <Form.Group as={Col} xs={12} md={6}>
                     <Form.Label>Email</Form.Label>

@@ -1,4 +1,6 @@
-import { Card, Button } from "react-bootstrap"
+import Col from 'react-bootstrap/Col';
+import Form from 'react-bootstrap/Form';
+import Row from 'react-bootstrap/Row';
 import { pet } from "../../types"
 import noImage from "../../assets/noImage.png"
 import { useNavigate } from "react-router-dom"
@@ -12,7 +14,7 @@ interface PetDetailProps {
 const PetDetailCard: React.FC<PetDetailProps> = ({ pet }) => {
 
     const [show, setShow] = useRecoilState(modalState)
-    
+
     const navigate = useNavigate()
     const today = new Date();
     const bornDate = new Date(pet.born);
@@ -22,39 +24,72 @@ const PetDetailCard: React.FC<PetDetailProps> = ({ pet }) => {
     if (today.getMonth() < bornDate.getMonth() ||
         (today.getMonth() === bornDate.getMonth() && today.getDate() < bornDate.getDate())) {
         age--;
-    }   
+    }
 
     return (
         <div>
-            <Card>
-                <Card.Header>
-                    <Card.Img onClick={() => {navigate(`/pets/detail/${pet.id}`); setShow(false)}} style={{ height: '150px' }} className='custom-card-img' variant="top" src={pet.photo ? `data:image/jpeg;base64,${pet.photo}` : noImage} alt={pet.name} />
-                </Card.Header>
-                <Card.Body>
-                    <ul className="p-0">
-                        <li className="d-flex align-items-center">
-                            <h6 className="m-0">Raza:&nbsp;</h6>
-                            {pet.race}
-                        </li>
-                        <li className="d-flex align-items-center">
-                            <h6 className="m-0">Sexo:&nbsp;</h6>
-                            {pet.gender}
-                        </li>
-                        <li className="d-flex align-items-center">
-                            <h6 className="m-0">Especie:&nbsp;</h6>
-                            {pet.species}
-                        </li>
-                        <li className="d-flex align-items-center">
-                            <h6 className="m-0">Peso:&nbsp;</h6>
-                            {pet.weight} Kg
-                        </li>
-                        <li className="d-flex align-items-center">
-                            <h6 className="m-0">Edad:&nbsp;</h6>
-                            {pet.born ? `${age} (Fecha de nacimiento: ${pet.born})` : "No disponible"}
-                        </li>
-                    </ul>
-                </Card.Body>
-            </Card>
+            <Form noValidate>
+                <Row>
+                    <img role="button" onClick={() => { navigate(`/pets/detail/${pet.id}`); setShow(false) }} className="m-auto w-50" src={pet.photo ? `data:image/jpeg;base64,${pet.photo}` : noImage} alt="" />
+                </Row>
+                <Row className="mb-2">
+                    <Form.Group as={Col}>
+                        <Form.Label>Dueño</Form.Label>
+                        <Form.Control type="text"
+                            value={pet.ownerName}
+                            disabled
+                        />
+                    </Form.Group>
+                </Row>
+                <Row className="mb-2">
+                    <Form.Group as={Col}>
+                        <Form.Label>Nombre</Form.Label>
+                        <Form.Control type="text"
+                            value={pet.name}
+                            disabled
+                        />
+                    </Form.Group>
+                    <Form.Group as={Col}>
+                        <Form.Label>Raza</Form.Label>
+                        <Form.Control type="text"
+                            value={pet.race}
+                            disabled
+                        />
+                    </Form.Group>
+                </Row>
+                <Row>
+                    <Form.Group as={Col}>
+                        <Form.Label>Especie</Form.Label>
+                        <Form.Control type="text"
+                            value={pet.species}
+                            disabled
+                        />
+                    </Form.Group>
+                    <Form.Group as={Col}>
+                        <Form.Label>Género</Form.Label>
+                        <Form.Control type="text"
+                            value={pet.gender}
+                            disabled
+                        />
+                    </Form.Group>
+                </Row>
+                <Row className="mb-2">
+                    <Form.Group as={Col}>
+                        <Form.Label>Peso (kg)</Form.Label>
+                        <Form.Control type="number"
+                            value={pet.weight}
+                            disabled
+                        />
+                    </Form.Group>
+                    <Form.Group as={Col}>
+                        <Form.Label>Edad</Form.Label>
+                        <Form.Control type="text"
+                            value={`${age} años`}
+                            disabled
+                        />
+                    </Form.Group>
+                </Row>
+            </Form>
         </div>
     )
 }

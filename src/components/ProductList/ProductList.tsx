@@ -16,10 +16,13 @@ import { modalState } from "../../app/store"
 import { useRecoilState } from "recoil"
 import CustomModal from '../Modal/CustomModal';
 import noImage from '../../assets/noImage.png'
+import Spinner from 'react-bootstrap/Spinner';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 
 const ProductList = () => {
+    const [loading, setloading] = useState(false)
+    const [searching, setSearching] = useState(false)
     const [show, setShow] = useRecoilState(modalState)
     const [products, setProducts] = useState<product[]>([]);
     const [selectedProduct, setSelectedProduct] = useState<product>({
@@ -32,8 +35,9 @@ const ProductList = () => {
         stock: 0,
         categoryId: 0,
         categoryName: "",
-        seller: "",
         providerName: "",
+        stockAlert: false,
+        published: false,
         image: ""
     })
     const [currentPage, setCurrentPage] = useState(1);
@@ -56,14 +60,17 @@ const ProductList = () => {
     }
 
     const fetchProducts = async () => {
+        setloading(true)
         try {
             const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/getProductsPaginated?page=${currentPage}&size=${pageSize}`)
             if (res.data) {
                 setProducts(res.data);
             }
         } catch (error: any) {
-            notifyError(error.response.data)
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error)
         }
+        setloading(false)
     };
 
     const handleDetail = (product: product) => {
@@ -71,24 +78,30 @@ const ProductList = () => {
         setShow(!show)
     }
 
-    const handleSearch = async (event:any) => {
+    const handleSearch = async (event: any) => {
+        setloading(true)
         let searchTerm
         event.preventDefault()
         try {
-            if(event.type == "submit") searchTerm = event.target[0].value 
+            if (event.type == "submit") searchTerm = event.target[0].value
             else event.target.value ? searchTerm = event.target.value : searchTerm = ""
             let res
-            if(searchTerm == "") {
-                 res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/getProductsPaginated?page=${currentPage}&size=${pageSize}`)
+            if (searchTerm == "") {
+                res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/getProductsPaginated?page=${currentPage}&size=${pageSize}`)
             } else {
-                 res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/searchProduct?searchTerm=${searchTerm}`)
+                res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/searchProduct?searchTerm=${searchTerm}`)
             }
             if (res.data) {
                 setProducts(res.data);
             }
-        } catch (error:any) {
+            setloading(false)
+        } catch (error: any) {
             notifyError(error.response.data)
         }
+    }
+
+    const handleResetSearch = (event: any) => {
+        if (event.target.value == "") fetchProducts()
     }
 
     useEffect(() => {
@@ -110,7 +123,7 @@ const ProductList = () => {
                                     type="text"
                                     placeholder="Buscar"
                                     className=" mr-sm-2"
-                                    onChange={handleSearch}
+                                    onChange={handleResetSearch}
                                 />
                             </Col>
                             <Col xs="auto">
@@ -119,7 +132,7 @@ const ProductList = () => {
                         </Row>
                     </Form>
                 </Navbar>
-                <Row xs={2} md={3} lg={6} className="g-4">
+                {!loading ? <Row xs={2} md={3} lg={6} className="g-4">
                     {products.map(product => (
                         <Col key={product.id}>
                             <Card style={{ height: '100%' }} onClick={() => handleDetail(product)}>
@@ -132,7 +145,7 @@ const ProductList = () => {
                         </Col>
                     ))
                     }
-                </Row>
+                </Row> : <Spinner />}
                 <div className='d-flex m-auto justify-content-center'>
                     <Pagination className='mt-5'>
                         <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />

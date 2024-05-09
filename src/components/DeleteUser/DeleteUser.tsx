@@ -1,6 +1,5 @@
 import { notifyError, notifySuccess } from "../Toaster/Toaster";
 import { userData } from "../../types";
-import { useState, useEffect } from "react";
 import { axiosWithToken } from "../../utils/axiosInstances";
 import { modalState } from "../../app/store"
 import { useRecoilState } from "recoil"

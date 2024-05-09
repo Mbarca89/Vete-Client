@@ -11,8 +11,8 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { product } from '../../types';
 import { axiosWithToken } from "../../utils/axiosInstances";
-import { notifyError, notifySuccess } from "../Toaster/Toaster";
-import { logState, modalState } from "../../app/store"
+import { notifyError } from "../Toaster/Toaster";
+import {  modalState } from "../../app/store"
 import { useRecoilState } from "recoil"
 import CustomModal from '../Modal/CustomModal';
 import noImage from '../../assets/noImage.png'
@@ -35,8 +35,9 @@ const Categories = () => {
         stock: 0,
         categoryId: 0,
         categoryName: "",
-        seller: "",
         providerName: "",
+        stockAlert: false,
+        published: false,
         image: ""
     })
     const [currentPage, setCurrentPage] = useState(1);

@@ -1,5 +1,3 @@
-import { useState } from 'react';
-import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { modalState } from "../../app/store"
 import { useRecoilState } from "recoil"
@@ -23,14 +21,6 @@ function CustomModal({ children, title }: any) {
         <Modal.Body>
             {children}
         </Modal.Body>
-        {/* <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Cancelar
-          </Button>
-          <Button variant="primary" onClick={handleClose}>
-            Guardar
-          </Button>
-        </Modal.Footer> */}
       </Modal>
     </>
   );

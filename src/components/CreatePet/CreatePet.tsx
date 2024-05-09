@@ -168,7 +168,6 @@ const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
                         name="image"
                         onChange={handleImageChange}
                         accept="image/*"
-                        capture="user"
                         ref={inputRef}
                     />
                 </Form.Group>

@@ -7,7 +7,7 @@ import Card from 'react-bootstrap/Card'
 import Pagination from 'react-bootstrap/Pagination';
 import { pet } from '../../types';
 import { axiosWithToken } from "../../utils/axiosInstances";
-import { notifyError, notifySuccess } from "../Toaster/Toaster";
+import { notifyError } from "../Toaster/Toaster";
 import { modalState } from "../../app/store"
 import { useRecoilState } from "recoil"
 import CustomModal from '../Modal/CustomModal';
@@ -26,7 +26,8 @@ const PetList = () => {
         species: "",
         weight: 0,
         born: "",
-        photo: ""
+        photo: "",
+        ownerName: ""
     })
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);

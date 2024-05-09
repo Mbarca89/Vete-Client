@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { axiosWithToken } from '../../utils/axiosInstances';
 import { notifyError, notifySuccess } from "../Toaster/Toaster";
-import { product } from '../../types';
 import { useFormik } from 'formik';
 import { createProductformValues } from '../../types';
 import Button from 'react-bootstrap/Button';
@@ -9,7 +8,6 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
-
 
 interface CreateProductProps {
     updateList: () => void;
@@ -38,19 +36,15 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
     const [product, setProduct] = useState<createProductformValues>({
         name: "",
         description: "",
-        barCode: 0,
-        cost: 0,
-        price: 0,
-        stock: 0,
+        barCode: undefined,
+        cost: undefined,
+        price: undefined,
+        stock: undefined,
         categoryName: "",
         providerName: ""
     });
 
     const [image, setImage] = useState<File | null>(null);
-
-    // const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //     setProduct({ ...product, [event.target.name]: event.target.value });
-    // };
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
@@ -80,10 +74,6 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
         if (!values.categoryName.trim()) {
             errors.categoryName = 'Seleccione una categoria';
         }
-
-        if (!values.providerName.trim()) {
-            errors.providerName = 'Seleccione un proveedor';
-        }
         return errors;
     };
 
@@ -91,10 +81,10 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
         initialValues: {
             name: "",
             description: "",
-            barCode: 0,
-            cost: 0,
-            price: 0,
-            stock: 0,
+            barCode: undefined,
+            cost: undefined,
+            price: undefined,
+            stock: undefined,
             categoryName: "",
             providerName: ""
         },
@@ -108,7 +98,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                 price: values.price,
                 stock: values.stock,
                 categoryName: values.categoryName,
-                providerName: values.providerName
+                providerName: values.providerName ? values.providerName : "Ninguno"
             }
             const formData = new FormData();
             if (image) formData.append('file', image);
@@ -246,7 +236,6 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                             <option key={provider} value={provider}>{provider}</option>
                         )}
                     </Form.Select>
-                    {formik.touched.providerName && formik.errors.providerName ? <div>{formik.errors.providerName}</div> : null}
                 </Form.Group>
             </Row>
             <Row>
@@ -257,7 +246,6 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                         name="image"
                         onChange={handleImageChange}
                         accept="image/*"
-                        capture="user"
                         ref={inputRef}
                     />
                 </Form.Group>
