@@ -10,24 +10,25 @@ interface MedicalHistoryDetailProps {
     medicalHistoryId: string
 }
 
-const MedicalHistoryDetail: React.FC<MedicalHistoryDetailProps> = ({medicalHistoryId}) => {
+const MedicalHistoryDetail: React.FC<MedicalHistoryDetailProps> = ({ medicalHistoryId }) => {
 
     const [medicalHistory, setMedicalHistory] = useState<medicalHistory>()
 
     const getMedicalHistoryDetails = async () => {
         try {
             const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/medicalHistory/getMedicalHistoryById?medicalHistoryId=${medicalHistoryId}`)
-            if(res.data) {
+            if (res.data) {
                 setMedicalHistory(res.data)
             }
-        } catch (error:any) {
-            notifyError(error.response.data)
+        } catch (error: any) {
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
         }
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         getMedicalHistoryDetails()
-    },[])
+    }, [])
 
     return (
         <div>

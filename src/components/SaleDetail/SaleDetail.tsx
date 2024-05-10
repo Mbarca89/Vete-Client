@@ -20,7 +20,8 @@ const SaleDetail: React.FC<SaleDetailProps> = ({ saleId }) => {
                 setSale(res.data)
             }
         } catch (error: any) {
-            notifyError(error.response.data)
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
         }
     }
 
@@ -58,7 +59,7 @@ const SaleDetail: React.FC<SaleDetailProps> = ({ saleId }) => {
                 </tbody>
             </Table>
             <div className="d-flex justify-content-end">
-                    <p><b>Total: </b>${sale.amount.toFixed(2)}</p>
+                <p><b>Total: </b>${sale.amount.toFixed(2)}</p>
             </div>
         </div>
     )

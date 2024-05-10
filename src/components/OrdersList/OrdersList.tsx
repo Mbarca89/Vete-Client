@@ -36,7 +36,8 @@ const OrdersList = () => {
                 setOrders(res.data)
             }
         } catch (error: any) {
-            error.response && notifyError(error.response.data)
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
         }
     }
 

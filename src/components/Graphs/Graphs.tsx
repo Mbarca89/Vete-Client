@@ -41,7 +41,8 @@ const Graphs = () => {
                 setSales(res.data)
             }
         } catch (error: any) {
-            notifyError(error.response.data)
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
         }
     }
 
@@ -86,7 +87,7 @@ const Graphs = () => {
         const daysArray = getDaysArray(startDate, endDate);
         const amountsByDay: number[] = new Array(daysArray.length).fill(0);
         const costByDay: number[] = new Array(daysArray.length).fill(0);
-    
+
         for (const sale of sales) {
             const saleDate = new Date(sale.date.split(' ')[0]);
             const timeDiff = saleDate.getTime() - startDate.getTime();
@@ -99,8 +100,8 @@ const Graphs = () => {
         setCategories(daysArray)
         setAmountData(amountsByDay)
         setCostData(costByDay)
-    } 
-    
+    }
+
 
     useEffect(() => {
         getSales()
@@ -158,15 +159,15 @@ const Graphs = () => {
                     </Col>
                 </Row>
             </Form>
-                <div className="d-flex justify-content-center">
-                    <Chart
-                        options={options}
-                        series={series}
-                        type="line"
-                        stroke="smooth"
-                        style={{width: "90%", heigth: "50"}}
-                    />
-                </div>
+            <div className="d-flex justify-content-center">
+                <Chart
+                    options={options}
+                    series={series}
+                    type="line"
+                    stroke="smooth"
+                    style={{ width: "90%", heigth: "50" }}
+                />
+            </div>
         </div>
     )
 }

@@ -169,12 +169,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, updateList }) =>
             }
         } catch (error: any) {
             if (error.response) notifyError(error.response.data)
-            else notifyError(error.response)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
         }
     }
 
     const handleSwitch = async (event: any) => {
-        if(event.target.name == "stockAlert") {
+        if (event.target.name == "stockAlert") {
             setStockAlert(!stockAlert)
         } else {
             setPublished(!published)
@@ -205,7 +205,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, updateList }) =>
                 updateList()
             }
         } catch (error: any) {
-            notifyError(error.response.data)
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
         }
     }
 
@@ -214,7 +215,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, updateList }) =>
     }, [])
 
     return (
-       product.id && !deleteProduct ? <div>
+        product.id && !deleteProduct ? <div>
             <Row>
                 <Col lg={6}>
                     <Image className="custom-detail-img" src={product.image ? `data:image/jpeg;base64,${product.image}` : noImage}></Image>

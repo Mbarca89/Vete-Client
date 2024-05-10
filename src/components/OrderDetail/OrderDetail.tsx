@@ -20,7 +20,8 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
                 setOrder(res.data)
             }
         } catch (error: any) {
-            notifyError(error.response.data)
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
         }
     }
 
@@ -57,7 +58,7 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
                 </tbody>
             </Table>
             <div className="d-flex justify-content-end">
-                    <p><b>Total: </b>${order.amount.toFixed(2)}</p>
+                <p><b>Total: </b>${order.amount.toFixed(2)}</p>
             </div>
         </div>
     )

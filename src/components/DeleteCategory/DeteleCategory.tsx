@@ -17,14 +17,14 @@ const DeleteCategory: React.FC<DeleteCategoryProps> = ({ category, getCategory }
     const handleDelete = async () => {
         try {
             const res = await axiosWithToken.delete(`${SERVER_URL}/api/v1/category/delete?name=${category}`)
-            if(res.data) {
+            if (res.data) {
                 notifySuccess(res.data)
                 getCategory()
                 setShow(false)
             }
-        } catch (error:any) {
-            if(error.response) notifyError(error.response.data)
-            else notifyError(error.message)
+        } catch (error: any) {
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
         }
     }
 

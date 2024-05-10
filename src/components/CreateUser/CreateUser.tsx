@@ -71,9 +71,8 @@ const CreateUser: React.FC<CreateUserProps> = ({ updateList }) => {
                 notifySuccess(res.data)
                 updateList()
             } catch (error: any) {
-                if (error.response) {
-                    notifyError(error.response.data)
-                }
+                if (error.response) notifyError(error.response.data)
+                else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
             }
         },
     });
@@ -144,8 +143,8 @@ const CreateUser: React.FC<CreateUserProps> = ({ updateList }) => {
                     />
                     {formik.touched.repeatPassword && formik.errors.repeatPassword ? <div>{formik.errors.repeatPassword}</div> : null}
                 </Form.Group>
-                </Row>
-                <Row className="mb-5">
+            </Row>
+            <Row className="mb-5">
                 <Form.Group as={Col} xs={12} lg={6}>
                     <Form.Label>Rol</Form.Label>
                     <Form.Select

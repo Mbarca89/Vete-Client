@@ -40,7 +40,8 @@ const ClientList = () => {
             }
             setLoading(false)
         } catch (error: any) {
-            notifyError(error.response.data)
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
             setLoading(false)
         }
     }
@@ -107,9 +108,9 @@ const ClientList = () => {
                     }
                 </tbody>
             </Table> :
-            <div>
-                <Spinner/>
-            </div>
+                <div>
+                    <Spinner />
+                </div>
             }
         </div>
     )

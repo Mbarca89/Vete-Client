@@ -45,8 +45,9 @@ const PetList = () => {
             if (count.data) {
                 setTotalPages(Math.ceil(count.data / pageSize));
             }
-        } catch (error:any) {
-            notifyError(error.response.data)
+        } catch (error: any) {
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
         }
     }
 
@@ -59,7 +60,8 @@ const PetList = () => {
             }
             setLoading(false)
         } catch (error: any) {
-            notifyError(error.response.data)
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
             setLoading(false)
         }
     };

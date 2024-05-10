@@ -68,6 +68,7 @@ const Order = () => {
             }
         } catch (error: any) {
             if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
         }
     }
 
@@ -124,7 +125,8 @@ const Order = () => {
                 handleClearOrder()
             }
         } catch (error: any) {
-            notifyError(error.response.data)
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
         }
     }
 
@@ -209,7 +211,7 @@ const Order = () => {
                 </Container>
             </div>
             <Container className='d-flex gap-2 justify-content-center p-1'>
-            <div className='d-flex align-items-center justify-content-center w-25'>
+                <div className='d-flex align-items-center justify-content-center w-25'>
                     <Button className="" variant="danger" onClick={handleClearOrder}>
                         Limpiar
                     </Button>

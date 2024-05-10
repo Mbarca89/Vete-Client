@@ -65,9 +65,8 @@ const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
                 setLoading(false)
                 setShow(false)
             } catch (error: any) {
-                if (error.response) {
-                    notifyError(error.response.data)
-                }
+                if (error.response) notifyError(error.response.data)
+                else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
                 setLoading(false)
             }
         },

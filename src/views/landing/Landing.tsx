@@ -40,7 +40,7 @@ const Landing = () => {
         event.preventDefault()
         try {
             const res = await axiosWithoutToken.post(`${SERVER_URL}/auth/login`, userData)
-            if (res.data) {      
+            if (res.data) {
                 setUser({
                     id: res.data.id,
                     name: res.data.name,
@@ -60,8 +60,9 @@ const Landing = () => {
                 navigate("/home")
             }
 
-        } catch (error:any) {
-            notifyError(error.response.data)
+        } catch (error: any) {
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
         }
 
     }

@@ -20,7 +20,7 @@ const Reminders = () => {
     const getReminders = async (day: string) => {
         try {
             const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/reminders/getReminders/${day}`)
-            if (res.data) {
+            if (res && res.data) {
                 setReminders(res.data.map((reminder: reminder) => ({
                     title: reminder.name,
                     start: reminder.date
@@ -28,8 +28,7 @@ const Reminders = () => {
             }
         } catch (error: any) {
             if (error.response) notifyError(error.response.data)
-            else notifyError(error)
-
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
         }
     }
 
@@ -40,10 +39,6 @@ const Reminders = () => {
     const handleDateChange = (dateInfo: any) => {
         getReminders(dateInfo.start.toISOString())
     }
-
-    useEffect(() => {
-        getReminders(new Date().toISOString())
-    }, [])
 
     return (
         <div className='w-100 w-md-25 h-75 custom rounded z-2 p-1'>

@@ -18,13 +18,14 @@ const DeleteClient: React.FC<DeleteClientProps> = ({ client, onUpdateClient }) =
     const handleDelete = async () => {
         try {
             const res = await axiosWithToken.delete(`${SERVER_URL}/api/v1/clients/delete?id=${client.id}`)
-            if(res.data) {
+            if (res.data) {
                 notifySuccess(res.data)
                 onUpdateClient()
                 setShow(false)
             }
-        } catch (error:any) {
-            notifyError(error.response.data)
+        } catch (error: any) {
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
         }
     }
 

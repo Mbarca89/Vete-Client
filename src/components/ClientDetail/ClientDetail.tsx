@@ -24,7 +24,7 @@ const ClientDetail = () => {
         name: "",
         surname: "",
         phone: "",
-        email:"",
+        email: "",
         social: "",
         userName: ""
     })
@@ -50,7 +50,8 @@ const ClientDetail = () => {
                 setPets(res.data)
             }
         } catch (error: any) {
-            notifyError(error.response.data)
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
         }
     }
 
@@ -84,7 +85,8 @@ const ClientDetail = () => {
                 setCurrentClient(res.data)
             }
         } catch (error: any) {
-            notifyError(error.response.data)
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
         }
     }
 
@@ -129,19 +131,19 @@ const ClientDetail = () => {
             </div>
             {show && modal == "createPet" &&
                 <CustomModal title="Crear Mascota">
-                    <CreatePet updateList={getPets} clientId={currentClient.id}/>
+                    <CreatePet updateList={getPets} clientId={currentClient.id} />
                 </CustomModal>}
             {show && modal == "petDetail" &&
                 <CustomModal title={currentPet.name}>
-                    <PetDetail pet={currentPet}/>
+                    <PetDetail pet={currentPet} />
                 </CustomModal>}
-                {show && modal == "deletePet" &&
+            {show && modal == "deletePet" &&
                 <CustomModal title={currentPet.name}>
-                    <DeletePet currentPet={currentPet} updateList={getPets}/>
+                    <DeletePet currentPet={currentPet} updateList={getPets} />
                 </CustomModal>}
-                {show && modal == "editPet" &&
+            {show && modal == "editPet" &&
                 <CustomModal title="Editar mascota">
-                    <EditPet currentPet={currentPet} updateList={getPets}/>
+                    <EditPet currentPet={currentPet} updateList={getPets} />
                 </CustomModal>}
         </div>
     )

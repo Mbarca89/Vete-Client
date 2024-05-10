@@ -30,7 +30,8 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                 setProviders(providersResponse.data)
             }
         } catch (error: any) {
-            notifyError(error.response.data)
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
         }
     }
 
@@ -118,7 +119,8 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                     updateList()
                 }
             } catch (error: any) {
-                notifyError(error.response.data)
+                if (error.response) notifyError(error.response.data)
+                else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
                 setLoading(false)
             }
         },

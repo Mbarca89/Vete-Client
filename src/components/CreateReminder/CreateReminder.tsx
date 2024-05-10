@@ -15,7 +15,7 @@ interface CreateReminderProps {
     updateList: () => void
 }
 
-const CreateReminder: React.FC<CreateReminderProps> = ({updateList }) => {
+const CreateReminder: React.FC<CreateReminderProps> = ({ updateList }) => {
 
     const [show, setShow] = useRecoilState(modalState)
 
@@ -25,7 +25,7 @@ const CreateReminder: React.FC<CreateReminderProps> = ({updateList }) => {
         if (!values.name.trim()) {
             errors.name = 'Ingrese el nombre';
         }
-        if(!values.date) {
+        if (!values.date) {
             errors.date = "Ingrese la fecha"
         }
         return errors;
@@ -52,9 +52,8 @@ const CreateReminder: React.FC<CreateReminderProps> = ({updateList }) => {
                 updateList()
                 setShow(false)
             } catch (error: any) {
-                if (error.response) {
-                    notifyError(error.response.data)
-                }
+                if (error.response) notifyError(error.response.data)
+                else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
             }
         },
     });

@@ -52,7 +52,7 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({ updateList,
                 medicine: values.medicine,
                 petId: petId
             }
-            if(newWeight && currentPet) {
+            if (newWeight && currentPet) {
                 try {
                     const editPet = {
                         id: currentPet.id,
@@ -66,21 +66,19 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({ updateList,
                     const formData = new FormData();
                     if (image) formData.append('file', image);
                     formData.append('pet', JSON.stringify(editPet));
-        
+
                     try {
                         const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/pets/edit`, formData)
                         notifySuccess(res.data)
                         updateList()
                         setShow(false)
                     } catch (error: any) {
-                        if (error.response) {
-                            notifyError(error.response.data)
-                        }
+                        if (error.response) notifyError(error.response.data)
+                        else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
                     }
-                } catch (error:any) {
-                    if (error.response) {
-                        notifyError(error.response.data)
-                    }
+                } catch (error: any) {
+                    if (error.response) notifyError(error.response.data)
+                    else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
                 }
             }
             let res
@@ -90,9 +88,8 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({ updateList,
                 updateList()
                 setShow(false)
             } catch (error: any) {
-                if (error.response) {
-                    notifyError(error.response.data)
-                }
+                if (error.response) notifyError(error.response.data)
+                else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
             }
         },
     });
@@ -108,20 +105,21 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({ updateList,
                 setCurrentPet(res.data)
             }
         } catch (error: any) {
-            notifyError(error.response.data)
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
         }
     }
 
-    const handleWeight = (event:any) => {
+    const handleWeight = (event: any) => {
         setNewWeight(event.target.value)
     }
 
     useEffect(() => {
         getPetDetails()
-    },[])
+    }, [])
 
     return (
-       currentPet && <Form onSubmit={formik.handleSubmit} noValidate>
+        currentPet && <Form onSubmit={formik.handleSubmit} noValidate>
             <Row className="mb-2">
                 <Form.Group as={Col} xs={12} md={6}>
                     <Form.Label>Tipo</Form.Label>

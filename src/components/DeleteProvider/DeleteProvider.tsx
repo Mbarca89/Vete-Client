@@ -21,14 +21,15 @@ const DeleteProvider: React.FC<DeleteProviderProps> = ({ provider, updateList })
         setLoading(true)
         try {
             const res = await axiosWithToken.delete(`${SERVER_URL}/api/v1/providers/delete?providerId=${provider.id}`)
-            if(res.data) {
+            if (res.data) {
                 notifySuccess(res.data)
                 updateList()
                 setShow(false)
             }
             setLoading(false)
-        } catch (error:any) {
-            notifyError(error.response.data)
+        } catch (error: any) {
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
             setLoading(false)
         }
     }

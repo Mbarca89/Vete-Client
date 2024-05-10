@@ -17,7 +17,7 @@ interface CreateClientProps {
 
 const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
     const [loading, setLoading] = useState(false)
-    
+
     const validate = (values: client): client => {
         const errors: any = {};
 
@@ -29,7 +29,7 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
                 errors.email = 'Ingrese un Email válido';
             }
         }
-        if(!/^\d+$/i.test(values.phone)) {
+        if (!/^\d+$/i.test(values.phone)) {
             errors.phone = "Ingrese solo números sin espacios ni guiones"
         }
         return errors;
@@ -63,9 +63,8 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
                 setLoading(false)
                 updateList()
             } catch (error: any) {
-                if (error.response) {
-                    notifyError(error.response.data)
-                }
+                if (error.response) notifyError(error.response.data)
+                else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
                 setLoading(false)
             }
         },
@@ -153,7 +152,7 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
                 </Form.Group>
             </Row>
             <Row>
-            <Form.Group as={Col} className="d-flex justify-content-center mt-3">
+                <Form.Group as={Col} className="d-flex justify-content-center mt-3">
                     <div className='d-flex align-items-center justify-content-center w-25'>
                         <Button className="" variant="danger" onClick={resetForm}>
                             Reiniciar

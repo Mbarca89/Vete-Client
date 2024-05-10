@@ -40,7 +40,8 @@ const Vaccines: React.FC<VaccinesProps> = ({ petId }) => {
                 })))
             }
         } catch (error: any) {
-            notifyError(error.response.data)
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
         }
     }
 
@@ -49,7 +50,7 @@ const Vaccines: React.FC<VaccinesProps> = ({ petId }) => {
         setModal("create")
     }
 
-    const handleEventDetail = (info:any) => {
+    const handleEventDetail = (info: any) => {
         setCurrentEvent(info.event)
         setShow(true)
         setModal("detail")
@@ -81,7 +82,7 @@ const Vaccines: React.FC<VaccinesProps> = ({ petId }) => {
                 </CustomModal>}
             {show && modal == "detail" &&
                 <CustomModal title={"Detalles"}>
-                    <VaccineDetail event={currentEvent}/>
+                    <VaccineDetail event={currentEvent} />
                 </CustomModal>}
         </div>
     )

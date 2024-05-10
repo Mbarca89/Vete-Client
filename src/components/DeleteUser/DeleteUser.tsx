@@ -19,13 +19,14 @@ const DeleteUser: React.FC<DeleteUserProps> = ({ user, onUpdateUser }) => {
     const handleDelete = async () => {
         try {
             const res = await axiosWithToken.delete(`${SERVER_URL}/api/v1/users/delete/${user.userName}`)
-            if(res.data) {
+            if (res.data) {
                 notifySuccess(res.data)
                 onUpdateUser()
                 setShow(false)
             }
-        } catch (error:any) {
-            notifyError(error.response.data)
+        } catch (error: any) {
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
         }
     }
 

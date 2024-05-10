@@ -40,7 +40,8 @@ const PetDetail = () => {
                 setCurrentPet(res.data)
             }
         } catch (error: any) {
-            notifyError(error.response.data)
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
         }
     }
 
@@ -66,7 +67,7 @@ const PetDetail = () => {
                 </Nav>
                 <div className="mt-3">
                     {currentTab == "medicalHistory" ? <MedicalHistory petId={currentPet.id} /> : null}
-                    {currentTab == "vaccionation" ? <Vaccines petId={currentPet.id}/> : null}
+                    {currentTab == "vaccionation" ? <Vaccines petId={currentPet.id} /> : null}
                 </div>
             </div>
         </div>
