@@ -54,6 +54,7 @@ const NavBar = () => {
                             <Nav.Link onClick={() => { navigate("/pets"); handleNavLinkClick() }}>Mascotas</Nav.Link>
                             <Nav.Link onClick={() => { navigate("/sale"); handleNavLinkClick() }}>Venta</Nav.Link>
                             <Nav.Link onClick={() => { navigate("/order"); handleNavLinkClick() }}>Compra</Nav.Link>
+                            <Nav.Link onClick={() => { navigate("/whatsapp"); handleNavLinkClick() }}>Whatsapp</Nav.Link>
                         </Nav>
                         <hr />
                         <Navbar.Text>

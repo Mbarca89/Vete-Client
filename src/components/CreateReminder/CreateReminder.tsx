@@ -89,7 +89,7 @@ const CreateReminder: React.FC<CreateReminderProps> = ({ updateList }) => {
                     {formik.touched.date && formik.errors.date ? <div>{formik.errors.date}</div> : null}
                 </Form.Group>
             </Row>
-            <Row className="mb-2">
+            {/* <Row className="mb-2">
                 <Form.Group as={Col} xs={12} md={6}>
                     <Form.Label>Notas</Form.Label>
                     <Form.Control type="text"
@@ -100,7 +100,7 @@ const CreateReminder: React.FC<CreateReminderProps> = ({ updateList }) => {
                         onBlur={formik.handleBlur}
                     />
                 </Form.Group>
-            </Row>
+            </Row> */}
             <Row>
                 <Form.Group as={Col} className="d-flex justify-content-center">
                     <Button className="custom-border m-3" variant="danger" onClick={resetForm}>

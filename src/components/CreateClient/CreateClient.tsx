@@ -51,7 +51,7 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
             const createClient = {
                 name: values.name,
                 surname: values.surname,
-                phone: "+549" + values.phone,
+                phone: "549" + values.phone,
                 email: values.email,
                 social: values.social,
                 userName: values.userName

@@ -14,6 +14,7 @@ const PetDetail = lazy(() => import("./components/PetDetail/PetDetail"))
 const Sale = lazy(() => import("./views/Sale/Sale"))
 const Reports = lazy(() => import("./views/Reports/Reports"))
 const Order = lazy(() => import("./views/Order/Order"))
+const Wa = lazy(() => import("./views/Wa/Wa"))
 import { useRecoilState } from "recoil"
 import { logState, userState } from "./app/store"
 import { Toaster } from 'react-hot-toast';
@@ -67,6 +68,7 @@ const App = () => {
           <Route path="/sale" element={isLogged ? <Sale /> : <Navigate to="/" />} />
           <Route path="/reports" element={isLogged && user.role == "Administrador" ? <Reports /> : <Navigate to="/" />} />
           <Route path="/order" element={isLogged && user.role == "Administrador" ? <Order /> : <Navigate to="/" />} />
+          <Route path="/whatsapp" element={isLogged ? <Wa /> : <Navigate to="/" />} />
         </Route>
         <Route path="/" element={<Landing />} />
       </Routes>

@@ -10,6 +10,12 @@ import { useRecoilState } from "recoil"
 import DeleteClient from '../DeleteClient/DeleteClient';
 import { notifyError } from '../Toaster/Toaster';
 import { Spinner } from 'react-bootstrap';
+import Navbar from 'react-bootstrap/Navbar';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 const ClientList = () => {
@@ -71,8 +77,47 @@ const ClientList = () => {
         getClients()
     };
 
+    const handleSearch = async (event: any) => {
+        setLoading(true)
+        let searchTerm
+        event.preventDefault()
+        if (event.type == "submit") searchTerm = event.target[0].value
+        try {
+            const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/clients/getClientsByName?searchTerm=${searchTerm}`)
+            if (res.data) {
+                setClients(res.data);
+            }
+            setLoading(false)
+        } catch (error: any) {
+            if (error.response) notifyError(error.response.data)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            setLoading(false)
+        }
+    }
+
+    const handleResetSearch = (event: any) => {
+        if (event.target.value == "") getClients()
+    }
+
     return (
         <div className='text-nowrap'>
+                <Navbar className="justify-content-between">
+                    <Form onSubmit={handleSearch}>
+                        <Row>
+                            <Col xs="auto">
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Buscar"
+                                    className=" mr-sm-2"
+                                    onChange={handleResetSearch}
+                                />
+                            </Col>
+                            <Col xs="auto">
+                                <Button type="submit">Buscar</Button>
+                            </Col>
+                        </Row>
+                    </Form>
+                </Navbar>
             {!loading ? <Table striped bordered hover>
                 <thead>
                     <tr>

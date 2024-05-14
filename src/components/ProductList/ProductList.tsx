@@ -68,7 +68,7 @@ const ProductList = () => {
             }
         } catch (error: any) {
             if (error.response) notifyError(error.response.data)
-            else notifyError(error)
+            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
         }
         setLoading(false)
     };
@@ -149,18 +149,15 @@ const ProductList = () => {
                 </Row> : <div className='mt-5'>
                     <Spinner />
                 </div>}
-                <div className='d-flex m-auto justify-content-center'>
-                    <Pagination className='mt-5'>
+                <div className='d-flex m-auto justify-content-center mt-5 w-50'>
+                    <Pagination className=''>
                         <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
                         <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
-                        <Pagination.Item>{1}</Pagination.Item>
-                        <Pagination.Ellipsis />
                         {Array.from({ length: totalPages }, (_, index) => (
                             <Pagination.Item key={index + 1} active={index + 1 === currentPage} onClick={() => handlePageChange(index + 1)}>
                                 {index + 1}
                             </Pagination.Item>
                         ))}
-                        <Pagination.Ellipsis />
                         <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
                         <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
                     </Pagination>

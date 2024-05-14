@@ -174,3 +174,11 @@ export interface stockAlert {
     productName: string,
     stock: number
 }
+
+export interface message {
+    clientName: string;
+    clientPhone: string;
+    petName: string;
+    vaccineName: string;
+    sent: boolean;
+}

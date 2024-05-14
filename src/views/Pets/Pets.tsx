@@ -141,18 +141,15 @@ const Pets = () => {
                 </Row> : <div className='mt-5'>
                     <Spinner />
                 </div>}
-                <div className='d-flex m-auto justify-content-center'>
+                <div className='d-flex m-auto justify-content-center mt-5 w-50'>
                     <Pagination className='mt-5'>
                         <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
                         <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
-                        <Pagination.Item>{1}</Pagination.Item>
-                        <Pagination.Ellipsis />
                         {Array.from({ length: totalPages }, (_, index) => (
                             <Pagination.Item key={index + 1} active={index + 1 === currentPage} onClick={() => handlePageChange(index + 1)}>
                                 {index + 1}
                             </Pagination.Item>
                         ))}
-                        <Pagination.Ellipsis />
                         <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
                         <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
                     </Pagination>
