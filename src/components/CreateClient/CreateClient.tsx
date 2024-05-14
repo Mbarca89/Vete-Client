@@ -9,6 +9,7 @@ import { axiosWithToken } from "../../utils/axiosInstances";
 import { notifyError, notifySuccess } from "../Toaster/Toaster";
 import { useState } from "react";
 import { Spinner } from "react-bootstrap";
+import handleError from "../../utils/HandleErrors";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface CreateClientProps {
@@ -16,7 +17,7 @@ interface CreateClientProps {
 }
 
 const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState<boolean>(false)
 
     const validate = (values: client): client => {
         const errors: any = {};
@@ -24,7 +25,9 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
         if (!values.name.trim()) {
             errors.name = 'Ingrese el nombre';
         }
-        if (values.email) {
+        if (!values.email) {
+            errors.email = 'Ingrese un Email';
+        } else {
             if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
                 errors.email = 'Ingrese un Email válido';
             }
@@ -63,8 +66,7 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
                 setLoading(false)
                 updateList()
             } catch (error: any) {
-                if (error.response) notifyError(error.response.data)
-                else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+                handleError(error)
                 setLoading(false)
             }
         },
@@ -86,8 +88,9 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
                         value={formik.values.name}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.name && formik.errors.name)}
                     />
-                    {formik.touched.name && formik.errors.name ? <div>{formik.errors.name}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.name}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} xs={12} md={6}>
                     <Form.Label>Apellido</Form.Label>
@@ -102,15 +105,16 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
             </Row>
             <Row className="mb-2">
                 <Form.Group as={Col} xs={12} md={6}>
-                    <Form.Label>Teléfono (+54 9)</Form.Label>
+                    <Form.Label>Teléfono (54 9)</Form.Label>
                     <Form.Control placeholder="Teléfono"
                         id="phone"
                         name="phone"
                         value={formik.values.phone}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.phone && formik.errors.phone)}
                     />
-                    {formik.touched.phone && formik.errors.phone ? <div>{formik.errors.phone}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.phone}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} xs={12} md={6}>
                     <Form.Label>Email</Form.Label>
@@ -120,8 +124,9 @@ const CreateClient: React.FC<CreateClientProps> = ({ updateList }) => {
                         value={formik.values.email}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.email && formik.errors.email)}
                     />
-                    {formik.touched.email && formik.errors.email ? <div>{formik.errors.email}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.email}</Form.Control.Feedback>
                 </Form.Group>
             </Row>
             <Row className="mb-5">

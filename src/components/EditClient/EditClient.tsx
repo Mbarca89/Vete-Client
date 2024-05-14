@@ -18,7 +18,7 @@ interface EditUserProps {
 }
 
 const EditClient: React.FC<EditUserProps> = ({ client, onUpdateClient }) => {
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState<boolean>(false)
     const [show, setShow] = useRecoilState(modalState)
 
     const validate = (values: client): client => {
@@ -27,10 +27,15 @@ const EditClient: React.FC<EditUserProps> = ({ client, onUpdateClient }) => {
         if (!values.name.trim()) {
             errors.name = 'Ingrese el nombre';
         }
-        if (values.email) {
+        if (!values.email) {
+            errors.email = 'Ingrese un Email';
+        } else {
             if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
                 errors.email = 'Ingrese un Email válido';
             }
+        }
+        if (!/^\d+$/i.test(values.phone)) {
+            errors.phone = "Ingrese solo números sin espacios ni guiones"
         }
         return errors;
     };
@@ -78,8 +83,9 @@ const EditClient: React.FC<EditUserProps> = ({ client, onUpdateClient }) => {
                         value={formik.values.name}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.name && formik.errors.name)}
                     />
-                    {formik.touched.name && formik.errors.name ? <div>{formik.errors.name}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.name}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} xs={12} md={6}>
                     <Form.Label>Apellido</Form.Label>
@@ -101,7 +107,9 @@ const EditClient: React.FC<EditUserProps> = ({ client, onUpdateClient }) => {
                         value={formik.values.phone}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.phone && formik.errors.phone)}
                     />
+                    <Form.Control.Feedback type="invalid">{formik.errors.phone}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} xs={12} md={6}>
                     <Form.Label>Email</Form.Label>
@@ -111,8 +119,9 @@ const EditClient: React.FC<EditUserProps> = ({ client, onUpdateClient }) => {
                         value={formik.values.email}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.email && formik.errors.email)}
                     />
-                    {formik.touched.email && formik.errors.email ? <div>{formik.errors.email}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.email}</Form.Control.Feedback>
                 </Form.Group>
             </Row>
             <Row className="mb-5">

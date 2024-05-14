@@ -12,6 +12,7 @@ import { useRecoilState } from "recoil";
 import { modalState } from "../../app/store";
 import noImage from "../../assets/noImage.png"
 import Spinner from 'react-bootstrap/Spinner';
+import handleError from "../../utils/HandleErrors";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface EditPetProps {
@@ -20,7 +21,7 @@ interface EditPetProps {
 }
 
 const EditPet: React.FC<EditPetProps> = ({ updateList, currentPet }) => {
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState<boolean>(false)
     const inputRef = useRef<HTMLInputElement>(null)
     const [image, setImage] = useState<File | null>(null);
     const [show, setShow] = useRecoilState(modalState)
@@ -66,8 +67,7 @@ const EditPet: React.FC<EditPetProps> = ({ updateList, currentPet }) => {
                 setShow(false)
                 setLoading(false)
             } catch (error: any) {
-                if (error.response) notifyError(error.response.data)
-                else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+                handleError(error)
                 setLoading(false)
             }
         },
@@ -102,8 +102,9 @@ const EditPet: React.FC<EditPetProps> = ({ updateList, currentPet }) => {
                         value={formik.values.name}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.name && formik.errors.name)}
                     />
-                    {formik.touched.name && formik.errors.name ? <div>{formik.errors.name}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.name}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} xs={12} md={6}>
                     <Form.Label>Raza</Form.Label>

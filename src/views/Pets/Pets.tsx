@@ -16,6 +16,7 @@ import { useRecoilState } from "recoil"
 import CustomModal from '../../components/Modal/CustomModal';
 import noImage from '../../assets/noImage.png'
 import Spinner from 'react-bootstrap/Spinner';
+import handleError from '../../utils/HandleErrors';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 
@@ -49,8 +50,7 @@ const Pets = () => {
                 setTotalPages(Math.ceil(count.data / pageSize));
             }
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
         }
     }
 
@@ -63,8 +63,7 @@ const Pets = () => {
             }
             setLoading(false)
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
             setLoading(false)
         }
     };
@@ -86,8 +85,7 @@ const Pets = () => {
             }
             setLoading(false)
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
             setLoading(false)
         }
     }
@@ -157,7 +155,7 @@ const Pets = () => {
             </Container>
             {show &&
                 <CustomModal title={selectedPet.name}>
-                    <PetDetailCard pet={selectedPet} />
+                    <PetDetailCard pet={selectedPet} updateList={fetchPets} />
                 </CustomModal>
             }
         </div>

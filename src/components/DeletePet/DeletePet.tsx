@@ -6,6 +6,7 @@ import { useRecoilState } from "recoil"
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 import { useState } from "react";
+import handleError from "../../utils/HandleErrors";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface DeletePetProps {
@@ -28,8 +29,7 @@ const DeletePet: React.FC<DeletePetProps> = ({ currentPet, updateList }) => {
             }
             setLoading(false)
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
             setLoading(false)
         }
     }

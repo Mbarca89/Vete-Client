@@ -11,6 +11,7 @@ import { useRef, useState } from "react";
 import { useRecoilState } from "recoil";
 import { modalState } from "../../app/store";
 import Spinner from 'react-bootstrap/Spinner';
+import handleError from "../../utils/HandleErrors";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface CreatePetProps {
@@ -65,8 +66,7 @@ const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
                 setLoading(false)
                 setShow(false)
             } catch (error: any) {
-                if (error.response) notifyError(error.response.data)
-                else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+                handleError(error)
                 setLoading(false)
             }
         },
@@ -97,8 +97,9 @@ const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
                         value={formik.values.name}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.name && formik.errors.name)}
                     />
-                    {formik.touched.name && formik.errors.name ? <div>{formik.errors.name}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.name}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} xs={12} md={6}>
                     <Form.Label>Raza</Form.Label>

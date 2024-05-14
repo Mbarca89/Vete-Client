@@ -8,22 +8,22 @@ import CustomModal from '../Modal/CustomModal';
 import { modalState, clientState } from "../../app/store"
 import { useRecoilState } from "recoil"
 import DeleteClient from '../DeleteClient/DeleteClient';
-import { notifyError } from '../Toaster/Toaster';
 import { Spinner } from 'react-bootstrap';
 import Navbar from 'react-bootstrap/Navbar';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import handleError from '../../utils/HandleErrors';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 const ClientList = () => {
 
     const navigate = useNavigate()
-    const [loading, setLoading] = useState(false)
     const [selectedClient, setSelectedClient] = useRecoilState(clientState)
-
+    const [show, setShow] = useRecoilState(modalState)
+    const [loading, setLoading] = useState<boolean>(false)
+    const [modal, setModal] = useState<string>("")
     const [clients, setClients] = useState<client[]>([{
         id: "",
         name: "",
@@ -34,20 +34,17 @@ const ClientList = () => {
         userName: ""
     }]);
 
-    const [show, setShow] = useRecoilState(modalState)
-    const [modal, setModal] = useState<string>("")
 
     const getClients = async () => {
         setLoading(true)
         try {
-            const res = await axiosWithToken(`${SERVER_URL}/api/v1/clients/getClients`)
+            const res = await axiosWithToken.get<client[]>(`${SERVER_URL}/api/v1/clients/getClients`)
             if (res.data) {
                 setClients(res.data)
             }
             setLoading(false)
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
             setLoading(false)
         }
     }
@@ -83,14 +80,13 @@ const ClientList = () => {
         event.preventDefault()
         if (event.type == "submit") searchTerm = event.target[0].value
         try {
-            const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/clients/getClientsByName?searchTerm=${searchTerm}`)
+            const res = await axiosWithToken.get<client[]>(`${SERVER_URL}/api/v1/clients/getClientsByName?searchTerm=${searchTerm}`)
             if (res.data) {
                 setClients(res.data);
             }
             setLoading(false)
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
             setLoading(false)
         }
     }

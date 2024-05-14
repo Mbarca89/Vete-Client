@@ -11,13 +11,15 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import handleError from '../../utils/HandleErrors';
+import { Spinner } from 'react-bootstrap';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 const OrdersList = () => {
-
+    const [loading, setLoading] = useState<boolean>(false)
     const [orders, setOrders] = useState<order[]>([])
     const [show, setShow] = useRecoilState(modalState)
-    const [currentOrder, setCurrentOrder] = useState("")
+    const [currentOrder, setCurrentOrder] = useState<string>("")
 
     const currentDate = new Date();
     const [dates, setDate] = useState({
@@ -26,29 +28,31 @@ const OrdersList = () => {
     })
 
     const getOrders = async () => {
+        setLoading(true)
         try {
             const startDate = new Date(dates.dateStart);
             const endDate = new Date(dates.dateEnd);
             const formattedStartDate = startDate.toISOString();
             const formattedEndDate = endDate.toISOString();
-            const res = await axiosWithToken(`${SERVER_URL}/api/v1/orders/getByDate?dateStart=${formattedStartDate}&dateEnd=${formattedEndDate}`)
+            const res = await axiosWithToken.get<order[]>(`${SERVER_URL}/api/v1/orders/getByDate?dateStart=${formattedStartDate}&dateEnd=${formattedEndDate}`)
             if (res.data) {
                 setOrders(res.data)
             }
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
+        } finally {
+            setLoading(false)
         }
     }
 
-    const handleDates = (event: any) => {
+    const handleDates = (event: React.ChangeEvent<HTMLInputElement>) => {
         setDate({
             ...dates,
             [event.target.name]: event.target.value
         });
     }
 
-    const handleSubmit = (event: any) => {
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         getOrders()
     }
@@ -94,7 +98,7 @@ const OrdersList = () => {
                     </Row>
                 </Form>
             </div>
-            <Table striped bordered hover size="md">
+            {loading ? <Spinner/> : <Table striped bordered hover size="md">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -116,7 +120,7 @@ const OrdersList = () => {
                         </CustomModal>
                     }
                 </tbody>
-            </Table>
+            </Table>}
         </div>
     )
 }

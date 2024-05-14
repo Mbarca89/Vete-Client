@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { order } from "../../types";
 import { notifyError } from "../Toaster/Toaster";
 import Table from 'react-bootstrap/Table';
+import handleError from "../../utils/HandleErrors";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface OrderDetailProps {
@@ -20,8 +21,7 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderId }) => {
                 setOrder(res.data)
             }
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
         }
     }
 

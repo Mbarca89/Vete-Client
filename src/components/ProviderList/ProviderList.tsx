@@ -9,6 +9,7 @@ import { notifyError } from '../Toaster/Toaster';
 import EditProvider from '../EditProviders/EditProviders';
 import DeleteProvider from '../DeleteProvider/DeleteProvider';
 import Spinner from 'react-bootstrap/Spinner';
+import handleError from '../../utils/HandleErrors';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 const ProviderList = () => {
@@ -41,8 +42,7 @@ const ProviderList = () => {
             }
             setLoading(false)
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
             setLoading(false)
         }
     }

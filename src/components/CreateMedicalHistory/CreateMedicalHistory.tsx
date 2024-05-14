@@ -10,6 +10,8 @@ import { notifyError, notifySuccess } from "../Toaster/Toaster";
 import { modalState } from "../../app/store"
 import { useRecoilState } from "recoil"
 import { useEffect, useState } from "react";
+import { Spinner } from "react-bootstrap";
+import handleError from "../../utils/HandleErrors";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface CreateMedicalHistoryProps {
@@ -21,15 +23,15 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({ updateList,
 
     const [show, setShow] = useRecoilState(modalState)
     const [currentPet, setCurrentPet] = useState<pet>()
-    const [newWeight, setNewWeight] = useState()
+    const [newWeight, setNewWeight] = useState<number>()
     const [image, setImage] = useState<File | null>(null);
-
+    const [loading, setLoading] = useState(false);
 
     const validate = (values: createMedicalHistoryFormValues): createMedicalHistoryFormValues => {
         const errors: any = {};
 
         if (!values.type) {
-            errors.name = 'Ingrese el tipo de registro';
+            errors.type = 'Ingrese el tipo de registro';
         }
         return errors;
     };
@@ -44,6 +46,7 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({ updateList,
         },
         validate,
         onSubmit: async values => {
+            setLoading(true)
             const CreateMedicalHistory = {
                 date: values.date,
                 type: values.type,
@@ -73,12 +76,10 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({ updateList,
                         updateList()
                         setShow(false)
                     } catch (error: any) {
-                        if (error.response) notifyError(error.response.data)
-                        else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+                        handleError(error)
                     }
                 } catch (error: any) {
-                    if (error.response) notifyError(error.response.data)
-                    else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+                    handleError(error)
                 }
             }
             let res
@@ -88,8 +89,9 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({ updateList,
                 updateList()
                 setShow(false)
             } catch (error: any) {
-                if (error.response) notifyError(error.response.data)
-                else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+                handleError(error)
+            } finally {
+                setLoading(false)
             }
         },
     });
@@ -100,18 +102,17 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({ updateList,
 
     const getPetDetails = async () => {
         try {
-            const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/pets/getPetById?petId=${petId}`)
+            const res = await axiosWithToken.get<pet>(`${SERVER_URL}/api/v1/pets/getPetById?petId=${petId}`)
             if (res.data) {
                 setCurrentPet(res.data)
             }
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
         }
     }
 
-    const handleWeight = (event: any) => {
-        setNewWeight(event.target.value)
+    const handleWeight = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setNewWeight(Number(event.target.value))
     }
 
     useEffect(() => {
@@ -129,6 +130,7 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({ updateList,
                         value={formik.values.type}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.type && formik.errors.type)}
                     >
                         <option value="">Seleccionar...</option>
                         <option value="Cirugía">Cirugía</option>
@@ -137,7 +139,7 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({ updateList,
                         <option value="Medicación">Medicación</option>
                         <option value="Vacuna">Vacuna</option>
                     </Form.Select>
-                    {formik.touched.type && formik.errors.type ? <div>{formik.errors.type}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.type}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} xs={12} md={6}>
                     <Form.Label>Notas</Form.Label>
@@ -187,13 +189,21 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({ updateList,
                 </Form.Group>
             </Row>
             <Row>
-                <Form.Group as={Col} className="d-flex justify-content-center">
-                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" onClick={resetForm}>
-                        Reiniciar
-                    </Button>
-                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" type="submit">
-                        Crear
-                    </Button>
+            <Form.Group as={Col} className="d-flex justify-content-center mt-3">
+                    <div className='d-flex align-items-center justify-content-center w-25'>
+                        <Button className="" variant="danger" onClick={resetForm}>
+                            Reiniciar
+                        </Button>
+                    </div>
+                    {!loading ?
+                        <div className='d-flex align-items-center justify-content-center w-25'>
+                            <Button className="" variant="primary" type="submit">
+                                Crear
+                            </Button>
+                        </div> :
+                        <div className='d-flex align-items-center justify-content-center w-25'>
+                            <Spinner />
+                        </div>}
                 </Form.Group>
             </Row>
         </Form>

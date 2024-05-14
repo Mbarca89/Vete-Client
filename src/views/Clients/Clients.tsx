@@ -11,7 +11,6 @@ const Clients = () => {
     }
 
     const [currentTab, setCurrentTab] = useState("clients")
-    const [modal, setModal] = useState<string>("")
 
     return (
         <div className='container flex-grow-1 p-lg-3 p-sm-0 rounded custom m-2 overflow-auto'>

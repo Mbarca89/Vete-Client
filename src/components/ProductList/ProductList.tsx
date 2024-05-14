@@ -17,6 +17,7 @@ import { useRecoilState } from "recoil"
 import CustomModal from '../Modal/CustomModal';
 import noImage from '../../assets/noImage.png'
 import Spinner from 'react-bootstrap/Spinner';
+import handleError from '../../utils/HandleErrors';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 
@@ -54,8 +55,7 @@ const ProductList = () => {
                 setTotalPages(Math.ceil(count.data / pageSize));
             }
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
         }
     }
 
@@ -67,8 +67,7 @@ const ProductList = () => {
                 setProducts(res.data);
             }
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
         }
         setLoading(false)
     };

@@ -9,6 +9,7 @@ import { useRecoilState } from "recoil";
 import CustomModal from '../Modal/CustomModal';
 import CreateMedicalHistory from "../CreateMedicalHistory/CreateMedicalHistory";
 import MedicalHistoryDetail from "../MedicalHistoryDetail/MedicalHistoryDetail";
+import handleError from "../../utils/HandleErrors";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface MedicalHistoryProps {
@@ -25,13 +26,12 @@ const MedicalHistory: React.FC<MedicalHistoryProps> = ({ petId }) => {
 
     const getMedicalHistory = async () => {
         try {
-            const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/medicalHistory/getMedicalHistoryForPet?petId=${petId}`)
+            const res = await axiosWithToken.get<medicalHistory[]>(`${SERVER_URL}/api/v1/medicalHistory/getMedicalHistoryForPet?petId=${petId}`)
             if (res.data) {
                 setCurrentMedicalHistory(res.data)
             }
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
         }
     }
 

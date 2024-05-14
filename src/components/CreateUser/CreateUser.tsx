@@ -7,6 +7,9 @@ import { createUserformValues } from "../../types";
 import { useFormik } from 'formik';
 import { axiosWithToken } from "../../utils/axiosInstances";
 import { notifyError, notifySuccess } from "../Toaster/Toaster";
+import { Spinner } from "react-bootstrap";
+import { useState } from "react";
+import handleError from "../../utils/HandleErrors";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface CreateUserProps {
@@ -14,20 +17,16 @@ interface CreateUserProps {
 }
 
 const CreateUser: React.FC<CreateUserProps> = ({ updateList }) => {
-
+    const [loading, setLoading] = useState<boolean>(false)
     const validate = (values: createUserformValues): createUserformValues => {
         const errors: any = {};
 
         if (!values.name.trim()) {
             errors.name = 'Ingrese el nombre';
-        } else if (values.name.length > 15) {
-            errors.name = 'El nombre es demasiado largo.';
         }
 
         if (!values.surname.trim()) {
             errors.surname = 'Ingrese el apellido';
-        } else if (values.surname.length > 20) {
-            errors.surname = 'El apellido es demasiado largo.';
         }
 
         if (!values.userName.trim()) {
@@ -43,6 +42,9 @@ const CreateUser: React.FC<CreateUserProps> = ({ updateList }) => {
         } else if (values.repeatPassword !== values.password) {
             errors.repeatPassword = "Las contraseñas no coinciden";
         }
+        if (!values.role) {
+            errors.role = 'Elija un rol';
+        }
         return errors;
     };
 
@@ -54,10 +56,11 @@ const CreateUser: React.FC<CreateUserProps> = ({ updateList }) => {
             userName: "",
             password: "",
             repeatPassword: "",
-            role: "Usuario"
+            role: ""
         },
         validate,
         onSubmit: async values => {
+            setLoading(true)
             const createUser = {
                 name: values.name,
                 surname: values.surname,
@@ -71,8 +74,9 @@ const CreateUser: React.FC<CreateUserProps> = ({ updateList }) => {
                 notifySuccess(res.data)
                 updateList()
             } catch (error: any) {
-                if (error.response) notifyError(error.response.data)
-                else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+                handleError(error)
+            } finally {
+                setLoading(false)
             }
         },
     });
@@ -93,8 +97,9 @@ const CreateUser: React.FC<CreateUserProps> = ({ updateList }) => {
                         value={formik.values.name}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.name && formik.errors.name)}
                     />
-                    {formik.touched.name && formik.errors.name ? <div>{formik.errors.name}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.name}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} xs={12} lg={6}>
                     <Form.Label>Apellido</Form.Label>
@@ -104,8 +109,9 @@ const CreateUser: React.FC<CreateUserProps> = ({ updateList }) => {
                         value={formik.values.surname}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.surname && formik.errors.surname)}
                     />
-                    {formik.touched.surname && formik.errors.surname ? <div>{formik.errors.surname}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.surname}</Form.Control.Feedback>
                 </Form.Group>
             </Row>
             <Row className="mb-2">
@@ -117,8 +123,9 @@ const CreateUser: React.FC<CreateUserProps> = ({ updateList }) => {
                         value={formik.values.userName}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.userName && formik.errors.userName)}
                     />
-                    {formik.touched.userName && formik.errors.userName ? <div>{formik.errors.userName}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.userName}</Form.Control.Feedback>
                 </Form.Group>
             </Row>
             <Row className="mb-2">
@@ -140,8 +147,9 @@ const CreateUser: React.FC<CreateUserProps> = ({ updateList }) => {
                         value={formik.values.repeatPassword}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.repeatPassword && formik.errors.repeatPassword)}
                     />
-                    {formik.touched.repeatPassword && formik.errors.repeatPassword ? <div>{formik.errors.repeatPassword}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.repeatPassword}</Form.Control.Feedback>
                 </Form.Group>
             </Row>
             <Row className="mb-5">
@@ -153,21 +161,31 @@ const CreateUser: React.FC<CreateUserProps> = ({ updateList }) => {
                         value={formik.values.role}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.role && formik.errors.role)}
                     >
+                        <option value="">Seleccionar...</option>
                         <option value="Usuario">Estandar</option>
                         <option value="Administrador">Administrador</option>
                     </Form.Select>
-                    {formik.touched.role && formik.errors.role ? <div>{formik.errors.role}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.role}</Form.Control.Feedback>
                 </Form.Group>
             </Row>
             <Row>
-                <Form.Group as={Col} className="d-flex justify-content-center">
-                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" onClick={resetForm}>
-                        Reiniciar
-                    </Button>
-                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" type="submit">
-                        Crear
-                    </Button>
+            <Form.Group as={Col} className="d-flex justify-content-center mt-3">
+                    <div className='d-flex align-items-center justify-content-center w-25'>
+                        <Button className="" variant="danger" onClick={resetForm}>
+                            Reiniciar
+                        </Button>
+                    </div>
+                    {!loading ?
+                        <div className='d-flex align-items-center justify-content-center w-25'>
+                            <Button className="" variant="primary" type="submit">
+                                Crear
+                            </Button>
+                        </div> :
+                        <div className='d-flex align-items-center justify-content-center w-25'>
+                            <Spinner />
+                        </div>}
                 </Form.Group>
             </Row>
         </Form>

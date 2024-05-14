@@ -10,6 +10,7 @@ import { useRecoilState } from 'recoil';
 import { modalState } from '../../app/store';
 import CustomModal from '../../components/Modal/CustomModal';
 import CreateReminder from '../../components/CreateReminder/CreateReminder';
+import handleError from '../../utils/HandleErrors';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 const Reminders = () => {
@@ -33,8 +34,7 @@ const Reminders = () => {
                 }))])
             }
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
         }
     }
 

@@ -16,6 +16,7 @@ import { notifyError, notifySuccess } from "../../components/Toaster/Toaster";
 import { useRecoilState } from "recoil"
 import { userState } from "../../app/store"
 import { Spinner } from "react-bootstrap";
+import handleError from "../../utils/HandleErrors";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 
@@ -51,10 +52,10 @@ const Sale = () => {
                     }
                 }
             }
-            setSearching(false)
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
+        } finally {
+            setSearching(false)
         }
     }
 
@@ -152,12 +153,11 @@ const Sale = () => {
                 notifySuccess(res.data)
                 handleClearSale()
             }
-            setLoading(false)
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
+        } finally {
+            setLoading(false)
         }
-        setLoading(false)
     }
 
     return (

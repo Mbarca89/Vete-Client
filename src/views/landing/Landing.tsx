@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from "recoil"
 import { userState, logState } from "../../app/store"
 import { notifyError } from '../../components/Toaster/Toaster';
+import handleError from '../../utils/HandleErrors';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 const Landing = () => {
@@ -61,8 +62,7 @@ const Landing = () => {
             }
 
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
         }
 
     }

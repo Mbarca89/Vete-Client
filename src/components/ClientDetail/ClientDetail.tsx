@@ -3,21 +3,20 @@ import { useRecoilState } from "recoil"
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { modalState } from "../../app/store";
+import { axiosWithToken } from "../../utils/axiosInstances";
 import Table from 'react-bootstrap/Table';
-import { pet } from "../../types";
 import CreatePet from "../CreatePet/CreatePet";
 import CustomModal from "../Modal/CustomModal";
-import { axiosWithToken } from "../../utils/axiosInstances";
-import { notifyError } from "../Toaster/Toaster";
 import PetDetail from "../PetDetailCard/PetDetailCard";
 import DeletePet from "../DeletePet/DeletePet";
 import EditPet from "../EditPet/EditPet";
-import { client } from "../../types";
+import { client, pet } from "../../types";
+import handleError from "../../utils/HandleErrors";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
-const ClientDetail = () => {
+const ClientDetail: React.FC = () => {
     const navigate = useNavigate()
-    const { clientId } = useParams()
+    const { clientId } = useParams<{clientId: string}>()
     const [pets, setPets] = useState<pet[]>([])
     const [currentClient, setCurrentClient] = useState<client>({
         id: "",
@@ -45,14 +44,12 @@ const ClientDetail = () => {
 
     const getPets = async () => {
         try {
-            const res = await axiosWithToken(`${SERVER_URL}/api/v1/pets/getPetClient?clientId=${clientId}`)
+            const res = await axiosWithToken.get<pet[]>(`${SERVER_URL}/api/v1/pets/getPetClient?clientId=${clientId}`)
             if (res.data) {
                 setPets(res.data)
             }
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
-        }
+            handleError(error); }
     }
 
     const handleCreatePet = () => {
@@ -80,13 +77,12 @@ const ClientDetail = () => {
 
     const getClientDetails = async () => {
         try {
-            const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/clients/getClientById?clientId=${clientId}`)
+            const res = await axiosWithToken.get<client>(`${SERVER_URL}/api/v1/clients/getClientById?clientId=${clientId}`)
             if (res.data) {
                 setCurrentClient(res.data)
             }
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error);
         }
     }
 
@@ -129,22 +125,25 @@ const ClientDetail = () => {
                     </tbody>
                 </Table>
             </div>
-            {show && modal == "createPet" &&
-                <CustomModal title="Crear Mascota">
-                    <CreatePet updateList={getPets} clientId={currentClient.id} />
-                </CustomModal>}
-            {show && modal == "petDetail" &&
-                <CustomModal title={currentPet.name}>
-                    <PetDetail pet={currentPet} />
-                </CustomModal>}
-            {show && modal == "deletePet" &&
-                <CustomModal title={currentPet.name}>
-                    <DeletePet currentPet={currentPet} updateList={getPets} />
-                </CustomModal>}
-            {show && modal == "editPet" &&
-                <CustomModal title="Editar mascota">
-                    <EditPet currentPet={currentPet} updateList={getPets} />
-                </CustomModal>}
+            {show && (
+                modal === "createPet" ? (
+                    <CustomModal title="Crear Mascota">
+                        <CreatePet updateList={getPets} clientId={currentClient.id} />
+                    </CustomModal>
+                ) : modal === "petDetail" ? (
+                    <CustomModal title={currentPet.name}>
+                        <PetDetail pet={currentPet} />
+                    </CustomModal>
+                ) : modal === "deletePet" ? (
+                    <CustomModal title={currentPet.name}>
+                        <DeletePet currentPet={currentPet} updateList={getPets} />
+                    </CustomModal>
+                ) : modal === "editPet" ? (
+                    <CustomModal title="Editar mascota">
+                        <EditPet currentPet={currentPet} updateList={getPets} />
+                    </CustomModal>
+                ) : null
+            )}
         </div>
     )
 }

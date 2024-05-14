@@ -4,6 +4,7 @@ import { Form } from "react-bootstrap";
 import { medicalHistory } from "../../types";
 import { axiosWithToken } from "../../utils/axiosInstances";
 import { notifyError } from "../Toaster/Toaster";
+import handleError from "../../utils/HandleErrors";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface MedicalHistoryDetailProps {
@@ -16,13 +17,12 @@ const MedicalHistoryDetail: React.FC<MedicalHistoryDetailProps> = ({ medicalHist
 
     const getMedicalHistoryDetails = async () => {
         try {
-            const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/medicalHistory/getMedicalHistoryById?medicalHistoryId=${medicalHistoryId}`)
+            const res = await axiosWithToken.get<medicalHistory>(`${SERVER_URL}/api/v1/medicalHistory/getMedicalHistoryById?medicalHistoryId=${medicalHistoryId}`)
             if (res.data) {
                 setMedicalHistory(res.data)
             }
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
         }
     }
 

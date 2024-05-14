@@ -2,30 +2,23 @@ import React, { useState, useEffect } from 'react';
 import ProductDetail from '../ProductDetail/ProductDetail';
 import CreateCategory from '../CreateCategory/CreateCategory';
 import DeleteCategory from '../DeleteCategory/DeteleCategory';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Card from 'react-bootstrap/Card'
-import Pagination from 'react-bootstrap/Pagination';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
+import { Container, Row, Col, DropdownButton, Dropdown, Pagination, Spinner, Card } from 'react-bootstrap';
 import { product } from '../../types';
 import { axiosWithToken } from "../../utils/axiosInstances";
-import { notifyError } from "../Toaster/Toaster";
 import { modalState } from "../../app/store"
 import { useRecoilState } from "recoil"
 import CustomModal from '../Modal/CustomModal';
 import noImage from '../../assets/noImage.png'
-import Spinner from 'react-bootstrap/Spinner';
+import handleError from "../../utils/HandleErrors";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 const Categories = () => {
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState<boolean>(false)
     const [show, setShow] = useRecoilState(modalState)
     const [products, setProducts] = useState<product[]>([]);
-    const [currentCategory, setCurrentCategory] = useState()
-    const [categories, setCategories] = useState([])
-    const [deleteCategory, setDeleteCategory] = useState("")
+    const [currentCategory, setCurrentCategory] = useState<string>("")
+    const [categories, setCategories] = useState<string[]>([])
+    const [deleteCategory, setDeleteCategory] = useState<string>("")
     const [modal, setModal] = useState<string>("")
     const [selectedProduct, setSelectedProduct] = useState<product>({
         id: 0,
@@ -42,8 +35,8 @@ const Categories = () => {
         published: false,
         image: ""
     })
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [totalPages, setTotalPages] = useState<number>(1);
     const pageSize = 12;
 
     const handlePageChange = (pageNumber: number) => {
@@ -52,40 +45,37 @@ const Categories = () => {
 
     const getCategory = async () => {
         try {
-            const categoriesResponse = await axiosWithToken.get(`${SERVER_URL}/api/v1/category/getCategoriesNames`)
+            const categoriesResponse = await axiosWithToken.get<string[]>(`${SERVER_URL}/api/v1/category/getCategoriesNames`)
             if (categoriesResponse.data) {
                 setCategories(categoriesResponse.data.sort())
                 setCurrentCategory(categoriesResponse.data[0])
             }
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
         }
     }
 
     const getCount = async () => {
         try {
-            const countResponse = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/getCategoryCount?categoryName=${currentCategory}`)
+            const countResponse = await axiosWithToken.get<number>(`${SERVER_URL}/api/v1/products/getCategoryCount?categoryName=${currentCategory}`)
             if (countResponse.data) {
                 setTotalPages(Math.ceil(countResponse.data / pageSize));
             }
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
         }
     }
 
     const fetchProducts = async () => {
         setLoading(true)
         try {
-            const productsResponse = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/getByCategory?categoryName=${currentCategory}&page=${currentPage}&size=${pageSize}`)
+            const productsResponse = await axiosWithToken.get<product[]>(`${SERVER_URL}/api/v1/products/getByCategory?categoryName=${currentCategory}&page=${currentPage}&size=${pageSize}`)
             if (productsResponse.data) {
                 setProducts(productsResponse.data);
             }
             setLoading(false)
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
             setLoading(false)
         }
     };

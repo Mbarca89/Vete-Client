@@ -11,10 +11,12 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import handleError from '../../utils/HandleErrors';
+import { Spinner } from 'react-bootstrap';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 const SalesList = () => {
-
+    const [loading, setLoading] = useState<boolean>(false)
     const [sales, setSales] = useState<sale[]>([])
     const [show, setShow] = useRecoilState(modalState)
     const [currentSale, setCurrentSale] = useState("")
@@ -26,6 +28,7 @@ const SalesList = () => {
     })
 
     const getSales = async () => {
+        setLoading(true)
         try {
             const startDate = new Date(dates.dateStart);
             const endDate = new Date(dates.dateEnd);
@@ -36,7 +39,9 @@ const SalesList = () => {
                 setSales(res.data)
             }
         } catch (error: any) {
-            error.response && notifyError(error.response.data)
+            handleError(error)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -93,7 +98,7 @@ const SalesList = () => {
                     </Row>
                 </Form>
             </div>
-            <Table striped bordered hover size="md">
+            {loading ? <Spinner/> : <Table striped bordered hover size="md">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -119,7 +124,7 @@ const SalesList = () => {
                         </CustomModal>
                     }
                 </tbody>
-            </Table>
+            </Table>}
         </div>
     )
 }

@@ -21,12 +21,12 @@ const Reports = () => {
                 <Nav.Item>
                     <Nav.Link eventKey="orders" onClick={() => setCurrentTab("orders")}>Compras</Nav.Link>
                 </Nav.Item>
-                <Nav.Item>
+                {/* <Nav.Item>
                     <Nav.Link eventKey="stock" onClick={() => setCurrentTab("stock")}>Stock</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
                     <Nav.Link eventKey="graphs" onClick={() => setCurrentTab("graphs")}>Gráficos</Nav.Link>
-                </Nav.Item>
+                </Nav.Item> */}
             </Nav>
             <div className="mt-3">
                 {currentTab == "sales" ? <SalesList /> : null}

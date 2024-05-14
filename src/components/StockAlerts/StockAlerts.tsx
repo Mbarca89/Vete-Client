@@ -3,6 +3,7 @@ import { notifyError } from "../Toaster/Toaster"
 import { axiosWithToken } from '../../utils/axiosInstances';
 import { stockAlert } from "../../types";
 import Table from 'react-bootstrap/Table';
+import handleError from "../../utils/HandleErrors";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 
@@ -17,8 +18,7 @@ const StockAlerts = () => {
                 setAlerts(res.data)
             }
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
         }
     }
 

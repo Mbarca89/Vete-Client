@@ -8,6 +8,7 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Spinner from 'react-bootstrap/Spinner';
+import handleError from '../../utils/HandleErrors';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface CreateProductProps {
@@ -15,7 +16,7 @@ interface CreateProductProps {
 }
 
 const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState<boolean>(false)
     const inputRef = useRef<HTMLInputElement>(null)
 
     const [providers, setProviders] = useState<string[]>([])
@@ -30,21 +31,9 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                 setProviders(providersResponse.data)
             }
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
         }
     }
-
-    const [product, setProduct] = useState<createProductformValues>({
-        name: "",
-        description: "",
-        barCode: undefined,
-        cost: undefined,
-        price: undefined,
-        stock: undefined,
-        categoryName: "",
-        providerName: ""
-    });
 
     const [image, setImage] = useState<File | null>(null);
 
@@ -53,7 +42,6 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
             setImage(event.target.files[0]);
         }
     };
-
 
     const validate = (values: createProductformValues): createProductformValues => {
         const errors: any = {};
@@ -119,8 +107,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                     updateList()
                 }
             } catch (error: any) {
-                if (error.response) notifyError(error.response.data)
-                else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+                handleError(error)
                 setLoading(false)
             }
         },
@@ -150,8 +137,9 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                         value={formik.values.name}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.name && formik.errors.name)}
                     />
-                    {formik.touched.name && formik.errors.name ? <div>{formik.errors.name}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.name}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group className="mb-3" as={Col} xs={12} md={6}>
                     <Form.Label>Descripción</Form.Label>
@@ -185,8 +173,9 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                         value={formik.values.cost}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.cost && formik.errors.cost)}
                     />
-                    {formik.touched.cost && formik.errors.cost ? <div>{formik.errors.cost}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.cost}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group className="mb-3" as={Col} xs={12} md={4}>
                     <Form.Label>Precio de venta</Form.Label>
@@ -196,8 +185,9 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                         value={formik.values.price}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.price && formik.errors.price)}
                     />
-                    {formik.touched.price && formik.errors.price ? <div>{formik.errors.price}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.price}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group className="mb-3" as={Col} xs={12} md={4}>
                     <Form.Label>Stock</Form.Label>
@@ -207,8 +197,9 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                         value={formik.values.stock}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.stock && formik.errors.stock)}
                     />
-                    {formik.touched.stock && formik.errors.stock ? <div>{formik.errors.stock}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.stock}</Form.Control.Feedback>
                 </Form.Group>
             </Row>
             <Row>
@@ -220,13 +211,14 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                         value={formik.values.categoryName}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.categoryName && formik.errors.categoryName)}
                     >
                         <option>Seleccionar...</option>
                         {categories.map(category =>
                             <option key={category} value={category}>{category}</option>
                         )}
                     </Form.Select>
-                    {formik.touched.categoryName && formik.errors.categoryName ? <div>{formik.errors.categoryName}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.categoryName}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group className="mb-3" as={Col} xs={12}>
                     <Form.Label>Proveedor</Form.Label>

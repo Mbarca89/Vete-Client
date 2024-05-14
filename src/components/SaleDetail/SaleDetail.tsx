@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { sale } from "../../types";
 import { notifyError } from "../Toaster/Toaster";
 import Table from 'react-bootstrap/Table';
+import handleError from "../../utils/HandleErrors";
+import { Spinner } from "react-bootstrap";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface SaleDetailProps {
@@ -10,18 +12,20 @@ interface SaleDetailProps {
 }
 
 const SaleDetail: React.FC<SaleDetailProps> = ({ saleId }) => {
-
+    const [loading, setLoading] = useState<boolean>(false)
     const [sale, setSale] = useState<sale>()
 
     const getSale = async () => {
+        setLoading(true)
         try {
             const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/sales/getById/${saleId}`)
             if (res.data) {
                 setSale(res.data)
             }
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -30,7 +34,7 @@ const SaleDetail: React.FC<SaleDetailProps> = ({ saleId }) => {
     }, [])
 
     return (
-        sale && <div className="text-nowrap overflow-auto flex-grow-1">
+        loading ? <Spinner/> : sale && <div className="text-nowrap overflow-auto flex-grow-1">
             <div>
                 <p><b>Fecha: </b>{sale.date.split(" ")[0]}</p>
                 <p><b>Hora: </b>{sale.date.split(" ")[1]}</p>

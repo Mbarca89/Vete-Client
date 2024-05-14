@@ -30,8 +30,7 @@ const Wa = () => {
             }
             setLoadingMessages(false)
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
         }
     }
 
@@ -75,8 +74,7 @@ const Wa = () => {
             };
         } catch (error: any) {
             setServer(false)
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
         }
     }, []);
 

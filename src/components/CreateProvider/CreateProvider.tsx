@@ -7,6 +7,9 @@ import { provider } from "../../types";
 import { useFormik } from 'formik';
 import { axiosWithToken } from "../../utils/axiosInstances";
 import { notifyError, notifySuccess } from "../Toaster/Toaster";
+import { useState } from "react";
+import { Spinner } from "react-bootstrap";
+import handleError from "../../utils/HandleErrors";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface CreateProviderProps {
@@ -14,7 +17,7 @@ interface CreateProviderProps {
 }
 
 const CreateProvider: React.FC<CreateProviderProps> = ({ updateList }) => {
-
+    const [loading, setLoading] = useState<boolean>(false)
     const validate = (values: provider): provider => {
         const errors: any = {};
 
@@ -22,7 +25,7 @@ const CreateProvider: React.FC<CreateProviderProps> = ({ updateList }) => {
             errors.name = 'Ingrese el nombre';
         }
         if (!values.contactName.trim()) {
-            errors.contactName = 'Ingrese el apellido';
+            errors.contactName = 'Ingrese el nombre de contacto';
         }
         return errors;
     };
@@ -36,6 +39,7 @@ const CreateProvider: React.FC<CreateProviderProps> = ({ updateList }) => {
         },
         validate,
         onSubmit: async values => {
+            setLoading(true)
             const createProvider = {
                 name: values.name,
                 contactName: values.contactName,
@@ -47,8 +51,9 @@ const CreateProvider: React.FC<CreateProviderProps> = ({ updateList }) => {
                 notifySuccess(res.data)
                 updateList()
             } catch (error: any) {
-                if (error.response) notifyError(error.response.data)
-                else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+                handleError(error)
+            } finally {
+                setLoading(false)
             }
         },
     });
@@ -69,8 +74,9 @@ const CreateProvider: React.FC<CreateProviderProps> = ({ updateList }) => {
                         value={formik.values.name}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.name && formik.errors.name)}
                     />
-                    {formik.touched.name && formik.errors.name ? <div>{formik.errors.name}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.name}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} xs={12} lg={6}>
                     <Form.Label>Nombre de contacto</Form.Label>
@@ -80,8 +86,9 @@ const CreateProvider: React.FC<CreateProviderProps> = ({ updateList }) => {
                         value={formik.values.contactName}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.contactName && formik.errors.contactName)}
                     />
-                    {formik.touched.contactName && formik.errors.contactName ? <div>{formik.errors.contactName}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.contactName}</Form.Control.Feedback>
                 </Form.Group>
             </Row>
             <Row className="mb-5">
@@ -97,13 +104,21 @@ const CreateProvider: React.FC<CreateProviderProps> = ({ updateList }) => {
                 </Form.Group>
             </Row>
             <Row>
-                <Form.Group as={Col} className="d-flex justify-content-center">
-                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" onClick={resetForm}>
-                        Reiniciar
-                    </Button>
-                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" type="submit">
-                        Crear
-                    </Button>
+                <Form.Group as={Col} className="d-flex justify-content-center mt-3">
+                    <div className='d-flex align-items-center justify-content-center w-25'>
+                        <Button className="" variant="danger" onClick={resetForm}>
+                            Reiniciar
+                        </Button>
+                    </div>
+                    {!loading ?
+                        <div className='d-flex align-items-center justify-content-center w-25'>
+                            <Button className="" variant="primary" type="submit">
+                                Crear
+                            </Button>
+                        </div> :
+                        <div className='d-flex align-items-center justify-content-center w-25'>
+                            <Spinner />
+                        </div>}
                 </Form.Group>
             </Row>
         </Form>

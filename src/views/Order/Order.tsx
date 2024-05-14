@@ -16,6 +16,7 @@ import { useRecoilState } from "recoil";
 import CustomModal from "../../components/Modal/CustomModal";
 import { modalState } from "../../app/store";
 import { Spinner } from "react-bootstrap";
+import handleError from "../../utils/HandleErrors";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 const Order = () => {
@@ -43,6 +44,7 @@ const Order = () => {
 
     const handleSearch = async (event: any) => {
         event.preventDefault()
+        setSearching(true)
         try {
             let searchTerm
             if (event.type == "submit") searchTerm = event.target[0].value
@@ -51,7 +53,6 @@ const Order = () => {
                 const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/searchProduct?searchTerm=${searchTerm}`)
                 if (res.data) {
                     if (res.data.length == 1) {
-                        console.log(res.data[0])
                         handleAddProduct({
                             orderId: "",
                             productId: res.data[0].id,
@@ -67,8 +68,9 @@ const Order = () => {
                 }
             }
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
+        }  finally {
+            setSearching(false)
         }
     }
 
@@ -114,6 +116,7 @@ const Order = () => {
     }
 
     const handleOrder = async () => {
+        setLoading(true)
         const orderRequestDto = {
             amount: selectedProducts.reduce((total, product) => total + (product.quantity * product.productCost), 0),
             orderProducts: selectedProducts
@@ -125,8 +128,9 @@ const Order = () => {
                 handleClearOrder()
             }
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
+        } finally {
+            setLoading(false)
         }
     }
 

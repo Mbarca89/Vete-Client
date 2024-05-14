@@ -78,8 +78,9 @@ const EditProvider: React.FC<EditProviderProps> = ({ provider, updateList }) => 
                         value={formik.values.name}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.name && formik.errors.name)}
                     />
-                    {formik.touched.name && formik.errors.name ? <div>{formik.errors.name}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.name}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} xs={12} lg={6}>
                     <Form.Label>Nombre de contacto</Form.Label>

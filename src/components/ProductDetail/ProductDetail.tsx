@@ -13,6 +13,8 @@ import noImage from '../../assets/noImage.png'
 import { modalState } from "../../app/store"
 import { useRecoilState } from "recoil"
 import { createProductformValues } from '../../types';
+import handleError from "../../utils/HandleErrors";
+import { Spinner } from "react-bootstrap";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface ProductDetailProps {
@@ -21,11 +23,10 @@ interface ProductDetailProps {
 }
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ product, updateList }) => {
-
+    const [loading, setLoading] = useState<boolean>(false)
     const [show, setShow] = useRecoilState(modalState)
-
-    const [edit, setEdit] = useState(false)
-    const [deleteProduct, setDeleteProduct] = useState(false)
+    const [edit, setEdit] = useState<boolean>(false)
+    const [deleteProduct, setDeleteProduct] = useState<boolean>(false)
 
     const inputRef = useRef<HTMLInputElement>(null)
 
@@ -82,10 +83,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, updateList }) =>
         if (!values.categoryName.trim()) {
             errors.categoryName = 'Seleccione una categoria';
         }
-
-        if (!values.providerName.trim()) {
-            errors.providerName = 'Seleccione un proveedor';
-        }
         return errors;
     };
 
@@ -102,6 +99,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, updateList }) =>
         },
         validate,
         onSubmit: async values => {
+            setLoading(true)
             const createProduct = {
                 id: product.id,
                 name: values.name,
@@ -129,7 +127,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, updateList }) =>
                     updateList()
                 }
             } catch (error: any) {
-                notifyError(error.response.data)
+                handleError(error)
+            } finally {
+                setLoading(false)
             }
         },
     });
@@ -155,10 +155,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, updateList }) =>
     }
 
     const handleDelete = () => {
-        setDeleteProduct(true)
+        setDeleteProduct(!deleteProduct)
     }
 
     const deleteProductHandler = async () => {
+        setLoading(true)
         try {
             const res = await axiosWithToken.delete(`${SERVER_URL}/api/v1/products/delete?productId=${product.id}`)
             if (res.data) {
@@ -168,8 +169,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, updateList }) =>
                 updateList()
             }
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -205,8 +207,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, updateList }) =>
                 updateList()
             }
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
         }
     }
 
@@ -262,8 +263,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, updateList }) =>
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             disabled={!edit}
+                            isInvalid={!!(formik.touched.name && formik.errors.name)}
                         />
-                        {formik.touched.name && formik.errors.name ? <div>{formik.errors.name}</div> : null}
+                        <Form.Control.Feedback type="invalid">{formik.errors.name}</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className="mb-3" as={Col} xs={12} md={6}>
                         <Form.Label>Descripción</Form.Label>
@@ -300,8 +302,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, updateList }) =>
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             disabled={!edit}
+                            isInvalid={!!(formik.touched.cost && formik.errors.cost)}
                         />
-                        {formik.touched.cost && formik.errors.cost ? <div>{formik.errors.cost}</div> : null}
+                        <Form.Control.Feedback type="invalid">{formik.errors.cost}</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className="mb-3" as={Col} xs={12} md={4}>
                         <Form.Label>Precio de venta</Form.Label>
@@ -312,8 +315,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, updateList }) =>
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             disabled={!edit}
+                            isInvalid={!!(formik.touched.price && formik.errors.price)}
                         />
-                        {formik.touched.price && formik.errors.price ? <div>{formik.errors.price}</div> : null}
+                        <Form.Control.Feedback type="invalid">{formik.errors.price}</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className="mb-3" as={Col} xs={12} md={4}>
                         <Form.Label>Stock</Form.Label>
@@ -324,8 +328,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, updateList }) =>
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             disabled={!edit}
+                            isInvalid={!!(formik.touched.stock && formik.errors.stock)}
                         />
-                        {formik.touched.stock && formik.errors.stock ? <div>{formik.errors.stock}</div> : null}
+                        <Form.Control.Feedback type="invalid">{formik.errors.stock}</Form.Control.Feedback>
                     </Form.Group>
                 </Row>
                 <Row>
@@ -359,7 +364,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, updateList }) =>
                                 <option key={provider} value={provider}>{provider}</option>
                             )}
                         </Form.Select>
-                        {formik.touched.providerName && formik.errors.providerName ? <div>{formik.errors.providerName}</div> : null}
                     </Form.Group>
                 </Row>
                 {edit && <Row>
@@ -376,27 +380,41 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, updateList }) =>
                     </Form.Group>
                 </Row>}
                 {edit && <Row>
-                    <Form.Group as={Col} className="d-flex justify-content-center">
-                        <Button className="custom-bg custom-border custom-font m-3" variant="danger" onClick={resetForm}>
-                            Cancelar
-                        </Button>
-                        <Button className="custom-bg custom-border custom-font m-3" variant="primary" type="submit">
-                            Guardar
-                        </Button>
+                    <Form.Group as={Col} className="d-flex justify-content-center mt-3">
+                        <div className='d-flex align-items-center justify-content-center w-25'>
+                            <Button className="" variant="danger" onClick={resetForm}>
+                                Cancelar
+                            </Button>
+                        </div>
+                        {!loading ?
+                            <div className='d-flex align-items-center justify-content-center w-25'>
+                                <Button className="" variant="primary" type="submit">
+                                    Guardar
+                                </Button>
+                            </div> :
+                            <div className='d-flex align-items-center justify-content-center w-25'>
+                                <Spinner />
+                            </div>}
                     </Form.Group>
                 </Row>}
             </Form>
         </div> :
             <div className="d-flex flex-column align-items-center">
                 <span>Esta seguro que quiere eliminar el producto?</span>
-                <Form.Group as={Col} className="d-flex justify-content-center">
-                    <Button className="custom-bg custom-border custom-font m-3" variant="danger" onClick={() => setDeleteProduct(false)}>
-                        Cancelar
-                    </Button>
-                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" onClick={deleteProductHandler}>
-                        Eliminar
-                    </Button>
-                </Form.Group>
+                <div className="mt-3 d-flex align-items-center justify-content-center gap-4 w-100">
+                    {!loading ?
+                        <div className="w-25 d-flex align-items-center justify-content-center">
+                            <Button className="" variant="danger" onClick={deleteProductHandler}>Si</Button>
+                        </div>
+                        :
+                        <div className="w-25 d-flex align-items-center justify-content-center">
+                            <Spinner />
+                        </div>
+                    }
+                    <div className="w-25 d-flex align-items-center justify-content-center">
+                        <Button className="" variant="primary" onClick={handleDelete}>No</Button>
+                    </div>
+                </div>
             </div>
     )
 }

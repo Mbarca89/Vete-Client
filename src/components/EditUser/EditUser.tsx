@@ -9,6 +9,9 @@ import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import { modalState } from "../../app/store"
 import { useRecoilState } from "recoil"
+import { Spinner } from 'react-bootstrap';
+import { useState } from 'react';
+import handleError from '../../utils/HandleErrors';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface EditUserProps {
@@ -17,7 +20,7 @@ interface EditUserProps {
 }
 
 const EditUser: React.FC<EditUserProps> = ({ user, onUpdateUser }) => {
-
+    const [loading, setLoading] = useState<boolean>(false)
     const [show, setShow] = useRecoilState(modalState)
 
     const validate = (values: createUserformValues): createUserformValues => {
@@ -25,21 +28,27 @@ const EditUser: React.FC<EditUserProps> = ({ user, onUpdateUser }) => {
 
         if (!values.name.trim()) {
             errors.name = 'Ingrese el nombre';
-        } else if (values.name.length > 15) {
-            errors.name = 'El nombre es demasiado largo.';
         }
 
         if (!values.surname.trim()) {
             errors.surname = 'Ingrese el apellido';
-        } else if (values.surname.length > 20) {
-            errors.surname = 'El apellido es demasiado largo.';
         }
 
         if (!values.userName.trim()) {
             errors.userName = 'Ingrese el nombre de usuario';
         }
-        if (values.repeatPassword !== values.password) {
+
+        if (!values.password.trim()) {
+            errors.password = 'Ingrese la contraseña';
+        }
+
+        if (!values.repeatPassword.trim()) {
+            errors.repeatPassword = 'Ingrese nuevamente la contraseña';
+        } else if (values.repeatPassword !== values.password) {
             errors.repeatPassword = "Las contraseñas no coinciden";
+        }
+        if (!values.role) {
+            errors.role = 'Elija un rol';
         }
         return errors;
     };
@@ -56,17 +65,24 @@ const EditUser: React.FC<EditUserProps> = ({ user, onUpdateUser }) => {
         },
         validate,
         onSubmit: async (values) => {
+            setLoading(true)
             try {
                 const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/users/edit`, values)
                 notifySuccess(res.data)
                 onUpdateUser(values)
                 setShow(false)
             } catch (error: any) {
-                if (error.response) notifyError(error.response.data)
-                else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+                handleError(error)
+            } finally {
+                setLoading(false)
             }
         },
     });
+
+    const resetForm = () => {
+        formik.resetForm();
+        setShow(false)
+    }
 
     return (
         <Form onSubmit={formik.handleSubmit} noValidate>
@@ -79,8 +95,9 @@ const EditUser: React.FC<EditUserProps> = ({ user, onUpdateUser }) => {
                         value={formik.values.name}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.name && formik.errors.name)}
                     />
-                    {formik.touched.name && formik.errors.name ? <div>{formik.errors.name}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.name}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} xs={12} lg={6}>
                     <Form.Label>Apellido</Form.Label>
@@ -90,8 +107,9 @@ const EditUser: React.FC<EditUserProps> = ({ user, onUpdateUser }) => {
                         value={formik.values.surname}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.surname && formik.errors.surname)}
                     />
-                    {formik.touched.surname && formik.errors.surname ? <div>{formik.errors.surname}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.surname}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} xs={12} lg={6}>
                     <Form.Label>Nombre de usuario</Form.Label>
@@ -101,8 +119,9 @@ const EditUser: React.FC<EditUserProps> = ({ user, onUpdateUser }) => {
                         value={formik.values.userName}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.userName && formik.errors.userName)}
                     />
-                    {formik.touched.userName && formik.errors.userName ? <div>{formik.errors.userName}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.userName}</Form.Control.Feedback>
                 </Form.Group>
             </Row>
             <Row className="mb-2">
@@ -124,8 +143,9 @@ const EditUser: React.FC<EditUserProps> = ({ user, onUpdateUser }) => {
                         value={formik.values.repeatPassword}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.repeatPassword && formik.errors.repeatPassword)}
                     />
-                    {formik.touched.repeatPassword && formik.errors.repeatPassword ? <div>{formik.errors.repeatPassword}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.repeatPassword}</Form.Control.Feedback>
                 </Form.Group>
             </Row>
             <Row className='mb-5'>
@@ -137,18 +157,30 @@ const EditUser: React.FC<EditUserProps> = ({ user, onUpdateUser }) => {
                         value={formik.values.role}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.role && formik.errors.role)}
                     >
-                        <option>Estandar</option>
-                        <option>Administrador</option>
+                        <option value="Usuario">Estandar</option>
+                        <option value="Administrador">Administrador</option>
                     </Form.Select>
-                    {formik.touched.role && formik.errors.role ? <div>{formik.errors.role}</div> : null}
+                    <Form.Control.Feedback type="invalid">{formik.errors.role}</Form.Control.Feedback>
                 </Form.Group>
             </Row>
             <Row>
-                <Form.Group as={Col} className="d-flex justify-content-center">
-                    <Button className="custom-bg custom-border custom-font m-3" variant="primary" type="submit">
-                        Actualizar
-                    </Button>
+            <Form.Group as={Col} className="d-flex justify-content-center mt-3">
+                    <div className='d-flex align-items-center justify-content-center w-25'>
+                        <Button className="" variant="danger" onClick={resetForm}>
+                            Cancelar
+                        </Button>
+                    </div>
+                    {!loading ?
+                        <div className='d-flex align-items-center justify-content-center w-25'>
+                            <Button className="" variant="primary" type="submit">
+                                Guardar
+                            </Button>
+                        </div> :
+                        <div className='d-flex align-items-center justify-content-center w-25'>
+                            <Spinner />
+                        </div>}
                 </Form.Group>
             </Row>
         </Form>

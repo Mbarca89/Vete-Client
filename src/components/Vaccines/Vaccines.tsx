@@ -11,6 +11,8 @@ import { axiosWithToken } from '../../utils/axiosInstances';
 import { events } from '../../types';
 import { notifyError } from '../Toaster/Toaster';
 import VaccineDetail from '../VaccineDetail/VaccineDetail';
+import handleError from '../../utils/HandleErrors';
+import { Spinner } from 'react-bootstrap';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface VaccinesProps {
@@ -18,7 +20,7 @@ interface VaccinesProps {
 }
 
 const Vaccines: React.FC<VaccinesProps> = ({ petId }) => {
-
+    const [loading, setLoading] = useState<boolean>(false)
     const [show, setShow] = useRecoilState(modalState)
     const [modal, setModal] = useState<string>("")
     const [currentEvent, setCurrentEvent] = useState({
@@ -28,6 +30,7 @@ const Vaccines: React.FC<VaccinesProps> = ({ petId }) => {
     const [events, setEvents] = useState<events[]>([])
 
     const getVaccines = async () => {
+        setLoading(true)
         try {
             const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/vaccines/getVaccines/${petId}`)
             if (res.data) {
@@ -40,8 +43,9 @@ const Vaccines: React.FC<VaccinesProps> = ({ petId }) => {
                 })))
             }
         } catch (error: any) {
-            if (error.response) notifyError(error.response.data)
-            else notifyError(error.message == "Network Error" ? "Error de comunicacion con el servidor" : error.message)
+            handleError(error)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -65,7 +69,7 @@ const Vaccines: React.FC<VaccinesProps> = ({ petId }) => {
             <div className='d-flex flex-column align-items-start'>
                 <h6 role="button" onClick={handleCreateVaccine}>Agregar evento<svg width="25" height="25" viewBox="0 0 512 512" style={{ color: "#632f6b" }} xmlns="http://www.w3.org/2000/svg" className="h-full w-full"><rect width="512" height="512" x="0" y="0" rx="30" fill="transparent" stroke="transparent" strokeWidth="0" strokeOpacity="100%" paintOrder="stroke"></rect><svg width="512px" height="512px" viewBox="0 0 24 24" fill="#632f6b" x="0" y="0" role="img" style={{ display: "inline-block;vertical-align:middle" }} xmlns="http://www.w3.org/2000/svg"><g fill="#632f6b"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="M12 20v-8m0 0V4m0 8h8m-8 0H4" /></g></svg></svg></h6>
             </div>
-            <FullCalendar
+            {loading ? <Spinner/> : <FullCalendar
                 plugins={[bootstrap5Plugin, listPlugin]}
                 initialView="listYear"
                 themeSystem='bootstrap5'
@@ -75,7 +79,7 @@ const Vaccines: React.FC<VaccinesProps> = ({ petId }) => {
                 height={"50vh"}
                 displayEventTime={false}
                 eventClick={(info: any) => handleEventDetail(info)}
-            />
+            />}
             {show && modal == "create" &&
                 <CustomModal title={"Agregar evento"}>
                     <CreateVaccine petId={petId} updateList={getVaccines} />
