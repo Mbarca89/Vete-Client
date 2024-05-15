@@ -42,13 +42,13 @@ const EditClient: React.FC<EditUserProps> = ({ client, onUpdateClient }) => {
 
     const formik = useFormik({
         initialValues: {
-            id: client.id,
-            name: client.name,
-            surname: client.surname,
-            phone: client.phone,
-            email: client.email,
-            social: client.social,
-            userName: client.userName
+            id: client.id || "",
+            name: client.name || "",
+            surname: client.surname || "",
+            phone: client.phone || "",
+            email: client.email || "",
+            social: client.social || "",
+            userName: client.userName || ""
         },
         validate,
         onSubmit: async (values) => {

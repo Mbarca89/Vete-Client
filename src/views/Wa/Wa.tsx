@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Spinner } from "react-bootstrap"
+import { Button, Spinner } from "react-bootstrap"
 import io from "socket.io-client";
 import { notifyError, notifySuccess } from "../../components/Toaster/Toaster";
 import Table from 'react-bootstrap/Table';
@@ -9,6 +9,7 @@ import listPlugin from '@fullcalendar/list';
 import bootstrap5Plugin from '@fullcalendar/bootstrap5';
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import { axiosWithToken } from "../../utils/axiosInstances";
+import handleError from "../../utils/HandleErrors";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 const WASERVER_URL = import.meta.env.VITE_REACT_APP_WASERVER_URL;
 
@@ -21,6 +22,7 @@ const Wa = () => {
     const [ready, setReady] = useState<boolean>(false)
     const [server, setServer] = useState<boolean>(false)
     const [messages, setMessages] = useState<message[]>([])
+    const [sending, setSending] = useState<boolean>(false)
 
     const getMessages = async (day: string) => {
         try {
@@ -82,6 +84,22 @@ const Wa = () => {
         getMessages(dateInfo.start.toISOString())
     }
 
+    const handleForce = async () => {
+        setSending(true)
+        try {
+            const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/messages/force`)
+            if (res && res.data) {
+                notifySuccess(res.data)
+                let tzoffset = (new Date()).getTimezoneOffset() * 60000
+                getMessages((new Date(Date.now() - tzoffset)).toISOString())
+            }
+        } catch (error: any) {
+            handleError(error)
+        } finally {
+            setSending(false)
+        }
+    }
+
     return (
         <div className='container flex-grow-1 p-lg-3 p-sm-0 rounded custom m-2 overflow-auto'>
             <div className="d-flex justify-content-around gap-4">
@@ -104,8 +122,9 @@ const Wa = () => {
                 <h4>Escanee el codigo con su aplicación de whatsapp: </h4>
                 <div><img src={qrCode} alt="QR Code" /></div>
             </div>}
-            {ready && <div className='text-nowrap mt-3'>
+            {ready && <div className='text-nowrap mt-3 overflow-auto'>
                 <h4>Mensajes enviados: </h4>
+                {sending ? <Spinner/> : <Button onClick={handleForce}>Forzar envio de mensajes</Button>}
                 <div className="custom-calendar mt-3">
                     <FullCalendar
                         plugins={[bootstrap5Plugin, listPlugin]}
@@ -118,7 +137,7 @@ const Wa = () => {
                         datesSet={(dateInfo) => handleDateChange(dateInfo)}
                     />
                 </div>
-                
+
                 {loadingMessages ?
                     <Spinner className="mt-5" />
                     : <Table striped bordered hover size="sm">
@@ -132,7 +151,7 @@ const Wa = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {messages.map(message => <tr key={String(message.clientName)}>
+                            {messages.map(message => <tr key={String(message.clientName + Math.random())}>
                                 <td>{message.clientName}</td>
                                 <td>{message.clientPhone}</td>
                                 <td>{message.petName}</td>

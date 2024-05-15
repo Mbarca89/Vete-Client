@@ -5,7 +5,7 @@ import Table from 'react-bootstrap/Table';
 import Container from 'react-bootstrap/Container';
 import { modalState } from "../../app/store";
 import { useRecoilState } from "recoil";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { notifyError } from "../Toaster/Toaster";
 
 interface AddProductOrderProps {
@@ -17,11 +17,11 @@ const AddProductOrder: React.FC<AddProductOrderProps> = ({ product, addProduct }
 
     const [show, setShow] = useRecoilState(modalState)
     const [quantity, setQuantity] = useState<number>(0)
-    const [updatedProduct, setUpdatedProduct] = useState<orderProduct>(product)
+    const [updatedProduct, setUpdatedProduct] = useState<orderProduct>()
 
     const handleChange = (event:ChangeEvent<HTMLInputElement>) => {
         if(event.target.name === "quantity") setQuantity(Number(event.target.value))
-        setUpdatedProduct({
+        updatedProduct && setUpdatedProduct({
             ...updatedProduct,
             [event.target.name]: event.target.value
         })
@@ -31,9 +31,13 @@ const AddProductOrder: React.FC<AddProductOrderProps> = ({ product, addProduct }
         if(quantity <= 0) {
             notifyError("Ingrese la cantidad")
         } else {
-            addProduct(updatedProduct)
+            updatedProduct && addProduct(updatedProduct)
         }
     }
+
+    useEffect(() => {
+        setUpdatedProduct(product)
+    },[product])
 
     return (
         <div>
