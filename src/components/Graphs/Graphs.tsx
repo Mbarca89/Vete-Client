@@ -9,6 +9,7 @@ import { modalState } from "../../app/store";
 import { sale } from "../../types";
 import { axiosWithToken } from "../../utils/axiosInstances";
 import { notifyError } from "../Toaster/Toaster";
+import handleError from "../../utils/HandleErrors";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 

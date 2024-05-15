@@ -132,7 +132,7 @@ const ClientDetail: React.FC = () => {
                     </CustomModal>
                 ) : modal === "petDetail" ? (
                     <CustomModal title={currentPet.name}>
-                        <PetDetail pet={currentPet} />
+                        <PetDetail pet={currentPet} updateList={getPets}/>
                     </CustomModal>
                 ) : modal === "deletePet" ? (
                     <CustomModal title={currentPet.name}>
