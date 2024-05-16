@@ -43,28 +43,19 @@ const ProductList = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const pageSize = 12;
+    const visiblePages = 5;
 
     const handlePageChange = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
-
-    const getCount = async () => {
-        try {
-            const count = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/getProductCount`)
-            if (count.data) {
-                setTotalPages(Math.ceil(count.data / pageSize));
-            }
-        } catch (error: any) {
-            handleError(error)
-        }
-    }
 
     const fetchProducts = async () => {
         setLoading(true)
         try {
             const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/getProductsPaginated?page=${currentPage}&size=${pageSize}`)
             if (res.data) {
-                setProducts(res.data);
+                setTotalPages(Math.ceil(res.data.totalCount / pageSize));
+                setProducts(res.data.data);
             }
         } catch (error: any) {
             handleError(error)
@@ -108,9 +99,7 @@ const ProductList = () => {
         fetchProducts();
     }, [currentPage]);
 
-    useEffect(() => {
-        getCount();
-    }, []);
+    console.log(totalPages)
 
     return (
         <div>
@@ -136,7 +125,7 @@ const ProductList = () => {
                     {products.map(product => (
                         <Col key={product.id}>
                             <Card style={{ height: '100%' }} onClick={() => handleDetail(product)}>
-                                <Card.Img style={{ height: '150px' }} className='custom-card-img' variant="top" src={product.image ? `data:image/jpeg;base64,${product.image}` : noImage} alt={product.name} />
+                                <Card.Img style={{ height: '150px', width: "auto", objectFit: "contain" }} className='custom-card-img p-1 rounded' variant="top" src={product.image ? `data:image/jpeg;base64,${product.image}` : noImage} alt={product.name} />
                                 <Card.Body className='d-flex flex-column justify-content-end'>
                                     <Card.Title className=''>{product.name}</Card.Title>
                                     <Card.Text>{product.categoryName}</Card.Text>
@@ -149,14 +138,40 @@ const ProductList = () => {
                     <Spinner />
                 </div>}
                 <div className='d-flex m-auto justify-content-center mt-5 w-50'>
-                    <Pagination className=''>
+                    <Pagination className='mt-5'>
                         <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
                         <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
-                        {Array.from({ length: totalPages }, (_, index) => (
-                            <Pagination.Item key={index + 1} active={index + 1 === currentPage} onClick={() => handlePageChange(index + 1)}>
-                                {index + 1}
-                            </Pagination.Item>
-                        ))}
+                        {currentPage > 2 && <Pagination.Item
+                            key={currentPage - 2}
+                            onClick={() => handlePageChange(currentPage - 2)}
+                        >
+                            {currentPage - 2}
+                        </Pagination.Item>}
+                        {currentPage > 1 && <Pagination.Item
+                            key={currentPage - 1}
+                            onClick={() => handlePageChange(currentPage - 1)}
+                        >
+                            {currentPage - 1}
+                        </Pagination.Item>}
+                        <Pagination.Item
+                            key={currentPage}
+                            active
+                            onClick={() => handlePageChange(currentPage)}
+                        >
+                            {currentPage}
+                        </Pagination.Item>
+                        {currentPage <= totalPages - 1 && <Pagination.Item
+                            key={currentPage + 1}
+                            onClick={() => handlePageChange(currentPage + 1)}
+                        >
+                            {currentPage + 1}
+                        </Pagination.Item>}
+                        {currentPage <= totalPages - 2 && <Pagination.Item
+                            key={currentPage + 2}
+                            onClick={() => handlePageChange(currentPage + 2)}
+                        >
+                            {currentPage + 2}
+                        </Pagination.Item>}
                         <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
                         <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
                     </Pagination>

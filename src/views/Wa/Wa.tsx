@@ -100,6 +100,22 @@ const Wa = () => {
         }
     }
 
+    const handleForceReminders = async () => {
+        setSending(true)
+        try {
+            const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/messages/forceReminders`)
+            if (res && res.data) {
+                notifySuccess(res.data)
+                let tzoffset = (new Date()).getTimezoneOffset() * 60000
+                getMessages((new Date(Date.now() - tzoffset)).toISOString())
+            }
+        } catch (error: any) {
+            handleError(error)
+        } finally {
+            setSending(false)
+        }
+    }
+
     return (
         <div className='container flex-grow-1 p-lg-3 p-sm-0 rounded custom m-2 overflow-auto'>
             <div className="d-flex justify-content-around gap-4">
@@ -124,7 +140,10 @@ const Wa = () => {
             </div>}
             {ready && <div className='text-nowrap mt-3 overflow-auto'>
                 <h4>Mensajes enviados: </h4>
-                {sending ? <Spinner/> : <Button onClick={handleForce}>Forzar envio de mensajes</Button>}
+                <div className="d-flex flex-row gap-2 justify-content-center">
+                    {sending ? <Spinner /> : <Button className="mr-2" onClick={handleForce}>Reenviar mensajes</Button>}
+                    {sending ? <Spinner /> : <Button onClick={handleForceReminders}>Reenviar recordatorios</Button>}
+                </div>
                 <div className="custom-calendar mt-3">
                     <FullCalendar
                         plugins={[bootstrap5Plugin, listPlugin]}

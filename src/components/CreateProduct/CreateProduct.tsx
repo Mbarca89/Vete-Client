@@ -244,6 +244,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({ updateList }) => {
                         name="image"
                         onChange={handleImageChange}
                         accept="image/*"
+                        capture="user"
                         ref={inputRef}
                     />
                 </Form.Group>

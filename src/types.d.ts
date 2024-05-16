@@ -168,6 +168,7 @@ export interface CreateReminderformValues {
     name: string;
     date: string;
     notes: string;
+    phone: string;
 }
 
 export interface stockAlert {

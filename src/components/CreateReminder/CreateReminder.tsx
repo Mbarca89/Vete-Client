@@ -21,6 +21,7 @@ interface CreateReminderProps {
 const CreateReminder: React.FC<CreateReminderProps> = ({ updateList }) => {
     const [loading, setLoading] = useState<boolean>(false)
     const [show, setShow] = useRecoilState(modalState)
+    const [notification, setNotification] = useState<boolean>(false)
 
     const validate = (values: CreateReminderformValues): CreateReminderformValues => {
         const errors: any = {};
@@ -31,6 +32,9 @@ const CreateReminder: React.FC<CreateReminderProps> = ({ updateList }) => {
         if (!values.date) {
             errors.date = "Ingrese la fecha"
         }
+        if (notification && !values.phone) {
+            errors.phone = "Ingrese el número de teléfono"
+        }
         return errors;
     };
 
@@ -40,6 +44,7 @@ const CreateReminder: React.FC<CreateReminderProps> = ({ updateList }) => {
             date: "",
             notes: "",
             id: "",
+            phone: ""
         },
         validate,
         onSubmit: async values => {
@@ -49,8 +54,10 @@ const CreateReminder: React.FC<CreateReminderProps> = ({ updateList }) => {
                 name: values.name,
                 date: new Date(year, month - 1, day),
                 notes: values.notes,
+                phone: `549${values.phone}`
             }
             try {
+            console.log(createReminder)
                 const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/reminders/create`, createReminder)
                 notifySuccess(res.data)
                 updateList()
@@ -95,6 +102,28 @@ const CreateReminder: React.FC<CreateReminderProps> = ({ updateList }) => {
                     />
                     <Form.Control.Feedback type="invalid">{formik.errors.date}</Form.Control.Feedback>
                 </Form.Group>
+                <Form.Group className="d-flex mt-3">
+                    <Form.Check type="checkbox"
+                        id="notification"
+                        name="notification"
+                        checked={notification}
+                        onChange={() => setNotification(!notification)}
+                        onBlur={formik.handleBlur}
+                    />
+                    <Form.Label className="ml-3">¿Enviar notificación?</Form.Label>
+                </Form.Group>
+                {notification && <Form.Group as={Col} xs={12} md={6}>
+                    <Form.Label>Teléfono (54 9)</Form.Label>
+                    <Form.Control type="text" placeholder="266 xxxxxxx"
+                        id="phone"
+                        name="phone"
+                        value={formik.values.phone}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.phone && formik.errors.phone)}
+                    />
+                    <Form.Control.Feedback type="invalid">{formik.errors.phone}</Form.Control.Feedback>
+                </Form.Group>}
             </Row>
             <Row>
                 <Form.Group as={Col} className="d-flex justify-content-center mt-3">
