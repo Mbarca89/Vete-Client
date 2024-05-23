@@ -66,7 +66,7 @@ const Payments = () => {
     return (
         <div className='container d-flex flex-column flex-grow-1 p-lg-3 p-sm-0 rounded custom m-2 overflow-auto'>
             <div className="d-flex justify-content-start">
-                <h5>Nueva venta</h5>
+                <h5>Nuevo pago</h5>
             </div>
             <Container className='mt-5'>
                 <Form onSubmit={formik.handleSubmit} noValidate>
