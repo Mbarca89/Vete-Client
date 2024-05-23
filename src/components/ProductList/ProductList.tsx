@@ -99,8 +99,6 @@ const ProductList = () => {
         fetchProducts();
     }, [currentPage]);
 
-    console.log(totalPages)
-
     return (
         <div>
             <Container>

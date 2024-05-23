@@ -8,21 +8,34 @@ import { useRecoilState } from "recoil";
 import { modalState } from "../../app/store";
 import { sale } from "../../types";
 import { axiosWithToken } from "../../utils/axiosInstances";
-import { notifyError } from "../Toaster/Toaster";
+import { notifyError } from "../../components/Toaster/Toaster";
 import handleError from "../../utils/HandleErrors";
+import { Spinner } from "react-bootstrap";
+import { ApexOptions } from 'apexcharts';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
+interface GroupedData {
+    [date: string]: {
+        amount: number;
+        cost: number;
+    };
+}
 
-const Graphs = () => {
+interface DataPoint {
+    amount: number;
+    cost: number;
+    date: string;
+}
 
+const DailySalesGraph = () => {
+    
     const [sales, setSales] = useState<sale[]>([])
-    const [show, setShow] = useRecoilState(modalState)
-    const [currentSale, setCurrentSale] = useState("")
+    const [loading, setLoading] = useState<boolean>(false)
 
     const currentDate = new Date();
     const [dates, setDate] = useState({
-        dateStart: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1),
-        dateEnd: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
+        dateStart: `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-01`,
+        dateEnd: `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`,
     })
 
     const [categories, setCategories] = useState<string[]>([]);
@@ -30,6 +43,7 @@ const Graphs = () => {
     const [costData, setCostData] = useState<number[]>([])
 
     const getSales = async () => {
+        setLoading(true)
         try {
             const startDate = new Date(dates.dateStart);
             startDate.setHours(0, 0, 0, 0);
@@ -43,20 +57,15 @@ const Graphs = () => {
             }
         } catch (error: any) {
             handleError(error)
+        } finally {
+            setLoading(false)
         }
-    }
-
-    const formatDate = (date: any) => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
     }
 
     const handleDates = (event: any) => {
         setDate({
             ...dates,
-            [event.target.name]: new Date(event.target.value)
+            [event.target.name]: event.target.value
         });
     }
 
@@ -65,41 +74,29 @@ const Graphs = () => {
         getSales()
     }
 
-    const handleDetail = (saleId: string) => {
-        setCurrentSale(saleId)
-        setShow(true)
-    }
-
-    const getDaysArray = (startDate: Date, endDate: Date): string[] => {
-        const daysArray: string[] = [];
-        let currentDate = new Date(startDate);
-        while (currentDate <= endDate) {
-            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-            const day = String(currentDate.getDate()).padStart(2, '0');
-            const dateString = `${month}-${day}`;
-            daysArray.push(dateString);
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
-        return daysArray;
-    }
-
     const setGraphData = (sales: sale[], startDate: Date, endDate: Date) => {
-        const daysArray = getDaysArray(startDate, endDate);
-        const amountsByDay: number[] = new Array(daysArray.length).fill(0);
-        const costByDay: number[] = new Array(daysArray.length).fill(0);
+        const processData = (sales: sale[]) => {
+            const groupedData: GroupedData = sales.reduce((acc: GroupedData, curr: DataPoint) => {
+                const dateParts = curr.date.split(' ')[0].split('-');
+                const monthDay = `${dateParts[1]}-${dateParts[2]}`;
+                if (!acc[monthDay]) {
+                    acc[monthDay] = { amount: 0, cost: 0 };
+                }
+                acc[monthDay].amount += curr.amount;
+                acc[monthDay].cost += curr.cost;
+                return acc;
+            }, {});
 
-        for (const sale of sales) {
-            const saleDate = new Date(sale.date.split(' ')[0]);
-            const timeDiff = saleDate.getTime() - startDate.getTime();
-            const dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
-            if (dayDiff >= 0 && dayDiff < amountsByDay.length) {
-                amountsByDay[dayDiff] += sale.amount;
-                costByDay[dayDiff] += sale.cost;
-            }
-        }
-        setCategories(daysArray)
-        setAmountData(amountsByDay)
-        setCostData(costByDay)
+            const dates = Object.keys(groupedData);
+            const amounts = dates.map(date => groupedData[date].amount);
+            const costs = dates.map(date => groupedData[date].cost);
+
+            return { dates, amounts, costs };
+        };
+        const { dates, amounts, costs } = processData(sales);
+        setCategories(dates)
+        setAmountData(amounts)
+        setCostData(costs)
     }
 
 
@@ -108,27 +105,32 @@ const Graphs = () => {
     }, [])
 
     useEffect(() => {
-        setGraphData(sales, dates.dateStart, dates.dateEnd)
+        setGraphData(sales, new Date(dates.dateStart), new Date(dates.dateEnd))
     }, [sales])
 
-    const options = {
+    const options: ApexOptions = {
         chart: {
-            id: "Line"
+            id: "Line",
+            type: "line",
         },
+        stroke: {
+            curve: 'smooth',
+          },
         xaxis: {
             categories: categories
-        }
-    }
-    const series = [
-        {
-            name: "Ventas",
-            data: amountData
         },
-        {
-            name: "Costo",
-            data: costData
-        }
-    ]
+        series: [
+            {
+                name: "Ventas",
+                data: amountData
+            },
+            {
+                name: "Costo",
+                data: costData
+            }
+        ]
+    }
+    
 
     return (
         <div className="">
@@ -141,7 +143,7 @@ const Graphs = () => {
                             name="dateStart"
                             className=""
                             onChange={handleDates}
-                            value={formatDate(dates.dateStart)}
+                            value={String(dates.dateStart)}
                         />
                     </Col>
                     <Col xs="auto">
@@ -151,20 +153,18 @@ const Graphs = () => {
                             name="dateEnd"
                             className=""
                             onChange={handleDates}
-                            value={formatDate(dates.dateEnd)}
+                            value={String(dates.dateEnd)}
                         />
                     </Col>
                     <Col xs="auto">
-                        <Button type="submit">Buscar</Button>
+                        {loading ? <Spinner/> : <Button type="submit">Buscar</Button>}
                     </Col>
                 </Row>
             </Form>
             <div className="d-flex justify-content-center">
                 <Chart
                     options={options}
-                    series={series}
-                    type="line"
-                    stroke="smooth"
+                    series={options.series as any}
                     style={{ width: "90%", heigth: "50" }}
                 />
             </div>
@@ -172,4 +172,4 @@ const Graphs = () => {
     )
 }
 
-export default Graphs
+export default DailySalesGraph

@@ -183,3 +183,25 @@ export interface message {
     vaccineName: string;
     sent: boolean;
 }
+
+export interface saleReport {
+    totalAmount: number;
+    totalCost: number;
+    payments: number;
+}
+
+export interface saleByCategoryReport {
+    categoryName: string;
+    totalAmount: number;
+}
+
+export interface payments {
+    id: string,
+    date: date,
+    billNumber: string,
+    amount: number,
+    provider: string,
+    payed: boolean,
+    paymentMethod: string,
+    paymentDate: date
+}

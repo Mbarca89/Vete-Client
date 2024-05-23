@@ -46,6 +46,8 @@ const NavBar = () => {
                             <NavDropdown title="Administrar" id="basic-nav-dropdown">
                                 <NavDropdown.Item onClick={() => { navigate("/users"); handleNavLinkClick() }}>Usuarios</NavDropdown.Item>
                                 <NavDropdown.Item onClick={() => { navigate("/reports"); handleNavLinkClick() }}>Reportes</NavDropdown.Item>
+                                <NavDropdown.Item onClick={() => { navigate("/graphs"); handleNavLinkClick() }}>Gráficos</NavDropdown.Item>
+                                <NavDropdown.Item onClick={() => { navigate("/payments"); handleNavLinkClick() }}>Pagos</NavDropdown.Item>
                                 <NavDropdown.Item onClick={() => { navigate("/users"); handleNavLinkClick() }}>Facturacion</NavDropdown.Item>
                             </NavDropdown>
                             <Nav.Link onClick={() => { navigate("/providers"); handleNavLinkClick() }}>Proveedores</Nav.Link>

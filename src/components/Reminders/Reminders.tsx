@@ -45,8 +45,6 @@ const Reminders = () => {
         getReminders(dateInfo.start.toISOString())
     }
 
-    console.log(reminders)
-
     return (
         <div className='w-100 w-md-25 h-100 custom rounded z-2 p-1'>
             <div className='d-flex flex-row align-items-center justify-content-between'>

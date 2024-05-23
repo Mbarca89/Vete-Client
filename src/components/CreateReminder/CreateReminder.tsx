@@ -57,7 +57,6 @@ const CreateReminder: React.FC<CreateReminderProps> = ({ updateList }) => {
                 phone: `549${values.phone}`
             }
             try {
-            console.log(createReminder)
                 const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/reminders/create`, createReminder)
                 notifySuccess(res.data)
                 updateList()
