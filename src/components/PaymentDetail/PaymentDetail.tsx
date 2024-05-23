@@ -45,7 +45,7 @@ const PaymentDetail: React.FC<PaymentDetailProps> = ({ paymentId }) => {
         const errors: any = {};
 
         if (!values.provider.trim()) {
-            errors.name = 'Ingrese el nombre o concepto';
+            errors.provider = 'Ingrese el nombre o concepto';
         }
         return errors;
     };
