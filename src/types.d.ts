@@ -37,6 +37,7 @@ export interface product {
     stockAlert: boolean;
     published: boolean;
     image: string | null;
+    thumbnail: string | null;
 }
 
 export interface createProductformValues {
@@ -77,6 +78,7 @@ export interface pet {
     born: date;
     photo: string | null;
     ownerName: string;
+    thumbnail: string | null;
 }
 
 export interface createPetformValues {

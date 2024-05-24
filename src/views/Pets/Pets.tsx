@@ -33,6 +33,7 @@ const Pets = () => {
         weight: 0,
         born: "",
         photo: "",
+        thumbnail: "",
         ownerName: ""
     })
     const [currentPage, setCurrentPage] = useState(1);
@@ -114,7 +115,7 @@ const Pets = () => {
                     {pets.map(pet => (
                         <Col key={pet.id}>
                             <Card className='' style={{ height: '100%' }} onClick={() => handleDetail(pet)}>
-                                <Card.Img style={{ height: '150px', width: "auto", objectFit: "contain" }} className='rounded p-1' variant="top" src={pet.photo ? `data:image/jpeg;base64,${pet.photo}` : noImage} alt={pet.name} />
+                                <Card.Img style={{ height: '150px', width: "auto", objectFit: "contain" }} className='rounded p-1' variant="top" src={pet.thumbnail ? `data:image/jpeg;base64,${pet.thumbnail}` : noImage} alt={pet.name} />
                                 <Card.Body className='d-flex flex-column justify-content-end'>
                                     <Card.Title className=''>{pet.name}</Card.Title>
                                     <Card.Text>{pet.ownerName}</Card.Text>
@@ -167,7 +168,7 @@ const Pets = () => {
             </Container>
             {show &&
                 <CustomModal title={selectedPet.name}>
-                    <PetDetailCard pet={selectedPet} updateList={fetchPets} />
+                    <PetDetailCard petId={selectedPet.id} updateList={fetchPets} />
                 </CustomModal>
             }
         </div>

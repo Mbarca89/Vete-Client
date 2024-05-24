@@ -7,7 +7,7 @@ import { axiosWithToken } from "../../utils/axiosInstances";
 import Table from 'react-bootstrap/Table';
 import CreatePet from "../CreatePet/CreatePet";
 import CustomModal from "../Modal/CustomModal";
-import PetDetail from "../PetDetailCard/PetDetailCard";
+import PetDetailCard from "../PetDetailCard/PetDetailCard";
 import DeletePet from "../DeletePet/DeletePet";
 import EditPet from "../EditPet/EditPet";
 import { client, pet } from "../../types";
@@ -36,6 +36,7 @@ const ClientDetail: React.FC = () => {
         weight: 0,
         born: "",
         photo: "",
+        thumbnail: "",
         ownerName: ""
     })
 
@@ -132,7 +133,7 @@ const ClientDetail: React.FC = () => {
                     </CustomModal>
                 ) : modal === "petDetail" ? (
                     <CustomModal title={currentPet.name}>
-                        <PetDetail pet={currentPet} updateList={getPets}/>
+                        <PetDetailCard petId={currentPet.id} updateList={getPets}/>
                     </CustomModal>
                 ) : modal === "deletePet" ? (
                     <CustomModal title={currentPet.name}>

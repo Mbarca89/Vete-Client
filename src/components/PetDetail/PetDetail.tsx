@@ -27,6 +27,7 @@ const PetDetail = () => {
         weight: 0,
         born: "",
         photo: "",
+        thumbnail: "",
         ownerName: ""
     })
 

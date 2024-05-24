@@ -18,15 +18,33 @@ import { Spinner } from "react-bootstrap";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface ProductDetailProps {
-    product: product;
+    productId: number;
     updateList: () => void;
 }
 
-const ProductDetail: React.FC<ProductDetailProps> = ({ product, updateList }) => {
+const ProductDetail: React.FC<ProductDetailProps> = ({ productId, updateList }) => {
     const [loading, setLoading] = useState<boolean>(false)
     const [show, setShow] = useRecoilState(modalState)
     const [edit, setEdit] = useState<boolean>(false)
     const [deleteProduct, setDeleteProduct] = useState<boolean>(false)
+
+    const [product, setProduct] = useState<product>({
+        id: productId,
+        name: "",
+        description: "",
+        barCode: 0,
+        cost: 0,
+        price: 0,
+        stock: 0,
+        categoryId: 0,
+        categoryName: "",
+        providerName: "",
+        stockAlert: false,
+        published: false,
+        image: "",
+        thumbnail: ""
+
+    })
 
     const inputRef = useRef<HTMLInputElement>(null)
 
@@ -47,7 +65,21 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, updateList }) =>
                 setProviders(providersResponse.data)
             }
         } catch (error: any) {
-            notifyError(error.response.data)
+            handleError(error)
+        }
+    }
+
+    const getProduct = async () => {
+        setLoading(true)
+        try {
+            const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/getById?productId=${productId}`)
+            if (res.data) {
+                setProduct(res.data)
+            }
+        } catch (error) {
+            handleError(error)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -98,6 +130,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, updateList }) =>
             providerName: product.providerName
         },
         validate,
+        enableReinitialize: true,
         onSubmit: async values => {
             setLoading(true)
             const createProduct = {
@@ -213,7 +246,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, updateList }) =>
 
     useEffect(() => {
         getInfo()
-    }, [])
+        getProduct()
+    }, [productId])
 
     return (
         product.id && !deleteProduct ? <div>

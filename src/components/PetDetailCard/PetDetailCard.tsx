@@ -6,7 +6,7 @@ import noImage from "../../assets/noImage.png"
 import { useNavigate } from "react-router-dom"
 import { modalState } from "../../app/store"
 import { useRecoilState } from "recoil"
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useFormik } from 'formik';
 import handleError from '../../utils/HandleErrors';
 import { notifySuccess } from '../Toaster/Toaster';
@@ -15,15 +15,28 @@ import { Button, Spinner } from 'react-bootstrap';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface PetDetailProps {
-    pet: pet
+    petId: string
     updateList: () => void;
 }
 
-const PetDetailCard: React.FC<PetDetailProps> = ({ pet, updateList }) => {
+const PetDetailCard: React.FC<PetDetailProps> = ({ petId, updateList }) => {
     const [loading, setLoading] = useState<boolean>(false)
     const [show, setShow] = useRecoilState(modalState)
     const [edit, setEdit] = useState<boolean>(false)
     const [deletePet, setDeletePet] = useState<boolean>(false)
+
+    const [pet, setPet] = useState<pet>({
+        id: "",
+        name: "",
+        race: "",
+        gender: "",
+        species: "",
+        weight: 0,
+        born: "",
+        photo: "",
+        ownerName: "",
+        thumbnail: ""
+    })
 
     const inputRef = useRef<HTMLInputElement>(null)
     const [image, setImage] = useState<File | null>(null);
@@ -37,6 +50,20 @@ const PetDetailCard: React.FC<PetDetailProps> = ({ pet, updateList }) => {
     if (today.getMonth() < bornDate.getMonth() ||
         (today.getMonth() === bornDate.getMonth() && today.getDate() < bornDate.getDate())) {
         age--;
+    }
+
+    const getPet = async () => {
+        setLoading(true)
+        try {
+            const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/pets/getPetById?petId=${petId}`)
+            if (res.data) {
+                setPet(res.data)
+            }
+        } catch (error) {
+            handleError(error)
+        } finally {
+            setLoading(false)
+        }
     }
 
     const handleEdit = () => {
@@ -61,6 +88,7 @@ const PetDetailCard: React.FC<PetDetailProps> = ({ pet, updateList }) => {
             weight: pet.weight,
             born: pet.born
         },
+        enableReinitialize: true,
         validate,
         onSubmit: async values => {
             setLoading(true)
@@ -127,6 +155,10 @@ const PetDetailCard: React.FC<PetDetailProps> = ({ pet, updateList }) => {
             setLoading(false)
         }
     }
+
+    useEffect(() => {
+        getPet()
+    },[petId])
 
     return (
         pet.id && !deletePet ? <div>
