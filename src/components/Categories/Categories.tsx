@@ -33,7 +33,8 @@ const Categories = () => {
         providerName: "",
         stockAlert: false,
         published: false,
-        image: ""
+        image: "",
+        thumbnail: "",
     })
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(1);
@@ -125,7 +126,7 @@ const Categories = () => {
                         {products.map(product => (
                             <Col key={product.id}>
                                 <Card style={{ height: '100%' }} onClick={() => handleDetail(product)}>
-                                    <Card.Img style={{ height: '150px', width: "auto", objectFit: "contain" }} className='custom-card-img p-1' variant="top" src={product.image ? `data:image/jpeg;base64,${product.image}` : noImage} alt={product.name} />
+                                    <Card.Img style={{ height: '150px', width: "auto", objectFit: "contain" }} className='custom-card-img p-1' variant="top" src={product.thumbnail ? `data:image/jpeg;base64,${product.thumbnail}` : noImage} alt={product.name} />
                                     <Card.Body className='d-flex flex-column justify-content-end'>
                                         <Card.Title className=''>{product.name}</Card.Title>
                                         <Card.Text>{product.categoryName}</Card.Text>
@@ -179,7 +180,7 @@ const Categories = () => {
             </Container>
             {show && modal == "productDetail" &&
                 <CustomModal title={selectedProduct.name}>
-                    <ProductDetail product={selectedProduct} updateList={fetchProducts} />
+                    <ProductDetail productId={selectedProduct.id} updateList={fetchProducts} />
                 </CustomModal>
             }
             {show && modal == "createCategory" &&

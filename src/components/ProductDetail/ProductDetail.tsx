@@ -24,6 +24,7 @@ interface ProductDetailProps {
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ productId, updateList }) => {
     const [loading, setLoading] = useState<boolean>(false)
+    const [fetching, setFetching] = useState<boolean>(false)
     const [show, setShow] = useRecoilState(modalState)
     const [edit, setEdit] = useState<boolean>(false)
     const [deleteProduct, setDeleteProduct] = useState<boolean>(false)
@@ -70,7 +71,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, updateList }) 
     }
 
     const getProduct = async () => {
-        setLoading(true)
+        setFetching(true)
         try {
             const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/getById?productId=${productId}`)
             if (res.data) {
@@ -79,7 +80,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, updateList }) 
         } catch (error) {
             handleError(error)
         } finally {
-            setLoading(false)
+            setFetching(false)
         }
     }
 
@@ -250,7 +251,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, updateList }) 
     }, [productId])
 
     return (
-        product.id && !deleteProduct ? <div>
+        product.id && !deleteProduct ? fetching ? <Spinner /> :  <div>
             <Row>
                 <Col lg={6}>
                     <Image className="custom-detail-img" src={product.image ? `data:image/jpeg;base64,${product.image}` : noImage}></Image>
@@ -432,7 +433,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, updateList }) 
                     </Form.Group>
                 </Row>}
             </Form>
-        </div> :
+        </div>
+            :
             <div className="d-flex flex-column align-items-center">
                 <span>Esta seguro que quiere eliminar el producto?</span>
                 <div className="mt-3 d-flex align-items-center justify-content-center gap-4 w-100">

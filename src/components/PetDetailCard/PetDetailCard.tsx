@@ -21,6 +21,7 @@ interface PetDetailProps {
 
 const PetDetailCard: React.FC<PetDetailProps> = ({ petId, updateList }) => {
     const [loading, setLoading] = useState<boolean>(false)
+    const [fetching, setFetching] = useState<boolean>(false)
     const [show, setShow] = useRecoilState(modalState)
     const [edit, setEdit] = useState<boolean>(false)
     const [deletePet, setDeletePet] = useState<boolean>(false)
@@ -53,7 +54,7 @@ const PetDetailCard: React.FC<PetDetailProps> = ({ petId, updateList }) => {
     }
 
     const getPet = async () => {
-        setLoading(true)
+        setFetching(true)
         try {
             const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/pets/getPetById?petId=${petId}`)
             if (res.data) {
@@ -62,7 +63,7 @@ const PetDetailCard: React.FC<PetDetailProps> = ({ petId, updateList }) => {
         } catch (error) {
             handleError(error)
         } finally {
-            setLoading(false)
+            setFetching(false)
         }
     }
 
@@ -161,7 +162,7 @@ const PetDetailCard: React.FC<PetDetailProps> = ({ petId, updateList }) => {
     },[petId])
 
     return (
-        pet.id && !deletePet ? <div>
+        !deletePet ? fetching ? <Spinner/> :  <div>
             <Form noValidate onSubmit={formik.handleSubmit}>
                 <Row>
                     <Col lg={6}>
