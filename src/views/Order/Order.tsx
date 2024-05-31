@@ -50,7 +50,7 @@ const Order = () => {
             if (event.type == "submit") searchTerm = event.target[0].value
             else searchTerm = event.target.value
             if (searchTerm.length > 1) {
-                const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/searchProduct?searchTerm=${searchTerm}`)
+                const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/searchProductForSale?searchTerm=${searchTerm}`)
                 if (res.data) {
                     if (res.data.length == 1) {
                         handleAddProduct({
@@ -237,7 +237,7 @@ const Order = () => {
             </Container>
             {show &&
                 <CustomModal title={"Agregar producto"}>
-                    <AddProductOrder product={currentProduct} addProduct={addProduct} />
+                    <AddProductOrder product={currentProduct} addProduct={addProduct} cancel={clearList}/>
                 </CustomModal>}
         </div>
     )

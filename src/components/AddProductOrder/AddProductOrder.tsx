@@ -11,9 +11,10 @@ import { notifyError } from "../Toaster/Toaster";
 interface AddProductOrderProps {
     product: orderProduct
     addProduct: (product: orderProduct) => void
+    cancel: () => void
 }
 
-const AddProductOrder: React.FC<AddProductOrderProps> = ({ product, addProduct }) => {
+const AddProductOrder: React.FC<AddProductOrderProps> = ({ product, addProduct, cancel }) => {
 
     const [show, setShow] = useRecoilState(modalState)
     const [quantity, setQuantity] = useState<number>(0)
@@ -80,7 +81,7 @@ const AddProductOrder: React.FC<AddProductOrderProps> = ({ product, addProduct }
                 </tbody>
             </Table>
             <Container className='d-flex gap-2 justify-content-center p-1'>
-                <Button variant="danger" onClick={() => setShow(false)}>Cancelar</Button>
+                <Button variant="danger" onClick={() => {setShow(false), cancel()}}>Cancelar</Button>
                 <Button onClick={handleAddProduct} >Confirmar</Button>
             </Container>
         </div>

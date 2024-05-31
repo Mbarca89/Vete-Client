@@ -23,6 +23,7 @@ const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 const ProductList = () => {
     const [loading, setLoading] = useState(false)
+    const [searching, setSearching] = useState(false)
     const [show, setShow] = useRecoilState(modalState)
     const [products, setProducts] = useState<product[]>([]);
     const [selectedProduct, setSelectedProduct] = useState<product>({
@@ -71,6 +72,7 @@ const ProductList = () => {
 
     const handleSearch = async (event: any) => {
         setLoading(true)
+        setSearching(true)
         let searchTerm
         event.preventDefault()
         try {
@@ -79,21 +81,26 @@ const ProductList = () => {
             let res
             if (searchTerm == "") {
                 res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/getProductsPaginated?page=${currentPage}&size=${pageSize}`)
+                setSearching(false)
             } else {
                 res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/searchProduct?searchTerm=${searchTerm}`)
             }
             if (res.data) {
+                console.log(res.data);
+
                 setProducts(res.data);
             }
             setLoading(false)
         } catch (error: any) {
             notifyError(error.response.data)
             setLoading(false)
+            setSearching(false)
         }
     }
 
     const handleResetSearch = (event: any) => {
         if (event.target.value == "") fetchProducts()
+        setSearching(false)
     }
 
     useEffect(() => {
@@ -136,7 +143,7 @@ const ProductList = () => {
                 </Row> : <div className='mt-5'>
                     <Spinner />
                 </div>}
-                <div className='d-flex m-auto justify-content-center mt-5 w-50'>
+                {!searching && <div className='d-flex m-auto justify-content-center mt-5 w-50'>
                     <Pagination className='mt-5'>
                         <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
                         <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
@@ -174,7 +181,7 @@ const ProductList = () => {
                         <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
                         <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
                     </Pagination>
-                </div>
+                </div>}
             </Container>
             {show &&
                 <CustomModal title={selectedProduct.name}>
