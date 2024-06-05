@@ -22,8 +22,11 @@ const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 const Pets = () => {
     const [loading, setLoading] = useState(false)
+    const [searching, setSearching] = useState(false)
     const [show, setShow] = useRecoilState(modalState)
     const [pets, setPets] = useState<pet[]>([]);
+    const [species, setSpecies] = useState<string>("")
+    const [searchName, setSearchName] = useState<string>("")
     const [selectedPet, setSelectedPet] = useState<pet>({
         id: "",
         name: "",
@@ -38,6 +41,7 @@ const Pets = () => {
     })
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
     const pageSize = 12;
 
     const handlePageChange = (pageNumber: number) => {
@@ -50,6 +54,7 @@ const Pets = () => {
             const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/pets/getPets?page=${currentPage}&size=${pageSize}`)
             if (res.data) {
                 setTotalPages(Math.ceil(res.data.totalCount / pageSize));
+                setTotalCount(res.data.totalCount)
                 setPets(res.data.data);
             }
             setLoading(false)
@@ -66,27 +71,44 @@ const Pets = () => {
 
     const handleSearch = async (event: any) => {
         setLoading(true)
+        setSearching(true)
         let searchTerm
-        event.preventDefault()
+        event.preventDefault && event.preventDefault()
         if (event.type == "submit") searchTerm = event.target[0].value
         try {
-            const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/pets/getPetsByName?name=${searchTerm}&page=1&size=${pageSize}`)
-            if (res.data) {
-                setPets(res.data);
+            const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/pets/getPetsByName?name=${searchTerm}&species=${species}&page=${currentPage}&size=${pageSize}`)
+            if (res.data) {  
+                setTotalPages(Math.ceil(res.data.totalCount / pageSize));
+                setTotalCount(res.data.totalCount)
+                setPets(res.data.data);
             }
-            setLoading(false)
         } catch (error: any) {
             handleError(error)
+        } finally {
             setLoading(false)
         }
     }
 
     const handleResetSearch = (event: any) => {
-        if (event.target.value == "") fetchPets()
+        setSearchName(event.target.value)
+        if (event.target.value == "") {
+            fetchPets()
+            setSpecies("")
+            setSearching(false)
+        }
+    }
+
+    const handleSelectSpecies = (event: any) => {
+        setSpecies(event.target.value)
     }
 
     useEffect(() => {
-        fetchPets();
+        const event = {
+            type: "submit",
+            target: [{value:searchName}]
+        }
+        if (searching) handleSearch(event)
+        else fetchPets();
     }, [currentPage]);
 
     return (
@@ -95,17 +117,34 @@ const Pets = () => {
                 <Navbar className="justify-content-between">
                     <Form onSubmit={handleSearch}>
                         <Row>
-                            <Col xs="auto">
+                            <Col xs="4" lg="4">
                                 <Form.Control
                                     type="text"
-                                    placeholder="Buscar"
+                                    placeholder="Nombre"
                                     className=" mr-sm-2"
                                     onChange={handleResetSearch}
                                 />
                             </Col>
-                            <Col xs="auto">
+                            <Col xs="4" lg="4">
+                                <Form.Group>
+                                    <Form.Select
+                                        id="providerName"
+                                        name="providerName"
+                                        value={species}
+                                        onChange={handleSelectSpecies}
+                                    >
+                                        <option value="">Especie</option>
+                                        <option value="Canino">Canino</option>
+                                        <option value="Felino">Felino</option>
+                                    </Form.Select>
+                                </Form.Group>
+                            </Col>
+                            <Col xs="auto" lg="4">
                                 <Button type="submit">Buscar</Button>
                             </Col>
+                        </Row>
+                        <Row className='text-start'>
+                            <p>{`Resultados: ${totalCount}`}</p>
                         </Row>
                     </Form>
                 </Navbar>
