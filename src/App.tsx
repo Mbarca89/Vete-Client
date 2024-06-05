@@ -10,6 +10,7 @@ const Providers = lazy(() => import("./views/Providers/Providers"))
 const Clients = lazy(() => import("./views/Clients/Clients"))
 const ClientDetail = lazy(() => import("./components/ClientDetail/ClientDetail"))
 const Pets = lazy(() => import("./views/Pets/Pets"))
+const PetReport = lazy(() => import("./views/PetReport/PetReport"))
 const PetDetail = lazy(() => import("./components/PetDetail/PetDetail"))
 const Sale = lazy(() => import("./views/Sale/Sale"))
 const Reports = lazy(() => import("./views/Reports/Reports"))
@@ -68,6 +69,7 @@ const App = () => {
           <Route path="/pets" element={isLogged ? <Pets /> : <Navigate to="/" />} />
           <Route path="/pets/detail/:petId" element={isLogged ? <PetDetail /> : <Navigate to="/" />} />
           <Route path="/sale" element={isLogged ? <Sale /> : <Navigate to="/" />} />
+          <Route path="/petReports" element={isLogged ? <PetReport /> : <Navigate to="/" />} />
           <Route path="/reports" element={isLogged && user.role == "Administrador" ? <Reports /> : <Navigate to="/" />} />
           <Route path="/graphs" element={isLogged && user.role == "Administrador" ? <Graphs /> : <Navigate to="/" />} />
           <Route path="/order" element={isLogged && user.role == "Administrador" ? <Order /> : <Navigate to="/" />} />

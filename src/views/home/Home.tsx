@@ -1,5 +1,5 @@
 import './Home.css'
-import logo from "../../assets/logook.png"
+import logo from "../../assets/logook.webp"
 import Reminders from '../../components/Reminders/Reminders'
 import StockAlerts from '../../components/StockAlerts/StockAlerts'
 

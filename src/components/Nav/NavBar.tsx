@@ -48,12 +48,13 @@ const NavBar = () => {
                                 <NavDropdown.Item onClick={() => { navigate("/reports"); handleNavLinkClick() }}>Reportes</NavDropdown.Item>
                                 <NavDropdown.Item onClick={() => { navigate("/graphs"); handleNavLinkClick() }}>Gráficos</NavDropdown.Item>
                                 <NavDropdown.Item onClick={() => { navigate("/payments"); handleNavLinkClick() }}>Pagos</NavDropdown.Item>
+                                <NavDropdown.Item onClick={() => { navigate("/providers"); handleNavLinkClick() }}>Proveedores</NavDropdown.Item>
                                 <NavDropdown.Item onClick={() => { navigate("/users"); handleNavLinkClick() }}>Facturacion</NavDropdown.Item>
                             </NavDropdown>
-                            <Nav.Link onClick={() => { navigate("/providers"); handleNavLinkClick() }}>Proveedores</Nav.Link>
                             <Nav.Link onClick={() => { navigate("/products"); handleNavLinkClick() }}>Productos</Nav.Link>
                             <Nav.Link onClick={() => { navigate("/clients"); handleNavLinkClick() }}>Clientes</Nav.Link>
                             <Nav.Link onClick={() => { navigate("/pets"); handleNavLinkClick() }}>Mascotas</Nav.Link>
+                            <Nav.Link onClick={() => { navigate("/petReports"); handleNavLinkClick() }}>Informes</Nav.Link>
                             <Nav.Link onClick={() => { navigate("/sale"); handleNavLinkClick() }}>Venta</Nav.Link>
                             <Nav.Link onClick={() => { navigate("/order"); handleNavLinkClick() }}>Compra</Nav.Link>
                             <Nav.Link onClick={() => { navigate("/whatsapp"); handleNavLinkClick() }}>Whatsapp</Nav.Link>
