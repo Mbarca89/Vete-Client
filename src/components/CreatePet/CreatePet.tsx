@@ -31,6 +31,12 @@ const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
         if (!values.name.trim()) {
             errors.name = 'Ingrese el nombre';
         }
+        if (!values.gender) {
+            errors.gender = 'Ingrese el género';
+        }
+        if (!values.species) {
+            errors.species = 'Ingrese la especie';
+        }
         return errors;
     };
 
@@ -121,11 +127,13 @@ const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
                         value={formik.values.species}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.species && formik.errors.species)}
                     >
                         <option value="">Seleccionar...</option>
                         <option value="Canino">Canino</option>
                         <option value="Felino">Felino</option>
                     </Form.Select>
+                    <Form.Control.Feedback type="invalid">{formik.errors.species}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} xs={12} md={6}>
                     <Form.Label>Género</Form.Label>
@@ -135,11 +143,13 @@ const CreatePet: React.FC<CreatePetProps> = ({ updateList, clientId }) => {
                         value={formik.values.gender}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        isInvalid={!!(formik.touched.gender && formik.errors.gender)}
                     >
                         <option value="">Seleccionar...</option>
                         <option value="Femenino">Femenino</option>
                         <option value="Masculino">Masculino</option>
                     </Form.Select>
+                    <Form.Control.Feedback type="invalid">{formik.errors.gender}</Form.Control.Feedback>
                 </Form.Group>
             </Row>
             <Row className="mb-2">
