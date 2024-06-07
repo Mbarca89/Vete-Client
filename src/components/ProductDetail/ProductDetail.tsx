@@ -146,6 +146,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, updateList }) 
                 cost: values.cost,
                 price: values.price,
                 stock: values.stock,
+                stockAlert: stockAlert,
+                published: published,
                 categoryName: values.categoryName,
                 providerName: values.providerName ? values.providerName : "Ninguno"
             }
