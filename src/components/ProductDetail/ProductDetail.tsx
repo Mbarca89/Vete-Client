@@ -73,9 +73,13 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, updateList }) 
     const getProduct = async () => {
         setFetching(true)
         try {
-            const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/getById?productId=${productId}`)
+            const res = await axiosWithToken.get<product>(`${SERVER_URL}/api/v1/products/getById?productId=${productId}`)
             if (res.data) {
+                console.log(res.data);
+                
                 setProduct(res.data)
+                setPublished(res.data.published)
+                setStockAlert(res.data.stockAlert)
             }
         } catch (error) {
             handleError(error)
