@@ -16,7 +16,7 @@ const PetReport = () => {
 
     const [loading, setLoading] = useState<boolean>(false)
     const inputRef = useRef<HTMLInputElement>(null)
-    const [image, setImage] = useState<string | ArrayBuffer | null>(null);
+    const [images, setImages] = useState<string[]>([]);
     const formRef = useRef<HTMLDivElement | null>(null);
     const pdfTemplateRef = useRef<HTMLDivElement | null>(null);
     const [pdfData, setPdfData] = useState<string | null>(null);
@@ -36,15 +36,26 @@ const PetReport = () => {
     })
 
 
-    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files && event.target.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                if (e.target && e.target.result) {
-                    setImage(e.target.result);
-                }
-            };
-            reader.readAsDataURL(event.target.files[0]);
+    const handleImagesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+            const files = Array.from(event.target.files);
+            const imagePromises = files.map(file => {
+                return new Promise<string>((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        if (e.target && e.target.result) {
+                            resolve(e.target.result as string);
+                        } else {
+                            reject(new Error('File reading error'));
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                });
+            });
+
+            Promise.all(imagePromises)
+                .then(images => setImages(images)) // Assuming setImages is a state setter for an array of images
+                .catch(error => console.error('Error reading files', error));
         }
     };
 
@@ -77,7 +88,7 @@ const PetReport = () => {
             diagnosis: '',
             recomendation: ''
         });
-        setImage(null)
+        setImages([])
         if (inputRef.current) {
             inputRef.current.value = ''
         }
@@ -86,11 +97,11 @@ const PetReport = () => {
 
     const generatePdf = async () => {
         if (!pdfTemplateRef.current) return;
-
+    
         setLoading(true);
-
+    
         const input = pdfTemplateRef.current;
-
+    
         try {
             const canvas = await html2canvas(input);
             const imgData = canvas.toDataURL('image/png');
@@ -103,37 +114,38 @@ const PetReport = () => {
             const contentHeight = input.offsetHeight;
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
-
+    
             let scale = 1;
             if (contentWidth > pdfWidth || contentHeight > pdfHeight) {
-                // If content exceeds page size, scale down to fit within page dimensions
                 scale = Math.min(pdfWidth / contentWidth, pdfHeight / contentHeight);
             }
-
+    
             const scaledWidth = contentWidth * scale;
             const scaledHeight = contentHeight * scale;
             const xOffset = (pdfWidth - scaledWidth) / 2;
             const yOffset = (pdfHeight - scaledHeight) / 2;
             pdf.addImage(imgData, 'PNG', xOffset, yOffset, scaledWidth, scaledHeight);
-
-            if (image) {
-                pdf.addPage();
-                pdf.addImage(image as string, 'PNG', 10, 10, 100, 100); // Adjust dimensions and position as needed
+    
+            if (images && images.length > 0) {
+                images.forEach((image, index) => {
+                    pdf.addPage();
+                    pdf.addImage(image, 'PNG', 10, 10, 190, 106)
+                });
             }
-
+    
             const pdfBlob = pdf.output('blob');
             const pdfUrl = URL.createObjectURL(pdfBlob);
             setPdfData(pdfUrl);
-
+    
             const formData = new FormData();
             formData.append('file', pdfBlob, 'generated.pdf');
-
+    
         } catch (error) {
             console.error('Error generating or sending PDF', error);
         } finally {
             setLoading(false);
         }
-    };
+    }; 
 
     const downloadPdf = () => {
         if (pdfData) {
@@ -300,8 +312,9 @@ const PetReport = () => {
                                 <Form.Control type="file"
                                     id="image"
                                     name="image"
-                                    onChange={handleImageChange}
+                                    onChange={handleImagesChange}
                                     accept="image/*"
+                                    multiple
                                     ref={inputRef}
                                 />
                             </Form.Group>
