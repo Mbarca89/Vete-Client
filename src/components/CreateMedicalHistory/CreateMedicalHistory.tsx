@@ -155,7 +155,7 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({ updateList,
             {formik.values.type == "Control" && <Row>
                 <Form.Group as={Col} xs={12} md={12}>
                     <Form.Label>Control de peso</Form.Label>
-                    <Form.Control type="text" placeholder={`Peso actual: ${currentPet.weight} kg`}
+                    <Form.Control type="number" placeholder={`Peso actual: ${currentPet.weight} kg`}
                         id="medicine"
                         name="medicine"
                         value={newWeight}

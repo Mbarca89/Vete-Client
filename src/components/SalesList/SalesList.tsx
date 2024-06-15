@@ -106,6 +106,7 @@ const SalesList = () => {
                         <th>Vendedor</th>
                         <th>Monto</th>
                         <th>Costo</th>
+                        <th>Facturar</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -115,6 +116,7 @@ const SalesList = () => {
                         <td>{sale.seller}</td>
                         <td>${sale.amount.toFixed(2)}</td>
                         <td>${sale.cost.toFixed(2)}</td>
+                        <td><svg width="25" height="25" viewBox="0 0 512 512" style={{color:"#632f6b"}} xmlns="http://www.w3.org/2000/svg" className="h-full w-full"><rect width="512" height="512" x="0" y="0" rx="30" fill="transparent" stroke="transparent" stroke-width="0" stroke-opacity="100%" paint-order="stroke"></rect><svg width="512px" height="512px" viewBox="0 0 48 48" fill="#632f6b" x="0" y="0" role="img" style={{display:"inline-block;vertical-align:middle"}} xmlns="http://www.w3.org/2000/svg"><g fill="#632f6b"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M10 6a2 2 0 0 1 2-2h24a2 2 0 0 1 2 2v38l-7-5l-7 5l-7-5l-7 5V6Zm8 16h12m-12 8h12M18 14h12"/></g></svg></svg></td>
                     </tr>
 
                     )}

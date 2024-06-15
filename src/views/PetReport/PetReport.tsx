@@ -11,6 +11,8 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import { Spinner } from 'react-bootstrap';
+import handleError from "../../utils/HandleErrors";
+import { notifySuccess } from "../../components/Toaster/Toaster";
 
 const PetReport = () => {
 
@@ -54,7 +56,7 @@ const PetReport = () => {
             });
 
             Promise.all(imagePromises)
-                .then(images => setImages(images)) // Assuming setImages is a state setter for an array of images
+                .then(images => setImages(images))
                 .catch(error => console.error('Error reading files', error));
         }
     };
@@ -97,11 +99,11 @@ const PetReport = () => {
 
     const generatePdf = async () => {
         if (!pdfTemplateRef.current) return;
-    
+
         setLoading(true);
-    
+
         const input = pdfTemplateRef.current;
-    
+
         try {
             const canvas = await html2canvas(input);
             const imgData = canvas.toDataURL('image/png');
@@ -114,38 +116,61 @@ const PetReport = () => {
             const contentHeight = input.offsetHeight;
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
-    
+
             let scale = 1;
             if (contentWidth > pdfWidth || contentHeight > pdfHeight) {
                 scale = Math.min(pdfWidth / contentWidth, pdfHeight / contentHeight);
             }
-    
+
             const scaledWidth = contentWidth * scale;
             const scaledHeight = contentHeight * scale;
             const xOffset = (pdfWidth - scaledWidth) / 2;
             const yOffset = (pdfHeight - scaledHeight) / 2;
             pdf.addImage(imgData, 'PNG', xOffset, yOffset, scaledWidth, scaledHeight);
-    
+
             if (images && images.length > 0) {
-                images.forEach((image, index) => {
-                    pdf.addPage();
-                    pdf.addImage(image, 'PNG', 10, 10, 190, 106)
+                const loadImage = (src: string): Promise<HTMLImageElement> => {
+                  return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.src = src;
+                    img.onload = () => resolve(img);
+                    img.onerror = (err) => reject(err);
+                  });
+                };
+          
+                const imagePromises = images.map(loadImage);
+                const loadedImages = await Promise.all(imagePromises);
+          
+                loadedImages.forEach((img) => {
+                  const imgWidth = img.width;
+                  const imgHeight = img.height;
+                  const imgAspectRatio = imgWidth / imgHeight;
+                  let displayWidth = 190;
+                  let displayHeight = displayWidth / imgAspectRatio;
+          
+                  if (displayHeight > 190) {
+                    displayHeight = 190;
+                    displayWidth = displayHeight * imgAspectRatio;
+                  }
+          
+                  pdf.addPage();
+                  pdf.addImage(img.src, 'PNG', (pdfWidth - displayWidth) / 2, (pdfHeight - displayHeight) / 2, displayWidth, displayHeight);
                 });
-            }
-    
+              }
+
             const pdfBlob = pdf.output('blob');
             const pdfUrl = URL.createObjectURL(pdfBlob);
             setPdfData(pdfUrl);
-    
+
             const formData = new FormData();
             formData.append('file', pdfBlob, 'generated.pdf');
-    
-        } catch (error) {
-            console.error('Error generating or sending PDF', error);
+            notifySuccess("Informe creado correctamente.")
+        } catch (error: any) {
+            handleError(error)
         } finally {
             setLoading(false);
         }
-    }; 
+    };
 
     const downloadPdf = () => {
         if (pdfData) {

@@ -6,7 +6,7 @@ import Row from 'react-bootstrap/Row';
 import { createPetformValues } from "../../types";
 import { useFormik } from 'formik';
 import { axiosWithToken } from "../../utils/axiosInstances";
-import { notifyError, notifySuccess } from "../Toaster/Toaster";
+import { notifySuccess } from "../Toaster/Toaster";
 import { useRef, useState } from "react";
 import { useRecoilState } from "recoil";
 import { modalState } from "../../app/store";

@@ -207,3 +207,21 @@ export interface payments {
     paymentMethod: string,
     paymentDate: date
 }
+
+export interface billFormValues {
+    id: string
+    type: string
+    number: number
+    cuit: number
+}
+
+export interface billProduct {
+    id: number
+    barCode: number
+    description: string
+    quantity: number
+    unitCode: number
+    price: number
+    iva: number
+    total: number
+}
