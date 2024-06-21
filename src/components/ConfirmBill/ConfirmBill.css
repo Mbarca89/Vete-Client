@@ -1,0 +1,14 @@
+.pdf-template {
+    width: 210mm; /* A4 width */
+    min-height: 297mm; /* A4 height */
+    padding: 10mm;
+    background: white;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    margin: auto;
+    overflow: hidden;
+    font-size: 8pt;
+}
+
+.pdf-template h1 {
+    font-size: 16pt;
+}

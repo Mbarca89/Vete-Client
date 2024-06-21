@@ -212,16 +212,53 @@ export interface billFormValues {
     id: string
     type: string
     number: number
-    cuit: number
+    cuit: number | null
+    name: string
 }
 
 export interface billProduct {
-    id: number
-    barCode: number
-    description: string
-    quantity: number
-    unitCode: number
-    price: number
-    iva: number
-    total: number
+    id: number;
+    barCode: number;
+    description: string;
+    quantity: number;
+    price: number;
+    netPrice: number;
+    iva: number;
+}
+
+export interface customBillProduct {
+    id: number | undefined;
+    barCode: number | undefined;
+    description: string | undefined;
+    quantity: number | undefined;
+    price: number | undefined;
+}
+
+export interface afipResponse {
+    errors: [{ code: string, msg: string }]
+    observations: [{ code: string, msg: string }]
+    cae: string
+    caeFchVto: string
+    status: string
+    message: string
+}
+
+export interface bill {
+    id: string;
+    fecha: string;
+    tipo: string;
+    numero: number;
+    tipoDocumento: number;
+    documento: number;
+    nombre: string;
+    importeTotal: number;
+    importeNoGravado: number;
+    importeGravado: number;
+    importeIva: number;
+    cae: string;
+    caeFchVto: string;
+    estado: string;
+    errors: [{ code: string, msg: string }];
+    observations: [{ code: string, msg: string }];
+    billProducts: [billProduct];
 }

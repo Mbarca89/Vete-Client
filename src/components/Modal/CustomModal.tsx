@@ -4,7 +4,7 @@ import { useRecoilState } from "recoil"
 
 
 
-function CustomModal({ children, title }: any) {
+function CustomModal({ children, title, fullscreen }: any) {
 
   let [show, setShow] = useRecoilState(modalState)
   
@@ -12,7 +12,7 @@ function CustomModal({ children, title }: any) {
   
   return (
     <>
-      <Modal backdrop="static" show={show} onHide={handleClose} size="lg"
+      <Modal backdrop="static" show={show} onHide={handleClose} size={fullscreen ? "xl" : "lg"}
       aria-labelledby="contained-modal-title-vcenter"
       centered>
         <Modal.Header closeButton>
