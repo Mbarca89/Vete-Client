@@ -1,5 +1,5 @@
 import "./Sale.css"
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -26,6 +26,8 @@ const Sale = () => {
     const [optionSelected, setOptionSelected] = useState(false);
     const [quantity, setQuantity] = useState<number>(1)
     const [user, setUser] = useRecoilState(userState)
+    const [discountApplied, setDiscountApplied] = useState<boolean>(false)
+    const [discountAmount, setDiscountAmount] = useState<number>(0)
 
     const handleDelete = (index: number) => {
         const newSaleProducts = [...saleProducts.slice(0, index), ...saleProducts.slice(index + 1)];
@@ -111,6 +113,7 @@ const Sale = () => {
                     productPrice: product.price,
                     productCost: product.cost,
                     quantity: quantity !== 0 ? quantity : 1,
+                    barCode: product.barCode
                 },
             ]);
         }
@@ -122,14 +125,13 @@ const Sale = () => {
         setQuantity(1);
     };
 
-
-    const handlePrint = () => {
-        window.print()
-    }
-
     const handleQuantity = (event: any) => {
         // const newValue = parseInt(event.target.value, 10)
         setQuantity(event.target.value)
+    }
+
+    const handleDiscount = () => {
+        setDiscountApplied(!discountApplied)
     }
 
     const handleClearSale = () => {
@@ -140,9 +142,15 @@ const Sale = () => {
         setLoading(true)
         const saleRequestDto = {
             seller: user.name + " " + user.surname,
-            amount: saleProducts.reduce((total, product) => total + (product.quantity * product.productPrice), 0),
-            cost: saleProducts.reduce((total, product) => total + (product.productCost), 0),
-            saleProducts: saleProducts
+            amount: discountApplied ? (saleProducts.reduce((total, product) => total + (product.quantity * product.productPrice), 0) * (1 - discountAmount / 100)) : saleProducts.reduce((total, product) => total + (product.quantity * product.productPrice), 0),
+            cost: saleProducts.reduce((total, product) => total + (product.quantity * product.productCost), 0),
+            saleProducts: discountApplied ? saleProducts.map((product) => (
+                {
+                ...product,
+                productPrice: product.productPrice * (1 - discountAmount / 100)
+            })) : saleProducts,
+            discount: discountApplied,
+            discountAmount: discountAmount
         }
         try {
             const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/sales/create`, saleRequestDto)
@@ -224,19 +232,42 @@ const Sale = () => {
                             {saleProducts.map((product, index) => <tr key={String(product.productId)}>
                                 <td className=''>{product.productName}</td>
                                 <td>{product.productDescription}</td>
-                                <td>{product.productPrice}</td>
+                                <td>{discountApplied ? <p><del>{product.productPrice}</del> {product.productPrice * (1 - discountAmount / 100)}</p> : product.productPrice}</td>
                                 <td>{product.quantity}</td>
-                                <td>{product.quantity * product.productPrice}</td>
+                                <td>{discountApplied ? (product.quantity * product.productPrice) * (1 - discountAmount / 100) : product.quantity * product.productPrice}</td>
                                 <td><svg role="button" onClick={() => handleDelete(index)} width="25" height="25" viewBox="0 0 512 512" style={{ color: "#632f6b" }} xmlns="http://www.w3.org/2000/svg" className="h-full w-full"><rect width="512" height="512" x="0" y="0" rx="30" fill="transparent" stroke="transparent" strokeWidth="0" strokeOpacity="100%" paintOrder="stroke"></rect><svg width="512px" height="512px" viewBox="0 0 1024 1024" fill="#632f6b" x="0" y="0" role="img" style={{ display: "inline-block;vertical-align:middle" }} xmlns="http://www.w3.org/2000/svg"><g fill="#632f6b"><path fill="currentColor" fillRule="evenodd" d="M799.855 166.312c.023.007.043.018.084.059l57.69 57.69c.041.041.052.06.059.084a.118.118 0 0 1 0 .069c-.007.023-.018.042-.059.083L569.926 512l287.703 287.703c.041.04.052.06.059.083a.118.118 0 0 1 0 .07c-.007.022-.018.042-.059.083l-57.69 57.69c-.041.041-.06.052-.084.059a.118.118 0 0 1-.069 0c-.023-.007-.042-.018-.083-.059L512 569.926L224.297 857.629c-.04.041-.06.052-.083.059a.118.118 0 0 1-.07 0c-.022-.007-.042-.018-.083-.059l-57.69-57.69c-.041-.041-.052-.06-.059-.084a.118.118 0 0 1 0-.069c.007-.023.018-.042.059-.083L454.073 512L166.371 224.297c-.041-.04-.052-.06-.059-.083a.118.118 0 0 1 0-.07c.007-.022.018-.042.059-.083l57.69-57.69c.041-.041.06-.052.084-.059a.118.118 0 0 1 .069 0c.023.007.042.018.083.059L512 454.073l287.703-287.702c.04-.041.06-.052.083-.059a.118.118 0 0 1 .07 0Z" /></g></svg></svg></td>
                             </tr>
                             )}
                         </tbody>
                     </Table>
-                    <div className='container d-flex justify-content-end'>
-                        <h5>{`Total: ${saleProducts.reduce((total, product) => total + (product.quantity * product.productPrice), 0)}`}</h5>
+                    <div className='container d-flex flex-column align-items-end justify-content-end'>
+                        <h5>{`Total: $${saleProducts.reduce((total, product) => total + (product.quantity * product.productPrice), 0)}`}</h5>
+                        {discountApplied && <h5>{`Total con descuento: $${(saleProducts.reduce((total, product) => total + (product.quantity * product.productPrice), 0) * (1 - discountAmount / 100))}`}</h5>}
                     </div>
                 </Container>
             </div>
+            <Container className="mb-3 d-flex align-items-center justify-content-center">
+                <Row>
+                    <Col xs={9} md={8} className="d-flex align-items-center">
+                        <Form.Check
+                            type="checkbox"
+                            name="published"
+                            id="custom-switch"
+                            label="Aplicar descuento"
+                            checked={discountApplied}
+                            onChange={handleDiscount}
+                        />
+                    </Col>
+                    <Col xs={3} md={4} className="d-flex align-items-center">
+                        <Form.Control
+                            type="number"
+                            onChange={(event: any) => { setDiscountAmount(event.target.value) }}
+                            value={discountAmount}
+                        />
+                        <p className="m-auto ms-3">%</p>
+                    </Col>
+                </Row>
+            </Container>
             <Container className='d-flex gap-2 justify-content-center p-1'>
                 <div className='d-flex align-items-center justify-content-center w-25'>
                     <Button className="" variant="danger" onClick={handleClearSale}>

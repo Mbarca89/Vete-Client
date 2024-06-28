@@ -75,7 +75,7 @@ const App = () => {
           <Route path="/graphs" element={isLogged && user.role == "Administrador" ? <Graphs /> : <Navigate to="/" />} />
           <Route path="/order" element={isLogged && user.role == "Administrador" ? <Order /> : <Navigate to="/" />} />
           <Route path="/payments" element={isLogged && user.role == "Administrador" ? <Payments /> : <Navigate to="/" />} />
-          <Route path="/billing" element={isLogged && user.role == "Administrador" ? <Billing /> : <Navigate to="/" />} />
+          <Route path="/billing" element={isLogged && user.role == "Administrador" ? <Billing/> : <Navigate to="/" />} />
           <Route path="/whatsapp" element={isLogged ? <Wa /> : <Navigate to="/" />} />
         </Route>
         <Route path="/" element={<Landing />} />

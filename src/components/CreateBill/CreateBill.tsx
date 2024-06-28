@@ -7,7 +7,7 @@ import Container from 'react-bootstrap/Container';
 import Table from 'react-bootstrap/Table';
 import { useFormik } from 'formik';
 import { axiosWithToken } from "../../utils/axiosInstances";
-import { afipResponse, billFormValues, billProduct, product } from '../../types';
+import { afipResponse, billFormValues, billProduct, product, saleProduct } from '../../types';
 import { notifyError, notifySuccess } from '../Toaster/Toaster';
 import handleError from '../../utils/HandleErrors';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -20,10 +20,11 @@ import ConfirmBill from '../ConfirmBill/ConfirmBill';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface CreateBillProps {
+    saleId: string | (string | null)[] | null
     updateList: () => void
 }
 
-const CreateBill:React.FC<CreateBillProps> = ({updateList}) => {
+const CreateBill: React.FC<CreateBillProps> = ({ updateList, saleId }) => {
     const [show, setShow] = useRecoilState(modalState)
     const [modal, setModal] = useState<string>("addProduct")
     const [loading, setLoading] = useState(false)
@@ -157,7 +158,7 @@ const CreateBill:React.FC<CreateBillProps> = ({updateList}) => {
                 numero: values.number,
                 tipoDocumento: values.type == "1" ? 80 : values.cuit ? "90" : "99",
                 documento: values.cuit || 0,
-                nombre:values.name != "" ? values.name : "Consumidor final",
+                nombre: values.name != "" ? values.name : "Consumidor final",
                 importeTotal: (billProducts.reduce((total, product) => total + (product.quantity * product.price), 0).toFixed(2)),
                 importeNoGravado: values.type == "1" ? 0 : (billProducts.reduce((total, product) => total + (product.quantity * product.price), 0).toFixed(2)),
                 importeGravado: values.type == "1" ? (billProducts.reduce((total, product) => total + (product.netPrice), 0).toFixed(2)) : 0,
@@ -165,8 +166,6 @@ const CreateBill:React.FC<CreateBillProps> = ({updateList}) => {
                 billProducts: billProducts
             }
             try {
-                console.log(bill);
-                
                 const res = await axiosWithToken.post<afipResponse>(`${SERVER_URL}/api/v1/afipws/generarComprobante`, bill)
                 if (res.data) {
                     setBillResult(res.data)
@@ -228,6 +227,33 @@ const CreateBill:React.FC<CreateBillProps> = ({updateList}) => {
         }
         formik.values.type && getBillNumber()
     }, [formik.values.type])
+
+    useEffect(() => {
+        const getSale = async (saleId: string | (string | null)[] | null) => {
+            setLoading(true)
+            try {
+                const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/sales/getById/${saleId}`)
+                if (res.data) {
+                    setBillProducts(res.data.saleProducts.map((product: saleProduct) => ({
+                        id: product.productId,
+                        barCode: product.barCode,
+                        description: product.productDescription,
+                        quantity: product.quantity,
+                        price: product.productPrice,
+                        netPrice: Number((product.productPrice / 1.21).toFixed(2)),
+                        iva: Number((product.productPrice - product.productPrice / 1.21).toFixed(2)),
+                    })))
+                }
+            } catch (error: any) {
+                handleError(error)
+            } finally {
+                setLoading(false)
+            }
+        }
+        if (saleId) {
+            getSale(saleId)
+        }
+    }, [])
 
     return (
         <div className='container flex-grow-1 p-lg-3 p-sm-0 rounded custom m-2 overflow-auto'>
@@ -313,7 +339,7 @@ const CreateBill:React.FC<CreateBillProps> = ({updateList}) => {
                     <Col xs="auto" lg={6} className='position-absolute'>
                         {!searching ? <ListGroup>
                             {products.map((product, index) => <ListGroup.Item
-                                key={product.id+index}
+                                key={product.id + index}
                                 action
                                 onClick={() => addProduct(product)}
                             >{product.name}</ListGroup.Item>)}

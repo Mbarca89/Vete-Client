@@ -86,8 +86,6 @@ const ProductList = () => {
                 res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/searchProduct?searchTerm=${searchTerm}`)
             }
             if (res.data) {
-                console.log(res.data);
-
                 setProducts(res.data);
             }
             setLoading(false)

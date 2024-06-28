@@ -75,8 +75,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, updateList }) 
         try {
             const res = await axiosWithToken.get<product>(`${SERVER_URL}/api/v1/products/getById?productId=${productId}`)
             if (res.data) {
-                console.log(res.data);
-                
                 setProduct(res.data)
                 setPublished(res.data.published)
                 setStockAlert(res.data.stockAlert)

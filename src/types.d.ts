@@ -128,7 +128,8 @@ export interface saleProduct {
     productDescription: string,
     productPrice: number,
     productCost: number,
-    quantity: number
+    quantity: number,
+    barCode: number
 }
 
 export interface sale {
@@ -137,6 +138,8 @@ export interface sale {
     cost: number,
     date: string,
     seller: string,
+    discount: boolean,
+    discountAmount: number,
     saleProducts: saleProduct[]
 }
 

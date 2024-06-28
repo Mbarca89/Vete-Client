@@ -67,9 +67,6 @@ const ConfirmBill: React.FC<ConfirmBillProps> = ({ submit, billResult, values, p
         }
     };
 
-    console.log(billResult);
-    
-
     return (
         <>
             {billResult.status == "R" || billResult.status == "" ?
