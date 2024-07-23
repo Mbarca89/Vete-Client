@@ -7,7 +7,7 @@ import Container from 'react-bootstrap/Container';
 import Table from 'react-bootstrap/Table';
 import { useFormik } from 'formik';
 import { axiosWithToken } from "../../utils/axiosInstances";
-import { afipResponse, billFormValues, billProduct, product, saleProduct } from '../../types';
+import type { afipResponse, billFormValues, billProduct, product, saleProduct } from '../../types';
 import { notifyError, notifySuccess } from '../Toaster/Toaster';
 import handleError from '../../utils/HandleErrors';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -156,20 +156,20 @@ const CreateBill: React.FC<CreateBillProps> = ({ updateList, saleId }) => {
             const bill = {
                 tipo: values.type,
                 numero: values.number,
-                tipoDocumento: values.type == "1" ? 80 : values.cuit ? "90" : "99",
+                tipoDocumento: values.type === "1" ? 80 : values.cuit ? "90" : "99",
                 documento: values.cuit || 0,
-                nombre: values.name != "" ? values.name : "Consumidor final",
+                nombre: values.name !== "" ? values.name : "Consumidor final",
                 importeTotal: (billProducts.reduce((total, product) => total + (product.quantity * product.price), 0).toFixed(2)),
-                importeNoGravado: values.type == "1" ? 0 : (billProducts.reduce((total, product) => total + (product.quantity * product.price), 0).toFixed(2)),
-                importeGravado: values.type == "1" ? (billProducts.reduce((total, product) => total + (product.netPrice), 0).toFixed(2)) : 0,
-                importeIva: values.type == "1" ? (billProducts.reduce((total, product) => total + (product.iva), 0).toFixed(2)) : 0,
+                importeNoGravado: 0,
+                importeGravado: (billProducts.reduce((total, product) => total + (product.netPrice), 0).toFixed(2)),
+                importeIva: (billProducts.reduce((total, product) => total + (product.iva), 0).toFixed(2)),
                 billProducts: billProducts
             }
             try {
                 const res = await axiosWithToken.post<afipResponse>(`${SERVER_URL}/api/v1/afipws/generarComprobante`, bill)
                 if (res.data) {
                     setBillResult(res.data)
-                    if (res.data.status == "A") notifySuccess(res.data.message)
+                    if (res.data.status === "A") notifySuccess(res.data.message)
                     else notifyError(res.data.message)
                 }
             } catch (error) {

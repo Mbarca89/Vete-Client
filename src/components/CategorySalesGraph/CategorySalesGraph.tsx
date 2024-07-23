@@ -4,14 +4,10 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { useState, useEffect } from "react";
-import { useRecoilState } from "recoil";
-import { modalState } from "../../app/store";
 import { saleByCategoryReport } from "../../types";
 import { axiosWithToken } from "../../utils/axiosInstances";
-import { notifyError } from "../../components/Toaster/Toaster";
 import handleError from "../../utils/HandleErrors";
 import { Spinner } from "react-bootstrap";
-import { ApexOptions } from 'apexcharts';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 const CategorySalesGraph = () => {
