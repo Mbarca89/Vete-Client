@@ -167,6 +167,8 @@ const CreateBill: React.FC<CreateBillProps> = ({ updateList, saleId }) => {
             }
             
             try {
+                console.log(bill);
+                
                 const res = await axiosWithToken.post<afipResponse>(`${SERVER_URL}/api/v1/afipws/generarComprobante`, bill)
                 if (res.data) {
                     setBillResult(res.data)
