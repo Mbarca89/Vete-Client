@@ -161,10 +161,11 @@ const CreateBill: React.FC<CreateBillProps> = ({ updateList, saleId }) => {
                 nombre: values.name !== "" ? values.name : "Consumidor final",
                 importeTotal: (billProducts.reduce((total, product) => total + (product.quantity * product.price), 0).toFixed(2)),
                 importeNoGravado: 0,
-                importeGravado: (billProducts.reduce((total, product) => total + (product.netPrice), 0).toFixed(2)),
-                importeIva: (billProducts.reduce((total, product) => total + (product.iva), 0).toFixed(2)),
+                importeGravado: (billProducts.reduce((total, product) => total + (product.quantity * product.netPrice), 0).toFixed(2)),
+                importeIva: (billProducts.reduce((total, product) => total + (product.quantity * product.iva), 0).toFixed(2)),
                 billProducts: billProducts
             }
+            
             try {
                 const res = await axiosWithToken.post<afipResponse>(`${SERVER_URL}/api/v1/afipws/generarComprobante`, bill)
                 if (res.data) {
