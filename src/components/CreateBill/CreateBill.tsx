@@ -231,6 +231,9 @@ const CreateBill: React.FC<CreateBillProps> = ({ updateList, saleId }) => {
         formik.values.type && getBillNumber()
     }, [formik.values.type])
 
+    console.log((billProducts.reduce((total, product) => total + (product.quantity * product.iva), 0).toFixed(2)),);
+    
+
     useEffect(() => {
         const getSale = async (saleId: string | (string | null)[] | null) => {
             setLoading(true)
