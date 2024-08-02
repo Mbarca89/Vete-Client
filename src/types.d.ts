@@ -167,7 +167,8 @@ export interface reminder {
     petName: string;
     date: date;
     id: string
-    petId: string
+    petId: string,
+    phone: string
 }
 
 export interface CreateReminderformValues {
@@ -176,6 +177,15 @@ export interface CreateReminderformValues {
     date: string;
     notes: string;
     phone: string;
+}
+
+export interface reminderDetailFormValues {
+    id: string;
+    name: string;
+    date: string;
+    notes: string;
+    phone: string;
+    petId: string;
 }
 
 export interface stockAlert {

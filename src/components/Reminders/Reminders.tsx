@@ -25,13 +25,13 @@ const Reminders = () => {
         try {
             const reminderResponse = await axiosWithToken.get(`${SERVER_URL}/api/v1/reminders/getReminders/${day}`)
             const vaccinesResponse = await axiosWithToken.get(`${SERVER_URL}/api/v1/vaccines/getVaccinesByDate?date=${day}`)
-            console.log(vaccinesResponse.data, reminderResponse.data);
             
             if (vaccinesResponse && vaccinesResponse.data) {
                 setReminders([...reminderResponse.data.map((reminder: reminder) => ({
                     title: reminder.name,
                     start: reminder.date,
                     id: reminder.id,
+                    phone: reminder.phone,
                     eventType: "reminder"
                 })), ...vaccinesResponse.data.map((reminder: reminder) => ({
                     title: reminder.name,

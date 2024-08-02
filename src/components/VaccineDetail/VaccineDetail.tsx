@@ -2,7 +2,7 @@ import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
 import { axiosWithToken } from "../../utils/axiosInstances";
 import { notifySuccess } from "../Toaster/Toaster";
 import { useFormik } from "formik";
-import type { CreateVaccineformValues } from "../../types";
+import type { CreateVaccineformValues, reminderDetailFormValues } from "../../types";
 import { useState } from "react";
 import { useRecoilState } from "recoil";
 import { modalState } from "../../app/store";
@@ -23,7 +23,6 @@ const VaccineDetail: React.FC<VaccineDetailProps> = ({ event, updateList, petId 
     const [show, setShow] = useRecoilState(modalState)
 
     const date = new Date(event.startStr);
-    console.log(event.startStr);
     
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
@@ -31,7 +30,7 @@ const VaccineDetail: React.FC<VaccineDetailProps> = ({ event, updateList, petId 
 
     const newDateString = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
 
-    const validate = (values: CreateVaccineformValues): CreateVaccineformValues => {
+    const validate = (values: reminderDetailFormValues): reminderDetailFormValues => {
         const errors: any = {};
 
         if (!values.name.trim()) {
@@ -39,6 +38,9 @@ const VaccineDetail: React.FC<VaccineDetailProps> = ({ event, updateList, petId 
         }
         if (!values.date) {
             errors.date = "Ingrese una fecha"
+        }
+        if (!values.phone) {
+            errors.phone = "Ingrese el número de teléfono"
         }
         return errors;
     };
@@ -49,7 +51,8 @@ const VaccineDetail: React.FC<VaccineDetailProps> = ({ event, updateList, petId 
             date: newDateString,
             notes: event.extendedProps.notes,
             id: event.id,
-            petId: petId
+            petId: petId,
+            phone: event.extendedProps.phone
         },
         validate,
         enableReinitialize: true,
@@ -62,13 +65,20 @@ const VaccineDetail: React.FC<VaccineDetailProps> = ({ event, updateList, petId 
                 notes: values.notes,
                 id: event.id,
             }
+            const editReminder = {
+                name: values.name,
+                date: new Date(year, month - 1, day),
+                notes: values.notes,
+                id: event.id,
+                phone: values.phone
+            }
 
             try {
                 let res
                 if (event.extendedProps.eventType === "vaccine") {
                     res = await axiosWithToken.put(`${SERVER_URL}/api/v1/vaccines/editVaccine`, editVaccine)
                 } else {
-                    res = await axiosWithToken.put(`${SERVER_URL}/api/v1/reminders/editReminder`, editVaccine)
+                    res = await axiosWithToken.put(`${SERVER_URL}/api/v1/reminders/editReminder`, editReminder)
                 }
                 notifySuccess(res.data)
                 updateList()
@@ -111,9 +121,6 @@ const VaccineDetail: React.FC<VaccineDetailProps> = ({ event, updateList, petId 
             setLoading(false)
         }
     }
-
-    console.log(event);
-
 
     return (
         !deleteVaccine ? <div>
@@ -162,6 +169,21 @@ const VaccineDetail: React.FC<VaccineDetailProps> = ({ event, updateList, petId 
                             onBlur={formik.handleBlur}
                         />
                     </Form.Group>
+                </Row>
+                <Row>
+                {event.extendedProps.phone?.length > 3 && <Form.Group as={Col} xs={12} md={6}>
+                    <Form.Label>Teléfono (54 9)</Form.Label>
+                    <Form.Control type="text" placeholder="266 xxxxxxx"
+                        id="phone"
+                        name="phone"
+                        value={formik.values.phone}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        disabled={!edit}
+                        isInvalid={!!(formik.touched.phone && formik.errors.phone)}
+                    />
+                    <Form.Control.Feedback type="invalid">{formik.errors.phone}</Form.Control.Feedback>
+                </Form.Group>}
                 </Row>
                 {edit && <Row>
                     <Form.Group as={Col} className="d-flex justify-content-center mt-3">
