@@ -62,12 +62,12 @@ const CreateBill: React.FC<CreateBillProps> = ({ updateList, saleId }) => {
         setSearching(true)
         try {
             let searchTerm
-            if (event.type == "submit") searchTerm = event.target[0].value
+            if (event.type === "submit") searchTerm = event.target[0].value
             else searchTerm = event.target.value
             if (searchTerm.length > 1) {
                 const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/searchProductForSale?searchTerm=${searchTerm}`)
                 if (res.data) {
-                    if (res.data.length == 1) {
+                    if (res.data.length === 1) {
                         addProduct(res.data[0])
                     } else {
                         setProducts(res.data);
@@ -101,7 +101,7 @@ const CreateBill: React.FC<CreateBillProps> = ({ updateList, saleId }) => {
     }
 
     const handleClearList = (event: any) => {
-        if (event.target.value == "") clearList()
+        if (event.target.value === "") clearList()
     }
 
     const addProduct = (product: product) => {
@@ -131,11 +131,11 @@ const CreateBill: React.FC<CreateBillProps> = ({ updateList, saleId }) => {
         if (!values.type) {
             errors.type = 'Ingrese el tipo.';
         }
-        if (!values.cuit && values.type == "1") {
+        if (!values.cuit && values.type === "1") {
             errors.cuit = 'Ingrese el cuit.';
-        } else if (values.cuit && values.type == "1" && !/^\d{11}$/.test(values.cuit.toString())) {
+        } else if (values.cuit && values.type === "1" && !/^\d{11}$/.test(values.cuit.toString())) {
             errors.cuit = "Formato incorrecto."
-        } else if (values.cuit && values.type == "6" && !/^\d{8}$/.test(values.cuit.toString())) {
+        } else if (values.cuit && values.type === "6" && !/^\d{8}$/.test(values.cuit.toString())) {
             errors.cuit = "Formato incorrecto."
         }
 
@@ -300,7 +300,7 @@ const CreateBill: React.FC<CreateBillProps> = ({ updateList, saleId }) => {
                 </Row>
                 <Row>
                     <Form.Group as={Col} xs={12} md={6}>
-                        <Form.Label>{`Número de ${formik.values.type == "1" ? "CUIT" : "DNI (Opcional)"}`}</Form.Label>
+                        <Form.Label>{`Número de ${formik.values.type === "1" ? "CUIT" : "DNI (Opcional)"}`}</Form.Label>
                         <Form.Control type="number" placeholder="Número"
                             id="cuit"
                             name="cuit"
@@ -372,8 +372,8 @@ const CreateBill: React.FC<CreateBillProps> = ({ updateList, saleId }) => {
                                 <th className="col-4">Descripcion</th>
                                 <th className="col-1">Cantidad</th>
                                 <th className="col-1">Precio unitario</th>
-                                {formik.values.type == "1" && <th className="col-1">Subtotal</th>}
-                                {formik.values.type == "1" && <th className="col-1">Iva (21%)</th>}
+                                {formik.values.type === "1" && <th className="col-1">Subtotal</th>}
+                                {formik.values.type === "1" && <th className="col-1">Iva (21%)</th>}
                                 <th className="col-1">Total</th>
                                 <th className='exclude-print col-1'>Eliminar</th>
                             </tr>
@@ -389,18 +389,18 @@ const CreateBill: React.FC<CreateBillProps> = ({ updateList, saleId }) => {
                                         onChange={(event) => handleQuantity(event, index)}
                                     />
                                 </td>
-                                <td>{formik.values.type == "1" ? product.netPrice : product.price}</td>
-                                {formik.values.type == "1" && <td>{(product.netPrice * product.quantity).toFixed(2)}</td>}
-                                {formik.values.type == "1" && <td>{(product.iva * product.quantity).toFixed(2)}</td>}
-                                <td>{formik.values.type == "1" ? ((product.netPrice + product.iva) * product.quantity).toFixed(2) : product.price * product.quantity}</td>
+                                <td>{formik.values.type === "1" ? product.netPrice : product.price}</td>
+                                {formik.values.type === "1" && <td>{(product.netPrice * product.quantity).toFixed(2)}</td>}
+                                {formik.values.type === "1" && <td>{(product.iva * product.quantity).toFixed(2)}</td>}
+                                <td>{formik.values.type === "1" ? ((product.netPrice + product.iva) * product.quantity).toFixed(2) : product.price * product.quantity}</td>
                                 <td><svg role="button" onClick={() => handleDelete(index)} width="25" height="25" viewBox="0 0 512 512" style={{ color: "#632f6b" }} xmlns="http://www.w3.org/2000/svg" className="h-full w-full"><rect width="512" height="512" x="0" y="0" rx="30" fill="transparent" stroke="transparent" strokeWidth="0" strokeOpacity="100%" paintOrder="stroke"></rect><svg width="512px" height="512px" viewBox="0 0 1024 1024" fill="#632f6b" x="0" y="0" role="img" style={{ display: "inline-block;vertical-align:middle" }} xmlns="http://www.w3.org/2000/svg"><g fill="#632f6b"><path fill="currentColor" fillRule="evenodd" d="M799.855 166.312c.023.007.043.018.084.059l57.69 57.69c.041.041.052.06.059.084a.118.118 0 0 1 0 .069c-.007.023-.018.042-.059.083L569.926 512l287.703 287.703c.041.04.052.06.059.083a.118.118 0 0 1 0 .07c-.007.022-.018.042-.059.083l-57.69 57.69c-.041.041-.06.052-.084.059a.118.118 0 0 1-.069 0c-.023-.007-.042-.018-.083-.059L512 569.926L224.297 857.629c-.04.041-.06.052-.083.059a.118.118 0 0 1-.07 0c-.022-.007-.042-.018-.083-.059l-57.69-57.69c-.041-.041-.052-.06-.059-.084a.118.118 0 0 1 0-.069c.007-.023.018-.042.059-.083L454.073 512L166.371 224.297c-.041-.04-.052-.06-.059-.083a.118.118 0 0 1 0-.07c.007-.022.018-.042.059-.083l57.69-57.69c.041-.041.06-.052.084-.059a.118.118 0 0 1 .069 0c.023.007.042.018.083.059L512 454.073l287.703-287.702c.04-.041.06-.052.083-.059a.118.118 0 0 1 .07 0Z" /></g></svg></svg></td>
                             </tr>
                             )}
                         </tbody>
                     </Table>
                     <div className='container d-flex flex-column justify-content-end align-items-end'>
-                        {formik.values.type == "1" && <h6>{`Subtotal: ${(billProducts.reduce((total, product) => total + (product.netPrice), 0)).toFixed(2)}`}</h6>}
-                        {formik.values.type == "1" && <h6>{`Iva: ${(billProducts.reduce((total, product) => total + (product.iva), 0).toFixed(2))}`}</h6>}
+                        {formik.values.type === "1" && <h6>{`Subtotal: ${(billProducts.reduce((total, product) => total + (product.netPrice), 0)).toFixed(2)}`}</h6>}
+                        {formik.values.type === "1" && <h6>{`Iva: ${(billProducts.reduce((total, product) => total + (product.iva), 0).toFixed(2))}`}</h6>}
                         <h5>{`Total: ${billProducts.reduce((total, product) => total + (product.quantity * product.price), 0)}`}</h5>
                     </div>
                 </Container>
@@ -421,11 +421,11 @@ const CreateBill: React.FC<CreateBillProps> = ({ updateList, saleId }) => {
                         <Spinner />
                     </div>}
             </Container>
-            {show && modal == "addProduct" && <CustomModal title={"Agregar producto"}>
+            {show && modal === "addProduct" && <CustomModal title={"Agregar producto"}>
                 <AddCustomProductToBill addProduct={addProduct} />
             </CustomModal>
             }
-            {show && modal == "confirmBill" && <CustomModal title={""} fullscreen={true}>
+            {show && modal === "confirmBill" && <CustomModal title={""} fullscreen={true}>
                 <ConfirmBill submit={formik.handleSubmit} values={formik.values} products={billProducts} billResult={billResult} />
             </CustomModal>
             }

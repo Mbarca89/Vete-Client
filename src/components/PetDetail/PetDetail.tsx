@@ -1,8 +1,7 @@
-import React from "react"
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Nav from 'react-bootstrap/Nav';
-import { pet } from "../../types";
+import type { pet } from "../../types";
 import { axiosWithToken } from "../../utils/axiosInstances";
 import noImage from "../../assets/noImage.png"
 import MedicalHistory from "../MedicalHistory/MedicalHistory";

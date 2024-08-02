@@ -166,6 +166,8 @@ export interface reminder {
     notes: string;
     petName: string;
     date: date;
+    id: string
+    petId: string
 }
 
 export interface CreateReminderformValues {

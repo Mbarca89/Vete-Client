@@ -8,8 +8,7 @@ import { useRecoilState } from "recoil"
 import CustomModal from '../Modal/CustomModal';
 import CreateVaccine from '../CreateVaccine/CreateVaccine';
 import { axiosWithToken } from '../../utils/axiosInstances';
-import { events } from '../../types';
-import { notifyError } from '../Toaster/Toaster';
+import type { events } from '../../types';
 import VaccineDetail from '../VaccineDetail/VaccineDetail';
 import handleError from '../../utils/HandleErrors';
 import { Spinner } from 'react-bootstrap';
@@ -35,11 +34,12 @@ const Vaccines: React.FC<VaccinesProps> = ({ petId }) => {
             const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/vaccines/getVaccines/${petId}`)
             if (res.data) {
                 setEvents(res.data.map((event: any) => ({
+                    id: event.id,
                     title: event.name,
                     notes: event.notes,
                     start: event.date,
                     allDay: false,
-                    backgroundColor: event.name == "Vacuna" ? 'blue' : 'red'
+                    backgroundColor: event.name === "Vacuna" ? 'blue' : 'red'
                 })))
             }
         } catch (error: any) {
@@ -79,14 +79,15 @@ const Vaccines: React.FC<VaccinesProps> = ({ petId }) => {
                 height={"50vh"}
                 displayEventTime={false}
                 eventClick={(info: any) => handleEventDetail(info)}
+                
             />}
-            {show && modal == "create" &&
+            {show && modal === "create" &&
                 <CustomModal title={"Agregar evento"}>
                     <CreateVaccine petId={petId} updateList={getVaccines} />
                 </CustomModal>}
-            {show && modal == "detail" &&
+            {show && modal === "detail" &&
                 <CustomModal title={"Detalles"}>
-                    <VaccineDetail event={currentEvent} />
+                    <VaccineDetail event={currentEvent} updateList={getVaccines} petId={petId}/>
                 </CustomModal>}
         </div>
     )
