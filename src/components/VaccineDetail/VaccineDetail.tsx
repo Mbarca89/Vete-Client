@@ -39,7 +39,7 @@ const VaccineDetail: React.FC<VaccineDetailProps> = ({ event, updateList, petId 
         if (!values.date) {
             errors.date = "Ingrese una fecha"
         }
-        if (!values.phone) {
+        if (event.extendedProps.eventType === "reminder" && !values.phone) {
             errors.phone = "Ingrese el número de teléfono"
         }
         return errors;
