@@ -107,10 +107,10 @@ const VaccineDetail: React.FC<VaccineDetailProps> = ({ event, updateList, petId 
     const deleteVaccineHandler = async () => {
         try {
             let res
-            if (event.extendedProps.eventType === "vaccine") {
-                res = await axiosWithToken.delete(`${SERVER_URL}/api/v1/vaccines/delete/${event.id}`)
-            } else {
+            if (event.extendedProps.eventType === "reminder") {
                 res = await axiosWithToken.delete(`${SERVER_URL}/api/v1/reminders/delete/${event.id}`)
+            } else {
+                res = await axiosWithToken.delete(`${SERVER_URL}/api/v1/vaccines/delete/${event.id}`)
             }
             notifySuccess(res.data)
             updateList()
