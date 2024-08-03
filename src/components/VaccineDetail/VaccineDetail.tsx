@@ -75,10 +75,10 @@ const VaccineDetail: React.FC<VaccineDetailProps> = ({ event, updateList, petId 
 
             try {
                 let res
-                if (event.extendedProps.eventType === "vaccine") {
-                    res = await axiosWithToken.put(`${SERVER_URL}/api/v1/vaccines/editVaccine`, editVaccine)
-                } else {
+                if (event.extendedProps.eventType === "reminder") {
                     res = await axiosWithToken.put(`${SERVER_URL}/api/v1/reminders/editReminder`, editReminder)
+                } else {
+                    res = await axiosWithToken.put(`${SERVER_URL}/api/v1/vaccines/editVaccine`, editVaccine)
                 }
                 notifySuccess(res.data)
                 updateList()
