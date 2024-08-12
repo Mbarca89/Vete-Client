@@ -3,13 +3,13 @@ import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
-import { createMedicalHistoryFormValues, pet } from "../../types";
+import type { createMedicalHistoryFormValues, pet } from "../../types";
 import { useFormik } from 'formik';
 import { axiosWithToken } from "../../utils/axiosInstances";
-import { notifyError, notifySuccess } from "../Toaster/Toaster";
+import { notifySuccess } from "../Toaster/Toaster";
 import { modalState } from "../../app/store"
 import { useRecoilState } from "recoil"
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Spinner } from "react-bootstrap";
 import handleError from "../../utils/HandleErrors";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
@@ -24,8 +24,9 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({ updateList,
     const [show, setShow] = useRecoilState(modalState)
     const [currentPet, setCurrentPet] = useState<pet>()
     const [newWeight, setNewWeight] = useState<number>()
-    const [image, setImage] = useState<File | null>(null);
+    const [file, setFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const validate = (values: createMedicalHistoryFormValues): createMedicalHistoryFormValues => {
         const errors: any = {};
@@ -67,7 +68,6 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({ updateList,
                         born: currentPet.born,
                     }
                     const formData = new FormData();
-                    if (image) formData.append('file', image);
                     formData.append('pet', JSON.stringify(editPet));
 
                     try {
@@ -83,8 +83,15 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({ updateList,
                 }
             }
             let res
+            const formData = new FormData();
+            if (file) formData.append('file', file);
+            formData.append('medicalHistoryRequestDto', JSON.stringify(CreateMedicalHistory));
             try {
-                res = await axiosWithToken.post(`${SERVER_URL}/api/v1/medicalHistory/create`, CreateMedicalHistory)
+                res = await axiosWithToken.post(`${SERVER_URL}/api/v1/medicalHistory/create`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
                 notifySuccess(res.data)
                 updateList()
                 setShow(false)
@@ -115,6 +122,12 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({ updateList,
         setNewWeight(Number(event.target.value))
     }
 
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+            setFile(event.target.files[0]);
+        }
+    };
+
     useEffect(() => {
         getPetDetails()
     }, [])
@@ -136,6 +149,7 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({ updateList,
                         <option value="Cirugía">Cirugía</option>
                         <option value="Consulta">Consulta</option>
                         <option value="Control">Control</option>
+                        <option value="Estudio">Estudio</option>
                         <option value="Medicación">Medicación</option>
                         <option value="Vacuna">Vacuna</option>
                     </Form.Select>
@@ -152,7 +166,7 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({ updateList,
                     />
                 </Form.Group>
             </Row>
-            {formik.values.type == "Control" && <Row>
+            {formik.values.type === "Control" && <Row>
                 <Form.Group as={Col} xs={12} md={12}>
                     <Form.Label>Control de peso</Form.Label>
                     <Form.Control type="number" placeholder={`Peso actual: ${currentPet.weight} kg`}
@@ -176,7 +190,7 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({ updateList,
                     />
                 </Form.Group>
             </Row>
-            <Row>
+            <Row className="mb-2">
                 <Form.Group as={Col} xs={12} md={12}>
                     <Form.Label>Medicación</Form.Label>
                     <Form.Control type="text" placeholder="Medicación"
@@ -188,6 +202,19 @@ const CreateMedicalHistory: React.FC<CreateMedicalHistoryProps> = ({ updateList,
                     />
                 </Form.Group>
             </Row>
+            {formik.values.type === "Estudio" && <Row>
+                <Form.Group as={Col} xs={12} md={12}>
+                        <Form.Label className="">Seleccionar archivo</Form.Label>
+                        <Form.Control
+                            type="file"
+                            id="file"
+                            name="file"
+                            onChange={handleFileChange}
+                            accept="image/*,.pdf"
+                            ref={inputRef}
+                        />
+                    </Form.Group>
+            </Row>}
             <Row>
             <Form.Group as={Col} className="d-flex justify-content-center mt-3">
                     <div className='d-flex align-items-center justify-content-center w-25'>

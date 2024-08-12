@@ -1,9 +1,8 @@
-import React from "react"
+import type React from "react"
 import { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
-import { medicalHistory } from "../../types";
+import type { medicalHistory } from "../../types";
 import { axiosWithToken } from "../../utils/axiosInstances";
-import { notifyError } from "../Toaster/Toaster";
 import handleError from "../../utils/HandleErrors";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
@@ -19,12 +18,32 @@ const MedicalHistoryDetail: React.FC<MedicalHistoryDetailProps> = ({ medicalHist
         try {
             const res = await axiosWithToken.get<medicalHistory>(`${SERVER_URL}/api/v1/medicalHistory/getMedicalHistoryById?medicalHistoryId=${medicalHistoryId}`)
             if (res.data) {
+                console.log(res.data);
+
                 setMedicalHistory(res.data)
             }
         } catch (error: any) {
             handleError(error)
         }
     }
+
+    const handleFileDownload = async (file: string) => {
+        try {
+            const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/medicalHistory/downloadFile?filePath=${encodeURI(file)}`, {
+                responseType: 'blob',
+            });
+            const url = window.URL.createObjectURL(new Blob([res.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', file.split('\\').slice(-1)[0]);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            handleError(error)
+        }
+        }
+    
 
     useEffect(() => {
         getMedicalHistoryDetails()
@@ -53,6 +72,14 @@ const MedicalHistoryDetail: React.FC<MedicalHistoryDetailProps> = ({ medicalHist
                     <h5>Medicación</h5>
                     <Form.Control size="lg" type="text" placeholder={medicalHistory?.medicine} />
                 </li>
+                {medicalHistory?.type === "Estudio" && <li className="list-group-item">
+                    <h5>Archivos adjuntos</h5>
+                    <div className="border p-1 rounded">
+                        <h6 className="text-secondary" role="button" onClick={()=>handleFileDownload(medicalHistory.file)}>
+                            {medicalHistory.file.split("\\").at(-1)}
+                        </h6>
+                    </div>
+                </li>}
             </ul>
         </div>
     )

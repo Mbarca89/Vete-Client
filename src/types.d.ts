@@ -97,6 +97,7 @@ export interface medicalHistory {
     notes: string;
     description: string;
     medicine: string;
+    file: string;
 }
 
 export interface createMedicalHistoryFormValues {
@@ -202,8 +203,11 @@ export interface message {
 }
 
 export interface saleReport {
-    totalAmount: number;
+    totalSaleAmount: number;
+    stockCost: number;
+    stockPotentialSales: number;
     totalCost: number;
+    totalOrderAmount: number;
     payments: number;
 }
 

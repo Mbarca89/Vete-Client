@@ -5,27 +5,17 @@ import Button from 'react-bootstrap/Button';
 import handleError from '../../utils/HandleErrors';
 import { useEffect, useState } from 'react';
 import { axiosWithToken } from '../../utils/axiosInstances';
-import { saleReport } from '../../types';
+import type { saleReport } from '../../types';
 import { Spinner, Table } from 'react-bootstrap';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
-
-interface GroupedData {
-    [date: string]: {
-        amount: number;
-        cost: number;
-    };
-}
-
-interface DataPoint {
-    amount: number;
-    cost: number;
-    date: string;
-}
 
 const MonthlyReport = () => {
     const [loading, setLoading] = useState<boolean>(false)
     const [sales, setSales] = useState<saleReport>({
-        totalAmount: 0,
+        totalOrderAmount: 0,
+        totalSaleAmount: 0,
+        stockCost: 0,
+        stockPotentialSales: 0,
         totalCost: 0,
         payments: 0
     })
@@ -44,6 +34,8 @@ const MonthlyReport = () => {
             const formattedEndDate = endDate.toISOString();
             const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/sales/getByMonth?dateStart=${formattedStartDate}&dateEnd=${formattedEndDate}`)
             if (res.data) {
+                console.log(res.data);
+
                 setSales(res.data)
             }
         } catch (error: any) {
@@ -65,9 +57,12 @@ const MonthlyReport = () => {
         getReport()
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         getReport()
-    },[])
+    }, [])
+
+
+
 
     return (
         <div className='text-nowrap'>
@@ -120,8 +115,83 @@ const MonthlyReport = () => {
                     </Row>
                 </Form>
             </div>
+            <hr />
             <div className='mt-5'>
-                {loading ? <Spinner /> : <Table striped bordered hover size="md">
+                {!loading ? <div>
+                    <h3 className='mb-3'>Ingresos</h3>
+                    <Form.Group as={Col} xs={12} md={{ span: 6, offset: 3 }}>
+                        <Form.Label>Ventas</Form.Label>
+                        <Form.Control type="text"
+                            id="name"
+                            name="name"
+                            value={`$${new Intl.NumberFormat('es-ES').format(sales.totalSaleAmount)}`}
+                            disabled
+                        />
+                    </Form.Group>
+                    <Form.Group as={Col} xs={12} md={{ span: 6, offset: 3 }}>
+                        <Form.Label>Costo de los productos vendidos</Form.Label>
+                        <Form.Control type="text"
+                            id="name"
+                            name="name"
+                            value={`$${new Intl.NumberFormat('es-ES').format(sales.totalCost)}`}
+                            disabled
+                        />
+                    </Form.Group>
+                    <Form.Group as={Col} xs={12} md={{ span: 6, offset: 3 }}>
+                        <Form.Label>Ganancia</Form.Label>
+                        <Form.Control type="text"
+                            id="name"
+                            name="name"
+                            value={`$${new Intl.NumberFormat('es-ES').format(sales.totalSaleAmount - sales.totalCost)}`}
+                            disabled
+                        />
+                    </Form.Group>
+                    <hr />
+                    <h3 className='mb-3'>Egresos</h3>
+                    <Form.Group as={Col} xs={12} md={{ span: 6, offset: 3 }}>
+                        <Form.Label>Pagos realizados</Form.Label>
+                        <Form.Control type="text"
+                            id="name"
+                            name="name"
+                            value={`$${new Intl.NumberFormat('es-ES').format(sales.payments)}`}
+                            disabled
+                        />
+                    </Form.Group>
+                    <Form.Group as={Col} xs={12} md={{ span: 6, offset: 3 }}>
+                        <Form.Label>Compra de productos</Form.Label>
+                        <Form.Control type="text"
+                            id="name"
+                            name="name"
+                            value={`$${new Intl.NumberFormat('es-ES').format(sales.totalOrderAmount)}`}
+                            disabled
+                        />
+                    </Form.Group>
+                    <hr />
+                    <Row>
+                    <h3 className='mb-3'>Stock</h3>
+                    <Form.Group as={Col} xs={12} md={6}>
+                        <Form.Label>Costo del stock disponible</Form.Label>
+                        <Form.Control type="text"
+                            id="name"
+                            name="name"
+                            value={`$${new Intl.NumberFormat('es-ES').format(sales.stockCost)}`}
+                            disabled
+                        />
+                    </Form.Group>
+                    <Form.Group as={Col} xs={12} md={6}>
+                        <Form.Label>Ventas potenciales</Form.Label>
+                        <Form.Control type="text"
+                            id="name"
+                            name="name"
+                            value={`$${new Intl.NumberFormat('es-ES').format(sales.stockPotentialSales)}`}
+                            disabled
+                        />
+                    </Form.Group>
+                    </Row>
+                </div> :
+                    <Spinner></Spinner>
+                }
+                {/* {loading ? <Spinner /> : <Table striped bordered hover size="md">
                     <thead>
                         <tr>
                             <th>Ventas</th>
@@ -132,13 +202,13 @@ const MonthlyReport = () => {
                     </thead>
                     <tbody>
                         <tr>
-                            <td>{`$${new Intl.NumberFormat('es-ES').format(sales.totalAmount)}`}</td>
+                            <td>{`$${new Intl.NumberFormat('es-ES').format(sales.totalSaleAmount)}`}</td>
                             <td>{`$${new Intl.NumberFormat('es-ES').format(sales.totalCost)}`}</td>
-                            <td>{`$${new Intl.NumberFormat('es-ES').format(sales.totalAmount - sales.totalCost)}`}</td>
+                            <td>{`$${new Intl.NumberFormat('es-ES').format(sales.totalSaleAmount - sales.totalCost)}`}</td>
                             <td>{`$${new Intl.NumberFormat('es-ES').format(sales.payments)}`}</td>
                         </tr>
                     </tbody>
-                </Table>}
+                </Table>} */}
             </div>
         </div>
     )
