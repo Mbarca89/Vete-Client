@@ -27,6 +27,7 @@ const PetDetail = () => {
         born: "",
         photo: "",
         thumbnail: "",
+        ownerPhone: "",
         ownerName: ""
     })
 
@@ -64,8 +65,8 @@ const PetDetail = () => {
                     </Nav.Item>
                 </Nav>
                 <div className="mt-3">
-                    {currentTab == "medicalHistory" ? <MedicalHistory petId={currentPet.id} /> : null}
-                    {currentTab == "vaccionation" ? <Vaccines petId={currentPet.id} /> : null}
+                    {currentTab === "medicalHistory" ? <MedicalHistory petId={currentPet.id} /> : null}
+                    {currentTab === "vaccionation" ? <Vaccines petId={currentPet.id} /> : null}
                 </div>
             </div>
         </div>

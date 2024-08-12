@@ -78,6 +78,7 @@ export interface pet {
     born: date;
     photo: string | null;
     ownerName: string;
+    ownerPhone: string;
     thumbnail: string | null;
 }
 

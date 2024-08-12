@@ -36,6 +36,7 @@ const PetDetailCard: React.FC<PetDetailProps> = ({ petId, updateList }) => {
         born: "",
         photo: "",
         ownerName: "",
+        ownerPhone: "",
         thumbnail: ""
     })
 
@@ -180,6 +181,15 @@ const PetDetailCard: React.FC<PetDetailProps> = ({ petId, updateList }) => {
                         <Form.Label>Dueño</Form.Label>
                         <Form.Control type="text"
                             value={pet.ownerName}
+                            disabled
+                        />
+                    </Form.Group>
+                </Row>
+                <Row className="mb-2">
+                    <Form.Group as={Col}>
+                        <Form.Label>Teléfono</Form.Label>
+                        <Form.Control type="text"
+                            value={pet.ownerPhone}
                             disabled
                         />
                     </Form.Group>
