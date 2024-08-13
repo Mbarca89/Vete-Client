@@ -35,7 +35,7 @@ const MedicalHistoryDetail: React.FC<MedicalHistoryDetailProps> = ({ medicalHist
             const url = window.URL.createObjectURL(new Blob([res.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', file.split('\\').slice(-1)[0]);
+            link.setAttribute('download', file.split('\\').slice.arguments(-1));
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
