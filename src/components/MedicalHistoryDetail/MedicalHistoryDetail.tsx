@@ -18,8 +18,6 @@ const MedicalHistoryDetail: React.FC<MedicalHistoryDetailProps> = ({ medicalHist
         try {
             const res = await axiosWithToken.get<medicalHistory>(`${SERVER_URL}/api/v1/medicalHistory/getMedicalHistoryById?medicalHistoryId=${medicalHistoryId}`)
             if (res.data) {
-                console.log(res.data);
-
                 setMedicalHistory(res.data)
             }
         } catch (error: any) {
@@ -35,15 +33,16 @@ const MedicalHistoryDetail: React.FC<MedicalHistoryDetailProps> = ({ medicalHist
             const url = window.URL.createObjectURL(new Blob([res.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', file.split('\\').slice.arguments(-1));
+            const fileName = file.split("/").at(-1) || ""
+            link.setAttribute('download', fileName);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         } catch (error) {
             handleError(error)
         }
-        }
-    
+    }
+
 
     useEffect(() => {
         getMedicalHistoryDetails()
@@ -75,7 +74,7 @@ const MedicalHistoryDetail: React.FC<MedicalHistoryDetailProps> = ({ medicalHist
                 {medicalHistory?.type === "Estudio" && <li className="list-group-item">
                     <h5>Archivos adjuntos</h5>
                     <div className="border p-1 rounded">
-                        <h6 className="text-secondary" role="button" onClick={()=>handleFileDownload(medicalHistory.file)}>
+                        <h6 className="text-secondary" role="button" onClick={() => handleFileDownload(medicalHistory.file)}>
                             {medicalHistory.file.split("\\").at(-1)}
                         </h6>
                     </div>

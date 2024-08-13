@@ -34,8 +34,6 @@ const MonthlyReport = () => {
             const formattedEndDate = endDate.toISOString();
             const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/sales/getByMonth?dateStart=${formattedStartDate}&dateEnd=${formattedEndDate}`)
             if (res.data) {
-                console.log(res.data);
-
                 setSales(res.data)
             }
         } catch (error: any) {
