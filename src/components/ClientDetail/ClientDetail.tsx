@@ -1,4 +1,4 @@
-import React from "react"
+import type React from "react"
 import { useRecoilState } from "recoil"
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -10,7 +10,7 @@ import CustomModal from "../Modal/CustomModal";
 import PetDetailCard from "../PetDetailCard/PetDetailCard";
 import DeletePet from "../DeletePet/DeletePet";
 import EditPet from "../EditPet/EditPet";
-import { client, pet } from "../../types";
+import type { client, pet } from "../../types";
 import handleError from "../../utils/HandleErrors";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
@@ -37,7 +37,8 @@ const ClientDetail: React.FC = () => {
         born: "",
         photo: "",
         thumbnail: "",
-        ownerName: ""
+        ownerName: "",
+        ownerPhone: ""
     })
 
     const [show, setShow] = useRecoilState(modalState)
