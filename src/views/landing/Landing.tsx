@@ -49,6 +49,7 @@ const Landing = () => {
                     userName: res.data.userName,
                     role: res.data.role[0].authority
                 })
+                localStorage.setItem("token", res.data.token)
                 if (userData.remember) {
                     localStorage.setItem("token", res.data.token)
                     localStorage.setItem("userName", res.data.userName)
