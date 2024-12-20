@@ -3,6 +3,7 @@ import { useState } from "react";
 import DailySalesGraph from '../../components/DailySalesGraph/DailySalesGraph'
 import CategorySalesGraph from '../../components/CategorySalesGraph/CategorySalesGraph';
 import MonthlyGraph from '../../components/MonthlyGraph/MonthlyGraph';
+import SimplifiedReport from '../../components/SimplifiedReport/SimplifiedReport';
 
 const Graphs = () => {
     const setTab = () => {
@@ -27,7 +28,7 @@ const Graphs = () => {
             <div className="mt-3 h-100 w-100">
                 {currentTab == "daily" ? <DailySalesGraph /> : null}
                 {currentTab == "categories" ? <CategorySalesGraph /> : null}
-                {currentTab == "monthly" ? <MonthlyGraph /> : null}
+                {currentTab == "monthly" ? <SimplifiedReport /> : null}
             </div>
         </div>
     )

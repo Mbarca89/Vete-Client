@@ -56,30 +56,24 @@ interface ChartData {
     paymentsData: number[];
 }
 
-interface CombinedData {
-    date: string;
-    salesAmount: number;
-    salesCost: number;
-    ordersAmount: number;
-    billsAmount: number;
-    paymentsAmount: number;
+interface SimplifiedData {
+    totalBillAmount: number
+    totalOrderAmount: number
+    totalPaymentAmount: number
+    totalSaleAmount: number
+    totalSaleCost: number
 }
 
-const MonthlyGraph = () => {
-    const [combinedData, setCombinedData] = useState<CombinedReport>({
-        sales: [],
-        orders: [],
-        bills: [],
-        payments: []
+const SimplifiedReport = () => {
+
+    const [combinedData, setCombinedData] = useState<SimplifiedData>({
+        totalBillAmount: 0,
+        totalOrderAmount: 0,
+        totalPaymentAmount: 0,
+        totalSaleAmount: 0,
+        totalSaleCost: 0
     });
-    const [chartData, setChartData] = useState<ChartData>({
-        categories: [],
-        salesData: [],
-        costData: [],
-        ordersData: [],
-        billsData: [],
-        paymentsData: []
-    });
+
     const [loading, setLoading] = useState<boolean>(false);
 
     const currentDate = new Date();
@@ -87,13 +81,6 @@ const MonthlyGraph = () => {
         year: `${currentDate.getFullYear()}`,
         month: `${String(currentDate.getMonth() + 1).padStart(2, '0')}`,
     })
-
-    const [categories, setCategories] = useState<string[]>([]);
-    const [salesAmounts, setSalesAmounts] = useState<number[]>([]);
-    const [salesCosts, setSalesCosts] = useState<number[]>([]);
-    const [ordersAmounts, setOrdersAmounts] = useState<number[]>([]);
-    const [billsAmounts, setBillsAmounts] = useState<number[]>([]);
-    const [paymentsAmounts, setPaymentsAmounts] = useState<number[]>([]);
 
     const getCombinedData = async () => {
         setLoading(true);
@@ -103,9 +90,10 @@ const MonthlyGraph = () => {
             const formattedStartDate = startDate.toISOString();
             const formattedEndDate = endDate.toISOString();
             const res = await axiosWithToken(
-                `${SERVER_URL}/api/v1/sales/getCombinedByMonth?dateStart=${formattedStartDate}&dateEnd=${formattedEndDate}`
+                `${SERVER_URL}/api/v1/sales/getSimplifiedReport?dateStart=${formattedStartDate}&dateEnd=${formattedEndDate}`
             );
             if (res.data) {
+                console.log(res.data)
                 setCombinedData(res.data);
             }
         } catch (error: any) {
@@ -127,113 +115,15 @@ const MonthlyGraph = () => {
         getCombinedData();
     };
 
-    const processData = (data: CombinedReport): void => {
-        const sales = data.sales;
-        const orders = data.orders;
-        const bills = data.bills;
-        const payments = data.payments;
-
-        // Utilizamos un objeto para almacenar las sumas por día
-        const dailyData: { [key: string]: DailyData } = {};
-
-        // Procesar ventas
-        sales.forEach((sale) => {
-            const date = sale.saleDate.split('T')[0]; // Obtener solo la fecha (sin la hora)
-            if (!dailyData[date]) dailyData[date] = { sales: 0, cost: 0, orders: 0, bills: 0, payments: 0 };
-            dailyData[date].sales += sale.saleAmount;
-            dailyData[date].cost += sale.saleCost;
-        });
-
-        // Procesar órdenes
-        orders.forEach((order) => {
-            const date = order.orderDate.split('T')[0];
-            if (!dailyData[date]) dailyData[date] = { sales: 0, cost: 0, orders: 0, bills: 0, payments: 0 };
-            dailyData[date].orders += order.orderAmount;
-        });
-
-        // Procesar facturas
-        bills.forEach((bill) => {
-            const date = bill.billDate.split('T')[0];
-            if (!dailyData[date]) dailyData[date] = { sales: 0, cost: 0, orders: 0, bills: 0, payments: 0 };
-            dailyData[date].bills += bill.totalAmount;
-        });
-
-        // Procesar pagos
-        payments.forEach((payment) => {
-            const date = payment.paymentDate.split('T')[0];
-            if (!dailyData[date]) dailyData[date] = { sales: 0, cost: 0, orders: 0, bills: 0, payments: 0 };
-            dailyData[date].payments += payment.amount;
-        });
-
-        // Ahora que tenemos los datos procesados, los organizamos para el gráfico
-        const categories = Object.keys(dailyData);
-        const salesData = categories.map((date) => dailyData[date].sales);
-        const costData = categories.map((date) => dailyData[date].cost);
-        const ordersData = categories.map((date) => dailyData[date].orders);
-        const billsData = categories.map((date) => dailyData[date].bills);
-        const paymentsData = categories.map((date) => dailyData[date].payments);
-
-        setChartData({
-            categories,
-            salesData,
-            costData,
-            ordersData,
-            billsData,
-            paymentsData
-        });
-    };
 
     useEffect(() => {
         getCombinedData();
     }, []);
 
-    useEffect(() => {
-        processData(combinedData);
-    }, [combinedData]);
-
-    // const options: ApexOptions = {
-    //     chart: {
-    //         id: "MonthlyGraph",
-    //         type: "bar",
-    //     },
-    //     stroke: {
-    //         curve: "smooth",
-    //     },
-    //     xaxis: {
-    //         categories: chartData.categories,
-    //     },
-    //     series: [
-    //         {
-    //             name: "Ventas",
-    //             data: chartData.salesData,
-    //         },
-    //         {
-    //             name: "Costo",
-    //             data: chartData.costData,
-    //         },
-    //         {
-    //             name: "Compras",
-    //             data: chartData.ordersData,
-    //         },
-    //         {
-    //             name: "Facturación",
-    //             data: chartData.billsData,
-    //         },
-    //         {
-    //             name: "Pagos",
-    //             data: chartData.paymentsData,
-    //         },
-    //     ],
-    // };
-
-    console.log(chartData.billsData)
-    console.log(chartData.categories)
-
     const options: ApexOptions = {
         chart: {
-            id: "MonthlyGraph",
+            id: "SimplifiedReport",
             type: "bar",
-            stacked: true // Cambiado a 'bar' para un gráfico de barras
         },
         plotOptions: {
             bar: {
@@ -241,38 +131,56 @@ const MonthlyGraph = () => {
                 columnWidth: '45%',  // Ajusta el ancho de las barras
             }
         },
-        xaxis: {
-            type: "datetime",
-            categories: chartData.categories
-        },
         legend: {
             position: "top",
             horizontalAlign: "center",
-        }
+        },
+        tooltip: {
+            y: {
+                formatter: (value: number) => `$${value.toFixed(2)}` // Formatear como moneda
+            },
+        },
+        yaxis: {
+            labels: {
+                formatter: (value: number) => `$${value.toFixed(2)}`, // Formato de moneda en el eje Y
+            }
+        },
+        xaxis: {
+            type: "category"
+        },
+        labels: ["Ventas", "Costo", "Compras", "Pagos", "Facturación"]
     };
 
-    const series = [
-        {
-            name: "Facturas",
-            data: chartData.billsData
-        },
-        {
-            name: "Ventas",
-            data: chartData.salesData
-        },
-        {
-            name: "Costo",
-            data: chartData.costData
-        },
-        {
-            name: "Pagos",
-            data: chartData.paymentsData
-        },
-        {
-            name: "Compras",
-            data: chartData.ordersData
-        }
-    ]
+    const series = [{
+        name:"Monto",
+        data: [
+            {
+                x: "Ventas",
+                y: combinedData.totalSaleAmount,
+                fillColor: '#00e396',
+            },
+            {
+                x: "Costo",
+                y: combinedData.totalSaleCost,
+                fillColor: '#ff4560',
+            },
+            {
+                x: "Compras",
+                y: combinedData.totalOrderAmount,
+                fillColor: '#feb019',
+            },
+            {
+                x: "Pagos",
+                y: combinedData.totalPaymentAmount,
+                fillColor: '#775dd0',
+            },
+            {
+                x: "Facturación",
+                y: combinedData.totalBillAmount,
+                fillColor: '#EB8C87',
+            },
+        ]
+    }]
 
     return (
         <div>
@@ -326,8 +234,8 @@ const MonthlyGraph = () => {
             <div className="d-flex justify-content-center">
                 <Chart
                     options={options}
-                    series={series}
                     type="bar"
+                    series={series}
                     style={{ width: "90%", height: "50" }}
                 />
             </div>
@@ -335,4 +243,4 @@ const MonthlyGraph = () => {
     );
 };
 
-export default MonthlyGraph;
+export default SimplifiedReport;
