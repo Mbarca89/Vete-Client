@@ -226,8 +226,6 @@ const MonthlyGraph = () => {
     //     ],
     // };
 
-    console.log(chartData.billsData)
-    console.log(chartData.categories)
 
     const options: ApexOptions = {
         chart: {

@@ -93,7 +93,6 @@ const SimplifiedReport = () => {
                 `${SERVER_URL}/api/v1/sales/getSimplifiedReport?dateStart=${formattedStartDate}&dateEnd=${formattedEndDate}`
             );
             if (res.data) {
-                console.log(res.data)
                 setCombinedData(res.data);
             }
         } catch (error: any) {
