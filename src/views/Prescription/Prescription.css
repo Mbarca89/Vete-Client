@@ -1,0 +1,31 @@
+.offscreen2 {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+}
+
+.prescription-content p{
+  line-height: 50%;
+}
+
+/* Para listas no ordenadas (viñetas) */
+.prescription-content ul li::before {
+  content: "• ";  /* Usa un punto como viñeta */
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+/* Para listas ordenadas (números) */
+.prescription-content ol {
+  counter-reset: list-counter; /* Inicializa el contador */
+}
+
+.prescription-content ol li {
+  counter-increment: list-counter; /* Incrementa el contador */
+}
+
+.prescription-content ol li::before {
+  content: counter(list-counter) ". "; /* Muestra el número */
+  font-weight: bold;
+  margin-right: 5px;
+}
