@@ -26,7 +26,7 @@ const SendPrescription: React.FC<SendPrescriptionProps> = ({ image }) => {
         }
         setLoading(true)
         try {
-            const res = await axiosWithoutToken.post(`${WASERVER_URL}/ws/sendFile`, body, { headers: { "Content-Type": "application/json" }, withCredentials: true })
+            const res = await axiosWithoutToken.post(`${WASERVER_URL}/ws/sendFile`, body)
             notifySuccess("Receta enviada correctamente")
         } catch (error) {
             console.log(error)
