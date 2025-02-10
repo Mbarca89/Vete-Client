@@ -7,7 +7,7 @@ import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
-import { Spinner } from 'react-bootstrap';
+import { Container, Spinner } from 'react-bootstrap';
 import handleError from "../../utils/HandleErrors";
 import { notifySuccess } from "../../components/Toaster/Toaster";
 import ReactQuill from 'react-quill'
@@ -121,9 +121,11 @@ const Prescription = () => {
         setShow(true)
     }
 
+    console.log(data.content)
+
     return (
         <>
-            <div className='container d-flex flex-column flex-grow-1 p-lg-3 p-sm-0 rounded custom m-2 overflow-auto'>
+            <div className='container d-flex flex-column flex-grow-1 p-lg-3 p-sm-0 rounded custom m-2'>
                 {/* Formulario */}
                 <div ref={formRef}>
                     <h1>Generar Receta</h1>
@@ -154,6 +156,17 @@ const Prescription = () => {
                         <Row className='mt-5 mb-5'>
                             <h3 className='text-start'>Contenido</h3>
                             <ReactQuill style={{ height: '300px' }}
+                                modules={{
+                                    toolbar: {
+                                        container: [
+                                            [{ header: [1, 2, 3, 4, 5, 6, false] }],
+                                            ["bold", "italic", "underline"],
+                                            [{ list: "ordered" }, { list: "bullet" }],
+                                            [{align: []}],
+                                        ]
+                                    },
+                                }}
+
                                 theme='snow'
                                 className=""
                                 id='content'
@@ -203,7 +216,6 @@ const Prescription = () => {
                     className="offscreen2 container d-flex flex-column justify-content-between bg-light"
                     style={{
                         width: "100mm", // 10 cm en milímetros
-                        height: "150mm", // 15 cm en milímetros
                         padding: "1mm", // Puedes ajustar esto si quieres espacio dentro de la receta
                         overflow: "hidden"
                     }}
@@ -229,7 +241,7 @@ const Prescription = () => {
                         </p>
                     </div>
                     <hr />
-                    <div style={{ height: "100mm" }} className="text-start prescription-content mt-3">
+                    <div className="prescription-content mt-3 text-start">
                         <div dangerouslySetInnerHTML={{ __html: data.content }}></div>
                     </div>
                     <hr />

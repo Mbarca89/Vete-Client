@@ -1,11 +1,17 @@
 .offscreen2 {
   position: absolute;
-  left: -9999px;
-  top: 0;
+ top: -99999px;
+ right: -99999px;
 }
 
 .prescription-content p{
   line-height: 100%;
+  text-wrap: wrap;
+  word-break: break-word;
+}
+
+.prescription-content {
+  overflow-x: hidden;
 }
 
 /* Para listas no ordenadas (viñetas) */
@@ -13,6 +19,7 @@
   content: "• ";  /* Usa un punto como viñeta */
   font-weight: bold;
   margin-right: 5px;
+  margin-left: 10px;
 }
 
 /* Para listas ordenadas (números) */
@@ -28,4 +35,17 @@
   content: counter(list-counter) ". "; /* Muestra el número */
   font-weight: bold;
   margin-right: 5px;
+}
+
+.ql-align-right {
+  text-align: right;
+}
+.ql-align-left {
+  text-align: left;
+}
+.ql-align-center {
+  text-align: center;
+}
+.ql-align-justify {
+  text-align: justify;
 }
