@@ -405,7 +405,7 @@ const PetReport = () => {
                         flexDirection: "column",
                         justifyContent: "space-between",
                     }}
-                    className=" container"
+                    className="offscreen container"
                 >                    <div className='d-flex align-items-center justify-content-center mb-5'>
                         <img src="/images/logook.png" style={{ width: "100px" }} alt="" />
                         <h1 className="fs-5 fw-5"><b>Veterinaria del Parque</b></h1>
