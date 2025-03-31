@@ -121,8 +121,6 @@ const Prescription = () => {
         setShow(true)
     }
 
-    console.log(data.content)
-
     return (
         <>
             <div className='container d-flex flex-column flex-grow-1 p-lg-3 p-sm-0 rounded custom m-2'>

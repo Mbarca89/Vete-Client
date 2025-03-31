@@ -10,10 +10,16 @@ import Row from 'react-bootstrap/Row';
 import { Spinner } from 'react-bootstrap';
 import handleError from "../../utils/HandleErrors";
 import { notifySuccess } from "../../components/Toaster/Toaster";
+import { useRecoilState } from "recoil";
+import { modalState } from "../../app/store";
+import CustomModal from "../../components/Modal/CustomModal";
+import SendReport from "../../components/SendReport/SendReport";
+
 
 const PetReport = () => {
 
     const [loading, setLoading] = useState<boolean>(false)
+    const [show, setShow] = useRecoilState(modalState)
     const inputRef = useRef<HTMLInputElement>(null)
     const [images, setImages] = useState<string[]>([]);
     const formRef = useRef<HTMLDivElement | null>(null);
@@ -177,6 +183,10 @@ const PetReport = () => {
             link.click();
         }
     };
+
+    const sendImg = () => {
+        setShow(true)
+    }
 
     return (
         <>
@@ -358,10 +368,18 @@ const PetReport = () => {
                                         <Spinner />
                                     </div>}
                             </Form.Group>
-                            <div className="mt-5">
-                                <Button disabled={pdfData == null} className="" variant="primary" onClick={downloadPdf}>
-                                    Descargar
-                                </Button>
+                            <div className="d-flex justify-content-center mt-5">
+                                <div className='d-flex align-items-center justify-content-center w-25'>
+                                    <Button disabled={pdfData == null} className="" variant="primary" onClick={downloadPdf}>
+                                        Descargar
+                                    </Button>
+                                </div>
+                                <div className='d-flex align-items-center justify-content-center w-25'>
+                                    <Button disabled={pdfData == null} className="" variant="primary" onClick={sendImg}>
+                                        Enviar
+                                    </Button>
+
+                                </div>
                             </div>
                         </Row>
                     </Form>
@@ -408,6 +426,9 @@ const PetReport = () => {
                     </div>
                 </div>
             </div>
+            {show && <CustomModal title="Vista previa">
+                <SendReport pdf={pdfData}></SendReport>
+            </CustomModal>}
         </>
     )
 }
