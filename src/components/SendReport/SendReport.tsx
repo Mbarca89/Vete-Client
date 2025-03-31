@@ -10,9 +10,10 @@ const WASERVER_URL = import.meta.env.VITE_REACT_APP_WASERVER_URL;
 
 interface SendPrescriptionProps {
     pdf: string | null
+    preview: string | null
 }
 
-const SendPrescription: React.FC<SendPrescriptionProps> = ({ pdf }) => {
+const SendPrescription: React.FC<SendPrescriptionProps> = ({ pdf, preview }) => {
     const [phone, setPhone] = useState<string>("");
     const [show, setShow] = useRecoilState(modalState);
     const [loading, setLoading] = useState<boolean>(false);
@@ -22,7 +23,6 @@ const SendPrescription: React.FC<SendPrescriptionProps> = ({ pdf }) => {
             notifyError("No hay un archivo PDF para enviar");
             return;
         }
-
         const body = {
             number: "549" + phone,
             file: pdf.split(",")[1], // Base64 encoded PDF
@@ -58,8 +58,13 @@ const SendPrescription: React.FC<SendPrescriptionProps> = ({ pdf }) => {
                 </Row>
                 {pdf && (
                     <div className="w-100 text-center mt-3">
-                        <embed src={pdf} type="application/pdf" width="100%" height="400px" />
-                    </div>
+                    <embed
+                        src={preview} 
+                        width="100%"
+                        height="400px"
+                        title="Vista previa del PDF"
+                    />
+                </div>
                 )}
                 <Row>
                     <div className="d-flex justify-content-center mt-5 gap-3">

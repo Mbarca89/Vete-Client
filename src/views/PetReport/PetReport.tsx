@@ -25,6 +25,7 @@ const PetReport = () => {
     const formRef = useRef<HTMLDivElement | null>(null);
     const pdfTemplateRef = useRef<HTMLDivElement | null>(null);
     const [pdfData, setPdfData] = useState<string | null>(null);
+    const [pdfBase64, setPdfBase64] = useState<string | null>(null);
     const [data, setData] = useState({
         date: "",
         name: "",
@@ -167,6 +168,14 @@ const PetReport = () => {
 
             const formData = new FormData();
             formData.append('file', pdfBlob, 'generated.pdf');
+
+            const reader = new FileReader();
+            reader.readAsDataURL(pdfBlob);
+            reader.onloadend = () => {
+                const base64String = reader.result?.toString() // Extraer solo el contenido
+                setPdfBase64(base64String || null);
+            };
+
             notifySuccess("Informe creado correctamente.")
         } catch (error: any) {
             handleError(error)
@@ -427,7 +436,7 @@ const PetReport = () => {
                 </div>
             </div>
             {show && <CustomModal title="Vista previa">
-                <SendReport pdf={pdfData}></SendReport>
+                <SendReport pdf={pdfBase64} preview={pdfData}></SendReport>
             </CustomModal>}
         </>
     )
