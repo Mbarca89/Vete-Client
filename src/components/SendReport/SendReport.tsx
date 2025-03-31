@@ -56,7 +56,7 @@ const SendPrescription: React.FC<SendPrescriptionProps> = ({ pdf, preview }) => 
                         />
                     </Form.Group>
                 </Row>
-                {pdf && (
+                {preview && (
                     <div className="w-100 text-center mt-3">
                     <embed
                         src={preview} 
