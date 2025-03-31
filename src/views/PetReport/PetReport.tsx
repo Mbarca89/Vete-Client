@@ -134,33 +134,33 @@ const PetReport = () => {
 
             if (images && images.length > 0) {
                 const loadImage = (src: string): Promise<HTMLImageElement> => {
-                  return new Promise((resolve, reject) => {
-                    const img = new Image();
-                    img.src = src;
-                    img.onload = () => resolve(img);
-                    img.onerror = (err) => reject(err);
-                  });
+                    return new Promise((resolve, reject) => {
+                        const img = new Image();
+                        img.src = src;
+                        img.onload = () => resolve(img);
+                        img.onerror = (err) => reject(err);
+                    });
                 };
-          
+
                 const imagePromises = images.map(loadImage);
                 const loadedImages = await Promise.all(imagePromises);
-          
+
                 loadedImages.forEach((img) => {
-                  const imgWidth = img.width;
-                  const imgHeight = img.height;
-                  const imgAspectRatio = imgWidth / imgHeight;
-                  let displayWidth = 190;
-                  let displayHeight = displayWidth / imgAspectRatio;
-          
-                  if (displayHeight > 190) {
-                    displayHeight = 190;
-                    displayWidth = displayHeight * imgAspectRatio;
-                  }
-          
-                  pdf.addPage();
-                  pdf.addImage(img.src, 'PNG', (pdfWidth - displayWidth) / 2, (pdfHeight - displayHeight) / 2, displayWidth, displayHeight);
+                    const imgWidth = img.width;
+                    const imgHeight = img.height;
+                    const imgAspectRatio = imgWidth / imgHeight;
+                    let displayWidth = 190;
+                    let displayHeight = displayWidth / imgAspectRatio;
+
+                    if (displayHeight > 190) {
+                        displayHeight = 190;
+                        displayWidth = displayHeight * imgAspectRatio;
+                    }
+
+                    pdf.addPage();
+                    pdf.addImage(img.src, 'PNG', (pdfWidth - displayWidth) / 2, (pdfHeight - displayHeight) / 2, displayWidth, displayHeight);
                 });
-              }
+            }
 
             const pdfBlob = pdf.output('blob');
             const pdfUrl = URL.createObjectURL(pdfBlob);
@@ -395,16 +395,26 @@ const PetReport = () => {
                 </div>
 
                 {/* PDF Template */}
-                <div ref={pdfTemplateRef} className='offscreen container d-flex flex-column justify-content-between'>
-                    <div className='d-flex align-items-center justify-content-center mb-5'>
+                <div
+                    ref={pdfTemplateRef}
+                    style={{
+                        width: "794px",
+                        minHeight: "1123px", // Tamaño A4 en px
+                        padding: "20px",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                    }}
+                    className=" container"
+                >                    <div className='d-flex align-items-center justify-content-center mb-5'>
                         <img src="/images/logook.png" style={{ width: "100px" }} alt="" />
-                        <h1>Veterinaria del Parque</h1>
+                        <h1 className="fs-5 fw-5"><b>Veterinaria del Parque</b></h1>
                     </div>
                     <div className="text-start mt-5">
-                        <h2>Informe diagnóstico por imágenes</h2>
+                        <h2 className="fs-5"><b>Informe diagnóstico por imágenes</b></h2>
                         <p className='lead'><b>Fecha: </b><span data-input-id="date">{data.date}</span></p>
                     </div>
-                    <hr />
+                    <hr className="w-100" />
                     <div className='text-start'>
                         <p className='fs-5'><b>Datos del paciente:</b></p>
                         <p><b>Nombre: </b><span data-input-id="name">{data.name}</span></p>

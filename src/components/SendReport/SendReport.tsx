@@ -33,6 +33,7 @@ const SendPrescription: React.FC<SendPrescriptionProps> = ({ pdf, preview }) => 
         try {
             const res = await axiosWithoutToken.post(`${WASERVER_URL}/ws/sendFile`, body);
             notifySuccess("Receta enviada correctamente");
+            setShow(false)
         } catch (error) {
             console.error(error);
             handleError(error);
