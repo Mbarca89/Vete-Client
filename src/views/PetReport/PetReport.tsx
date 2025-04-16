@@ -41,6 +41,30 @@ const PetReport = () => {
         recomendation: ""
     })
 
+    const resizeImage = (src: string, maxWidth = 1000, maxHeight = 1000): Promise<string> => {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let { width, height } = img;
+
+                if (width > maxWidth || height > maxHeight) {
+                    const scale = Math.min(maxWidth / width, maxHeight / height);
+                    width = width * scale;
+                    height = height * scale;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                if (ctx) {
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.7)); // Comprimir y convertir a JPEG
+                }
+            };
+            img.src = src;
+        });
+    };
 
     const handleImagesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
@@ -60,7 +84,8 @@ const PetReport = () => {
             });
 
             Promise.all(imagePromises)
-                .then(images => setImages(images))
+                .then(images => Promise.all(images.map(img => resizeImage(img))))
+                .then(resizedImages => setImages(resizedImages))
                 .catch(error => console.error('Error reading files', error));
         }
     };
@@ -110,7 +135,7 @@ const PetReport = () => {
 
         try {
             const canvas = await html2canvas(input);
-            const imgData = canvas.toDataURL('image/png');
+            const imgData = canvas.toDataURL('image/jpeg', 0.8);
             const pdf = new jsPDF({
                 orientation: 'portrait',
                 unit: 'mm',
@@ -130,7 +155,7 @@ const PetReport = () => {
             const scaledHeight = contentHeight * scale;
             const xOffset = (pdfWidth - scaledWidth) / 2;
             const yOffset = (pdfHeight - scaledHeight) / 2;
-            pdf.addImage(imgData, 'PNG', xOffset, yOffset, scaledWidth, scaledHeight);
+            pdf.addImage(imgData, 'JPEG', xOffset, yOffset, scaledWidth, scaledHeight);
 
             if (images && images.length > 0) {
                 const loadImage = (src: string): Promise<HTMLImageElement> => {
@@ -158,7 +183,7 @@ const PetReport = () => {
                     }
 
                     pdf.addPage();
-                    pdf.addImage(img.src, 'PNG', (pdfWidth - displayWidth) / 2, (pdfHeight - displayHeight) / 2, displayWidth, displayHeight);
+                    pdf.addImage(img.src, 'JPEG', (pdfWidth - displayWidth) / 2, (pdfHeight - displayHeight) / 2, displayWidth, displayHeight);
                 });
             }
 
