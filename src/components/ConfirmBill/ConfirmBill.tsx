@@ -133,7 +133,7 @@ const ConfirmBill: React.FC<ConfirmBillProps> = ({ submit, billResult, values, p
                                 <div>
                                     <h1>FACTURA</h1>
                                     <div className="d-flex gap-5">
-                                        <p><b>Punto de venta: 0002</b></p>
+                                        <p><b>Punto de venta: 0006</b></p>
                                         <p><b>{`Comp. Nro: ${values.number.toString().padStart(8, "0")}`}</b></p>
                                     </div>
                                 </div>
