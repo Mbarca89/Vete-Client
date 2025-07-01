@@ -40,7 +40,8 @@ const PrintBill: React.FC<PrintBillProps> = ({ billId }) => {
             price: 0,
             netPrice: 0,
             iva: 0,
-        }]
+        }],
+        condicionIvaDescripcion: "",
     })
 
     const generateAndDownloadPdf = async () => {
@@ -192,8 +193,9 @@ const PrintBill: React.FC<PrintBillProps> = ({ billId }) => {
                         <Row className="border">
                             <Col>
                                 <div className="">
-                                    <p><b>{bill.tipo == "1" ? 'CUIT: ' : 'DNI: '}</b>{bill.documento}</p>
-                                    <p><b>Nombre / Razón social: </b>{bill.nombre}</p>
+                                    <p><b>{bill.tipo == "1" ? 'CUIT: ' : 'DNI: '}</b>{bill.numero ? bill.numero : ""}</p>
+                                    <p><b>Nombre / Razón social: </b>{bill.nombre ? bill.nombre : ""}</p>
+                                    <p><b>Condición frente al IVA: </b>{bill.condicionIvaDescripcion ? bill.condicionIvaDescripcion : ""}</p>
                                 </div>
                             </Col>
                         </Row>

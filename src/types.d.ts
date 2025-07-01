@@ -283,4 +283,5 @@ export interface bill {
     errors: [{ code: string, msg: string }];
     observations: [{ code: string, msg: string }];
     billProducts: [billProduct];
+    condicionIvaDescripcion: string;
 }
