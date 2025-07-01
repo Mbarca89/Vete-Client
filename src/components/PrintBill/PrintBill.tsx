@@ -183,7 +183,7 @@ const PrintBill: React.FC<PrintBillProps> = ({ billId }) => {
                                     </div>
                                 </div>
                                 <div>
-                                    <p><b>{`Fecha de emisión: ${new Date(bill.fecha).getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`}</b></p>
+                                    <p><b>{`Fecha de emisión: ${new Date(bill.fecha).getDate()}/${new Date(bill.fecha).getMonth() + 1}/${new Date(bill.fecha).getFullYear()}`}</b></p>
                                     <p><b>CUIT: </b>20292322454</p>
                                     <p><b>Ingresos Brutos: </b>1220292322454</p>
                                     <p><b>Fecha de inicio de Actividades: </b>01/06/2011</p>
