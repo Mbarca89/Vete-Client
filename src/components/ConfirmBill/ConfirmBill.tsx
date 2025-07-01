@@ -148,8 +148,9 @@ const ConfirmBill: React.FC<ConfirmBillProps> = ({ submit, billResult, values, p
                         <Row className="border">
                             <Col>
                                 <div className="">
-                                    <p><b>{values.type == "1" ? 'CUIT: ' : 'DNI: '}</b>{values.cuit}</p>
-                                    <p><b>Nombre / Razón social: </b>{values.name ? values.name : "Consumidor final"}</p>
+                                    <p><b>{values.type == "1" ? 'CUIT: ' : 'DNI: '}</b>{values.cuit ? values.cuit : ""}</p>
+                                    <p><b>Nombre / Razón social: </b>{values.name ? values.name : ""}</p>
+                                    <p><b>Condición frente al IVA: </b>{values.condicionIvaDescripcion ? values.condicionIvaDescripcion : ""}</p>
                                 </div>
                             </Col>
                         </Row>

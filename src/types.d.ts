@@ -234,6 +234,7 @@ export interface billFormValues {
     number: number
     cuit: number | null
     name: string
+    condicionIvaDescripcion: string
 }
 
 export interface billProduct {
@@ -261,6 +262,7 @@ export interface afipResponse {
     caeFchVto: string
     status: string
     message: string
+    condicionIvaDescripcion: string
 }
 
 export interface bill {
