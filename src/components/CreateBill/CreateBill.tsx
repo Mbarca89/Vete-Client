@@ -37,7 +37,8 @@ const CreateBill: React.FC<CreateBillProps> = ({ updateList, saleId }) => {
         cae: "",
         caeFchVto: "",
         status: "",
-        message: ""
+        message: "",
+        condicionIvaDescripcion: ""
     })
     const [customProduct, setCustomProduct] = useState<billProduct>({
         id: 1,
@@ -148,7 +149,8 @@ const CreateBill: React.FC<CreateBillProps> = ({ updateList, saleId }) => {
             type: "",
             number: 0,
             cuit: null,
-            name: ""
+            name: "",
+            condicionIvaDescripcion: "5"
         },
         validate,
         onSubmit: async values => {
@@ -158,17 +160,18 @@ const CreateBill: React.FC<CreateBillProps> = ({ updateList, saleId }) => {
                 numero: values.number,
                 tipoDocumento: values.type === "1" ? 80 : values.cuit ? "90" : "99",
                 documento: values.cuit || 0,
-                nombre: values.name !== "" ? values.name : "Consumidor final",
+                nombre: values.name !== "" ? values.name : "",
+                condicionFrenteIva: Number(values.condicionIvaDescripcion),
                 importeTotal: (billProducts.reduce((total, product) => total + (product.quantity * product.price), 0).toFixed(2)),
                 importeNoGravado: 0,
                 importeGravado: (billProducts.reduce((total, product) => total + (product.quantity * product.netPrice), 0).toFixed(2)),
                 importeIva: (billProducts.reduce((total, product) => total + (product.quantity * product.iva), 0).toFixed(2)),
                 billProducts: billProducts
             }
-            
+
             try {
                 console.log(bill);
-                
+
                 const res = await axiosWithToken.post<afipResponse>(`${SERVER_URL}/api/v1/afipws/generarComprobante`, bill)
                 if (res.data) {
                     setBillResult(res.data)
@@ -232,7 +235,7 @@ const CreateBill: React.FC<CreateBillProps> = ({ updateList, saleId }) => {
     }, [formik.values.type])
 
     console.log((billProducts.reduce((total, product) => total + (product.quantity * product.iva), 0).toFixed(2)),);
-    
+
 
     useEffect(() => {
         const getSale = async (saleId: string | (string | null)[] | null) => {
@@ -281,14 +284,12 @@ const CreateBill: React.FC<CreateBillProps> = ({ updateList, saleId }) => {
                         </Form.Select>
                         <Form.Control.Feedback type="invalid">{formik.errors.type}</Form.Control.Feedback>
                     </Form.Group>
-                </Row>
-                <Row>
+
                     <Form.Group as={Col} xs={12} md={6}>
                         <Form.Label>Número de comprobante</Form.Label>
-                        {fetchingNumber && <Form.Label>
-                            <Spinner size="sm"></Spinner>
-                        </Form.Label>}
-                        <Form.Control type="number" placeholder="Número"
+                        {fetchingNumber && <Form.Label><Spinner size="sm" /></Form.Label>}
+                        <Form.Control
+                            type="number"
                             id="number"
                             name="number"
                             value={formik.values.number}
@@ -296,6 +297,31 @@ const CreateBill: React.FC<CreateBillProps> = ({ updateList, saleId }) => {
                             onBlur={formik.handleBlur}
                             disabled
                         />
+                    </Form.Group>
+                </Row>
+
+                <Row>
+                    <Form.Group as={Col} xs={12} md={6}>
+                        <Form.Label>Condición frente al IVA</Form.Label>
+                        <Form.Select
+                            id="condicionIvaDescripcion"
+                            name="condicionIvaDescripcion"
+                            value={formik.values.condicionIvaDescripcion}
+                            onChange={formik.handleChange}
+                        >
+                            <option value="1">Responsable Inscripto</option>
+                            <option value="2">Responsable No Inscripto</option>
+                            <option value="3">No Responsable</option>
+                            <option value="4">Sujeto Exento</option>
+                            <option value="5">Consumidor Final</option>
+                            <option value="6">Responsable Monotributo</option>
+                            <option value="7">Sujeto No Categorizado</option>
+                            <option value="8">Proveedor del Exterior</option>
+                            <option value="9">Cliente del Exterior</option>
+                            <option value="10">Monotributista Social</option>
+                            <option value="11">Pequeño Contribuyente Eventual</option>
+                            <option value="12">Monotributista Social Eventual</option>
+                        </Form.Select>
                     </Form.Group>
                 </Row>
                 <Row>
