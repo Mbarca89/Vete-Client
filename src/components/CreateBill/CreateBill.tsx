@@ -161,7 +161,7 @@ const CreateBill: React.FC<CreateBillProps> = ({ updateList, saleId }) => {
                 tipoDocumento: values.type === "1" ? 80 : values.cuit ? "90" : "99",
                 documento: values.cuit || 0,
                 nombre: values.name !== "" ? values.name : "",
-                condicionFrenteIva: Number(values.condicionIvaDescripcion),
+                condicionIvaReceptorId: Number(values.condicionIvaDescripcion),
                 importeTotal: (billProducts.reduce((total, product) => total + (product.quantity * product.price), 0).toFixed(2)),
                 importeNoGravado: 0,
                 importeGravado: (billProducts.reduce((total, product) => total + (product.quantity * product.netPrice), 0).toFixed(2)),
