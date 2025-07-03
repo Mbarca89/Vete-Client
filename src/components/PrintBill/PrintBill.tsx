@@ -237,7 +237,7 @@ const PrintBill: React.FC<PrintBillProps> = ({ billId }) => {
                         <Row className="border p-5">
                             <Col className=" d-flex flex-row justify-content-between">
                                 <div className="d-flex flex-column">
-                                    <img className="w-50" src="/images/afip.png" alt="" />
+                                    <img className="w-50" src="/images/arca.png" alt="" />
                                     <p><b>Comprobante autorizado</b></p>
                                 </div>
                                 <div>
