@@ -1,7 +1,7 @@
 import "./ConfirmBill.css"
 import { Alert, Button, Col, Container, Row, Spinner, Table } from "react-bootstrap";
-import { afipResponse, billFormValues, billProduct } from "../../types";
-import { useRef, useState, useEffect } from "react";
+import type { afipResponse, billFormValues, billProduct } from "../../types";
+import { useRef, useState } from "react";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import handleError from "../../utils/HandleErrors";
@@ -192,7 +192,7 @@ const ConfirmBill: React.FC<ConfirmBillProps> = ({ submit, billResult, values, p
                         <Row className="border p-5">
                             <Col className=" d-flex flex-row justify-content-between">
                                 <div className="d-flex flex-column">
-                                    <img className="w-50" src="/images/afip.png" alt="" />
+                                    <img className="w-50" src="/images/arca.png" alt="" />
                                     <p><b>Comprobante autorizado</b></p>
                                 </div>
                                 <div>
