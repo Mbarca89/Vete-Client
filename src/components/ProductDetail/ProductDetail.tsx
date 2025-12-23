@@ -15,6 +15,9 @@ import { useRecoilState } from "recoil"
 import { createProductformValues } from '../../types';
 import handleError from "../../utils/HandleErrors";
 import { Spinner } from "react-bootstrap";
+import DeleteProduct from "../DeleteProduct/DeleteProduct";
+import DeactivateProduct from "../DeactivateProduct/DeactivateProduct";
+import CustomModal from "../Modal/CustomModal";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface ProductDetailProps {
@@ -27,7 +30,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, updateList }) 
     const [fetching, setFetching] = useState<boolean>(false)
     const [show, setShow] = useRecoilState(modalState)
     const [edit, setEdit] = useState<boolean>(false)
-    const [deleteProduct, setDeleteProduct] = useState<boolean>(false)
+    const [modal, setModal] = useState<string>("")
 
     const [product, setProduct] = useState<product>({
         id: productId,
@@ -193,7 +196,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, updateList }) 
     }
 
     const handleDelete = () => {
-        setDeleteProduct(!deleteProduct)
+        setModal("delete")
+    }
+
+    const handleDeactivate = () => {
+        setModal("deactivate")
     }
 
     const deleteProductHandler = async () => {
@@ -202,7 +209,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, updateList }) 
             const res = await axiosWithToken.delete(`${SERVER_URL}/api/v1/products/delete?productId=${product.id}`)
             if (res.data) {
                 notifySuccess(res.data)
-                setDeleteProduct(false)
+                setModal("")
                 setShow(false)
                 updateList()
             }
@@ -255,7 +262,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, updateList }) 
     }, [productId])
 
     return (
-        product.id && !deleteProduct ? fetching ? <Spinner /> :  <div>
+        product.id && fetching ? <Spinner /> : <div>
             <Row>
                 <Col lg={6}>
                     <Image className="custom-detail-img" src={product.image ? `data:image/jpeg;base64,${product.image}` : noImage}></Image>
@@ -263,6 +270,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, updateList }) 
                 <Col>
                     <div className="d-flex justify-content-end">
                         <svg onClick={handleEdit} role="button" width="25" height="25" viewBox="0 0 512 512" style={{ color: "#632f6b" }} xmlns="http://www.w3.org/2000/svg" className="h-full w-full cursor-pointer mx-3"><rect width="512" height="512" x="0" y="0" rx="30" fill="transparent" stroke="transparent" strokeWidth="0" strokeOpacity="100%" paintOrder="stroke"></rect><svg width="512px" height="512px" viewBox="0 0 1024 1024" fill="#D040EE" x="0" y="0" style={{ display: "inline-block;vertical-align:middle" }} xmlns="http://www.w3.org/2000/svg"><g fill="#D040EE"><path fill="currentColor" d="M257.7 752c2 0 4-.2 6-.5L431.9 722c2-.4 3.9-1.3 5.3-2.8l423.9-423.9a9.96 9.96 0 0 0 0-14.1L694.9 114.9c-1.9-1.9-4.4-2.9-7.1-2.9s-5.2 1-7.1 2.9L256.8 538.8c-1.5 1.5-2.4 3.3-2.8 5.3l-29.5 168.2a33.5 33.5 0 0 0 9.4 29.8c6.6 6.4 14.9 9.9 23.8 9.9zm67.4-174.4L687.8 215l73.3 73.3l-362.7 362.6l-88.9 15.7l15.6-89zM880 836H144c-17.7 0-32 14.3-32 32v36c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-36c0-17.7-14.3-32-32-32z" /></g></svg></svg>
+                        <svg onClick={handleDeactivate} role="button" width="25" height="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-full w-full cursor-pointer me-3"><path fillRule="evenodd" clipRule="evenodd" d="M12 2.00098C6.47715 2.00098 2 6.47813 2 12.001C2 17.5238 6.47715 22.001 12 22.001C17.5228 22.001 22 17.5238 22 12.001C22 6.47813 17.5228 2.00098 12 2.00098ZM3.5 12.001C3.5 7.30656 7.30558 3.50098 12 3.50098C14.0774 3.50098 15.9808 4.24624 17.4573 5.48398L5.48301 17.4583C4.24526 15.9818 3.5 14.0784 3.5 12.001ZM6.54375 18.5189C8.02013 19.7561 9.92307 20.501 12 20.501C16.6944 20.501 20.5 16.6954 20.5 12.001C20.5 9.92405 19.7551 8.02111 18.5179 6.54473L6.54375 18.5189Z" fill="#632f6b" /></svg>
                         <svg onClick={handleDelete} role="button" width="25" height="25" viewBox="0 0 512 512" style={{ color: "#632f6b" }} xmlns="http://www.w3.org/2000/svg" className="h-full w-full"><rect width="512" height="512" x="0" y="0" rx="30" fill="transparent" stroke="transparent" strokeWidth="0" strokeOpacity="100%" paintOrder="stroke"></rect><svg width="512px" height="512px" viewBox="0 0 24 24" fill="#632f6b" x="0" y="0" style={{ display: "inline-block;vertical-align:middle" }} xmlns="http://www.w3.org/2000/svg"><g fill="#632f6b"><path fill="currentColor" d="M14.12 10.47L12 12.59l-2.13-2.12l-1.41 1.41L10.59 14l-2.12 2.12l1.41 1.41L12 15.41l2.12 2.12l1.41-1.41L13.41 14l2.12-2.12zM15.5 4l-1-1h-5l-1 1H5v2h14V4zM6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9z" /></g></svg></svg>
                     </div>
                 </Col>
@@ -437,25 +445,13 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, updateList }) 
                     </Form.Group>
                 </Row>}
             </Form>
+            {show && modal === "delete" && <CustomModal>
+                <DeleteProduct productId={product.id} onUpdateProduct={deleteProductHandler} setModal={setModal} />
+            </CustomModal>}
+            {show && modal === "deactivate" && <CustomModal>
+                <DeactivateProduct productId={product.id} onUpdateProduct={updateList} setModal={setModal} />
+            </CustomModal>}
         </div>
-            :
-            <div className="d-flex flex-column align-items-center">
-                <span>Esta seguro que quiere eliminar el producto?</span>
-                <div className="mt-3 d-flex align-items-center justify-content-center gap-4 w-100">
-                    {!loading ?
-                        <div className="w-25 d-flex align-items-center justify-content-center">
-                            <Button className="" variant="danger" onClick={deleteProductHandler}>Si</Button>
-                        </div>
-                        :
-                        <div className="w-25 d-flex align-items-center justify-content-center">
-                            <Spinner />
-                        </div>
-                    }
-                    <div className="w-25 d-flex align-items-center justify-content-center">
-                        <Button className="" variant="primary" onClick={handleDelete}>No</Button>
-                    </div>
-                </div>
-            </div>
     )
 }
 

@@ -70,9 +70,9 @@ const SaleDetail: React.FC<SaleDetailProps> = ({ saleId }) => {
                     {sale?.saleProducts.map(product => <tr key={String(product.productId)}>
                         <td>{product.productName}</td>
                         <td>{product.productDescription}</td>
-                        <td>{product.productPrice}</td>
+                        <td>{sale.discount ? <p><del>{product.productPrice}</del> {(product.productPrice * (1 - sale.discountAmount / 100)).toFixed(2)}</p> : product.productPrice.toFixed(2)}</td>
                         <td>{product.quantity}</td>
-                        <td>{(product.quantity * product.productPrice).toFixed(2)}</td>
+                        <td>{sale.discount ? (product.quantity * product.productPrice) * (1 - sale.discountAmount / 100) : product.quantity * product.productPrice}</td>
                     </tr>
                     )}
                 </tbody>

@@ -144,11 +144,7 @@ const Sale = () => {
             seller: user.name + " " + user.surname,
             amount: discountApplied ? (saleProducts.reduce((total, product) => total + (product.quantity * product.productPrice), 0) * (1 - discountAmount / 100)) : saleProducts.reduce((total, product) => total + (product.quantity * product.productPrice), 0),
             cost: saleProducts.reduce((total, product) => total + (product.quantity * product.productCost), 0),
-            saleProducts: discountApplied ? saleProducts.map((product) => (
-                {
-                ...product,
-                productPrice: product.productPrice * (1 - discountAmount / 100)
-            })) : saleProducts,
+            saleProducts: saleProducts,
             discount: discountApplied,
             discountAmount: discountAmount
         }
