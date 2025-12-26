@@ -77,10 +77,13 @@ const ClientList = () => {
     const handleSearch = async (event: any) => {
         setLoading(true)
         let searchTerm
+        let url
         event.preventDefault()
         if (event.type == "submit") searchTerm = event.target[0].value
+        const isOnlyNumbers = searchTerm !== "" && /^\d+$/.test(searchTerm)
+        isOnlyNumbers ? url = `${SERVER_URL}/api/v1/clients/getClientsByPhone?searchTerm=${searchTerm}` : url = `${SERVER_URL}/api/v1/clients/getClientsByName?searchTerm=${searchTerm}`
         try {
-            const res = await axiosWithToken.get<client[]>(`${SERVER_URL}/api/v1/clients/getClientsByName?searchTerm=${searchTerm}`)
+            const res = await axiosWithToken.get<client[]>(url)
             if (res.data) {
                 setClients(res.data);
             }

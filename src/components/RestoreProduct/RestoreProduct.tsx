@@ -15,14 +15,14 @@ interface DeleteProductProps {
     setModal: (modal: string) => void;
 }
 
-const DeactivateProduct: React.FC<DeleteProductProps> = ({ productId, onUpdateProduct, setModal }) => {
+const RestoreProduct: React.FC<DeleteProductProps> = ({ productId, onUpdateProduct, setModal }) => {
     const [loading, setloading] = useState<boolean>(false)
     const [show, setShow] = useRecoilState(modalState)
 
     const handleDelete = async () => {
         setloading(true)
         try {
-            const res = await axiosWithToken.put(`${SERVER_URL}/api/v1/products/deactivate?productId=${productId}`)
+            const res = await axiosWithToken.put(`${SERVER_URL}/api/v1/products/restore?productId=${productId}`)
             if (res.data) {
                 notifySuccess(res.data)
                 onUpdateProduct()
@@ -42,7 +42,7 @@ const DeactivateProduct: React.FC<DeleteProductProps> = ({ productId, onUpdatePr
 
     return (
         <div className="d-flex flex-column align-items-center">
-            <span>¿Esta seguro que quiere dar de baja el producto?</span>
+            <span>¿Esta seguro que quiere restaurar el producto?</span>
             <div className="mt-3 d-flex align-items-center justify-content-center gap-4 w-100">
                 {!loading ?
                     <div className="w-25 d-flex align-items-center justify-content-center">
@@ -61,4 +61,4 @@ const DeactivateProduct: React.FC<DeleteProductProps> = ({ productId, onUpdatePr
     )
 }
 
-export default DeactivateProduct
+export default RestoreProduct

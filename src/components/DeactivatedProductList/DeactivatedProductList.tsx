@@ -11,7 +11,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { product } from '../../types';
 import { axiosWithToken } from "../../utils/axiosInstances";
-import { notifyError, notifySuccess } from "../Toaster/Toaster";
+import { notifyError } from "../Toaster/Toaster";
 import { modalState } from "../../app/store"
 import { useRecoilState } from "recoil"
 import CustomModal from '../Modal/CustomModal';
@@ -21,7 +21,7 @@ import handleError from '../../utils/HandleErrors';
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 
-const ProductList = () => {
+const DeactivatedProductList = () => {
     const [loading, setLoading] = useState(false)
     const [searching, setSearching] = useState(false)
     const [show, setShow] = useRecoilState(modalState)
@@ -60,7 +60,7 @@ const ProductList = () => {
     const fetchProducts = async () => {
         setLoading(true)
         try {
-            const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/getProductsPaginated?page=${currentPage}&size=${pageSize}`)
+            const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/getDeactivatedProductsPaginated?page=${currentPage}&size=${pageSize}`)
             if (res.data) {
                 const newTotalPages = Math.max(1, Math.ceil(res.data.totalCount / pageSize));
                 setTotalPages(newTotalPages);
@@ -96,10 +96,10 @@ const ProductList = () => {
             else event.target.value ? searchTerm = event.target.value : searchTerm = ""
             let res
             if (searchTerm == "") {
-                res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/getProductsPaginated?page=${currentPage}&size=${pageSize}`)
+                res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/getDeactivatedProductsPaginated?page=${currentPage}&size=${pageSize}`)
                 setSearching(false)
             } else {
-                res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/searchProduct?searchTerm=${searchTerm}`)
+                res = await axiosWithToken.get(`${SERVER_URL}/api/v1/products/searchDeactivatedProduct?searchTerm=${searchTerm}`)
             }
             if (res.data) {
                 setProducts(res.data);
@@ -206,4 +206,4 @@ const ProductList = () => {
     )
 }
 
-export default ProductList;
+export default DeactivatedProductList;

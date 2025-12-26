@@ -36,6 +36,7 @@ export interface product {
     providerName: string;
     stockAlert: boolean;
     published: boolean;
+    active: boolean;
     image: string | null;
     thumbnail: string | null;
 }
