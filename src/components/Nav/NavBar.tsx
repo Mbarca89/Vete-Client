@@ -50,6 +50,7 @@ const NavBar = () => {
                                 <NavDropdown.Item onClick={() => { navigate("/payments"); handleNavLinkClick() }}>Pagos</NavDropdown.Item>
                                 <NavDropdown.Item onClick={() => { navigate("/providers"); handleNavLinkClick() }}>Proveedores</NavDropdown.Item>
                                 <NavDropdown.Item onClick={() => { navigate("/billing"); handleNavLinkClick() }}>Facturacion</NavDropdown.Item>
+                                <NavDropdown.Item onClick={() => { navigate("/webStore"); handleNavLinkClick() }}>Tienda Web</NavDropdown.Item>
                             </NavDropdown>
                             <Nav.Link onClick={() => { navigate("/products"); handleNavLinkClick() }}>Productos</Nav.Link>
                             <Nav.Link onClick={() => { navigate("/clients"); handleNavLinkClick() }}>Clientes</Nav.Link>

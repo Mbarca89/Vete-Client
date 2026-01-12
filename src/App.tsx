@@ -1,6 +1,9 @@
 import "./App.css"
 import { Routes, Route, Outlet, Navigate } from "react-router-dom"
 import { useState, useEffect, lazy, Suspense } from "react"
+import { useRecoilState } from "recoil"
+import { logState, userState } from "./app/store"
+import { Toaster } from 'react-hot-toast';
 const Landing = lazy(() => import("./views/landing/Landing"))
 const Home = lazy(() => import("./views/home/Home"))
 const NavBar = lazy(() => import("./components/Nav/NavBar"))
@@ -20,9 +23,7 @@ const Order = lazy(() => import("./views/Order/Order"))
 const Payments = lazy(() => import("./views/Payments/Payments"))
 const Wa = lazy(() => import("./views/Wa/Wa"))
 const Billing = lazy(() => import("./views/Billing/Billing"))
-import { useRecoilState } from "recoil"
-import { logState, userState } from "./app/store"
-import { Toaster } from 'react-hot-toast';
+const WebStore = lazy(() => import("./views/WebStore/WebStore"))
 
 const App = () => {
 
@@ -79,6 +80,7 @@ const App = () => {
           <Route path="/graphs" element={isLogged && user.role == "Administrador" ? <Graphs /> : <Navigate to="/" />} />
           <Route path="/order" element={isLogged && user.role == "Administrador" ? <Order /> : <Navigate to="/" />} />
           <Route path="/payments" element={isLogged && user.role == "Administrador" ? <Payments /> : <Navigate to="/" />} />
+          <Route path="/webStore" element={isLogged && user.role == "Administrador" ? <WebStore /> : <Navigate to="/" />} />
           <Route path="/billing" element={isLogged && user.role == "Administrador" ? <Billing /> : <Navigate to="/" />} />
           <Route path="/whatsapp" element={isLogged ? <Wa /> : <Navigate to="/" />} />
         </Route>

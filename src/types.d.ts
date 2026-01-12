@@ -286,3 +286,15 @@ export interface bill {
     billProducts: [billProduct];
     condicionIvaDescripcion: string;
 }
+
+export interface webOrder {
+    id: number;
+    customerName: string;
+    customerEmail: string;
+    customerPhone: string;
+    totalAmount: number;
+    status: string;
+    paymentId: number;
+    createdAt: date;
+    shipped: boolean
+}
