@@ -71,6 +71,7 @@ export interface client {
 
 export interface pet {
     id: string;
+    publicId: string;
     name: string;
     race: string;
     gender: string;
@@ -297,4 +298,12 @@ export interface webOrder {
     paymentId: number;
     createdAt: date;
     shipped: boolean
+    items: webOrderItem[];
+}
+
+export interface webOrderItem {
+    productId: number;
+    productName: string;
+    quantity: number;
+    unitPrice: number;
 }

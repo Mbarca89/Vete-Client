@@ -130,7 +130,7 @@ const ClientList = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {clients.map(client => <tr key={String(client.name)}>
+                    {clients.map(client => <tr key={String(client.id)}>
                         <td>{client.id}</td>
                         <td className=''>{client.name}</td>
                         <td>{client.surname}</td>

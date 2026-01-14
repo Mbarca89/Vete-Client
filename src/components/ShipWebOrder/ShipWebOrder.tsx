@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRecoilState } from "recoil";
-import { modalState } from "../../app/store";
+import { confirmModalState, modalState } from "../../app/store";
 import { axiosWithToken } from "../../utils/axiosInstances";
 import { notifySuccess } from "../Toaster/Toaster";
 import handleError from "../../utils/HandleErrors";
@@ -15,7 +15,7 @@ interface ShipWebOrderProps {
 
 const ShipWebOrder: React.FC<ShipWebOrderProps> = ({ orderId, updateList }) => {
     const [loading, setLoading] = useState(false)
-    const [show, setShow] = useRecoilState(modalState)
+    const [show, setShow] = useRecoilState(confirmModalState)
 
     const handleDelete = async () => {
         setLoading(true)

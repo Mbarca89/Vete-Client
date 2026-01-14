@@ -19,6 +19,7 @@ const PetDetail = () => {
 
     const [currentPet, setCurrentPet] = useState<pet>({
         id: "",
+        publicId: "",
         name: "",
         race: "",
         gender: "",

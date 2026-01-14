@@ -35,6 +35,11 @@ const modalState = atom({
   default: false
 })
 
+const confirmModalState = atom({
+  key: "confirmModalState",
+  default: false
+})
+
 const offCanvasState = atom({
   key: "offCanvasState",
   default: false
@@ -45,4 +50,4 @@ const loadingState = atom({
   default: false,
 })
 
-export { userState, clientState, logState, modalState, offCanvasState, loadingState }
+export { userState, clientState, logState, modalState, confirmModalState, offCanvasState, loadingState }

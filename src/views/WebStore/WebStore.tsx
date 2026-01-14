@@ -12,13 +12,13 @@ import { modalState } from "../../app/store";
 import { Spinner } from "react-bootstrap";
 import CustomModal from "../../components/Modal/CustomModal";
 import ShipWebOrder from "../../components/ShipWebOrder/ShipWebOrder";
+import WebOrderDetail from "../../components/WebOrderDetail/WebOrderDetail";
 
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 const formatDateAr = (value: string | Date) => {
     const d = value instanceof Date ? value : new Date(value)
 
-    // si la fecha es inválida, devolvé algo safe
     if (Number.isNaN(d.getTime())) return "-"
 
     return new Intl.DateTimeFormat("es-AR", {
@@ -72,7 +72,7 @@ const WebStore = () => {
         getOrders()
     }
 
-    const handleShipOrder = (orderId: number) => {
+    const handleOrderDetail = (orderId: number) => {
         setCurrentOrder(orderId)
         setShow(true)
     }
@@ -142,29 +142,29 @@ const WebStore = () => {
                         <th>Telefono</th>
                         <th>Monto</th>
                         <th>Pago</th>
-                        <th>Entregada</th>
+                        <th>Entregado</th>
                     </tr>
                 </thead>
                 <tbody>
                     {orders.map(order =>
-                        <tr>
+                        <tr role="button" key={order.id} onClick={() => handleOrderDetail(order.id)}>
                             <td>{order.id}</td>
                             <td>{formatDateAr(order.createdAt)}</td>
                             <td>{order.customerName}</td>
                             <td>{order.customerEmail}</td>
                             <td>{order.customerPhone}</td>
-                            <td>{order.totalAmount}</td>
+                            <td>{`$${order.totalAmount.toFixed(2)}`}</td>
                             <td>{order.status === "APPROVED" ? "Aprobado" : order.status === "PENDING" ? "Pendiente" : "Cancelado"}</td>
                             <td>{order.shipped ?
                                 <svg width="25" height="25" viewBox="0 0 512 512" style={{ color: "#7CC504" }} xmlns="http://www.w3.org/2000/svg" className="h-full w-full"><rect width="512" height="512" x="0" y="0" rx="30" fill="transparent" stroke="transparent" strokeWidth="0" strokeOpacity="100%" paintOrder="stroke"></rect><svg width="512px" height="512px" viewBox="0 0 16 16" fill="#7CC504" x="0" y="0" role="img" style={{ display: "inline-block;vertical-align:middle" }} xmlns="http://www.w3.org/2000/svg"><g fill="#7CC504"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="m2.75 8.75l3.5 3.5l7-7.5" /></g></svg></svg> :
-                                <svg role="button" onClick={()=>handleShipOrder(order.id)} width="25" height="25" viewBox="0 0 512 512" style={{ color: "#E8403E" }} xmlns="http://www.w3.org/2000/svg" className="h-full w-full"><rect width="512" height="512" x="0" y="0" rx="30" fill="transparent" stroke="transparent" strokeWidth="0" strokeOpacity="100%" paintOrder="stroke"></rect><svg width="512px" height="512px" viewBox="0 0 24 24" fill="#E8403E" x="0" y="0" role="img" style={{ display: "inline-block;vertical-align:middle" }} xmlns="http://www.w3.org/2000/svg"><g fill="#E8403E"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="M17 17L7 7m10 0L7 17" /></g></svg></svg>
+                                <svg width="25" height="25" viewBox="0 0 512 512" style={{ color: "#E8403E" }} xmlns="http://www.w3.org/2000/svg" className="h-full w-full"><rect width="512" height="512" x="0" y="0" rx="30" fill="transparent" stroke="transparent" strokeWidth="0" strokeOpacity="100%" paintOrder="stroke"></rect><svg width="512px" height="512px" viewBox="0 0 24 24" fill="#E8403E" x="0" y="0" role="img" style={{ display: "inline-block;vertical-align:middle" }} xmlns="http://www.w3.org/2000/svg"><g fill="#E8403E"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="M17 17L7 7m10 0L7 17" /></g></svg></svg>
                             }</td>
                         </tr>
 
                     )}
                     {show &&
-                        <CustomModal title="Enviar/Entregar pedido">
-                            <ShipWebOrder orderId={currentOrder} updateList={getOrders} />
+                        <CustomModal title="Detalle de pedido">
+                            <WebOrderDetail orderId={currentOrder} updateList={getOrders} />
                         </CustomModal>
                     }
                 </tbody>
