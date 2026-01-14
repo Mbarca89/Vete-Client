@@ -18,10 +18,12 @@ const ConfirmPetProfileShare: React.FC<ConfirmPetProfileShareProps> = ({ publicI
     const [loading, setloading] = useState<boolean>(false)
     const [show, setShow] = useRecoilState(confirmModalState)
 
+    console.log(publicId)
+
     const handleShare = async () => {
         setloading(true)
         try {
-            const res = await axiosWithToken.delete(`${SERVER_URL}/api/v1/products/delete?productId=${publicId}`)
+            const res = await axiosWithToken.post(`${SERVER_URL}/api/v1/public/pet/send?publicId=${publicId}`)
             if (res.data) {
                 notifySuccess(res.data)
                 setShow(false)
