@@ -7,7 +7,7 @@ import Container from 'react-bootstrap/Container';
 import Table from 'react-bootstrap/Table';
 import { useFormik } from 'formik';
 import { axiosWithToken } from "../../utils/axiosInstances";
-import type { afipResponse, billFormValues, billProduct, product, saleProduct } from '../../types';
+import type { afipResponse, billFormValues, billProduct, product, sale, saleProduct } from '../../types';
 import { notifyError, notifySuccess } from '../Toaster/Toaster';
 import handleError from '../../utils/HandleErrors';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -238,14 +238,15 @@ const CreateBill: React.FC<CreateBillProps> = ({ updateList, saleId }) => {
         const getSale = async (saleId: string | (string | null)[] | null) => {
             setLoading(true)
             try {
-                const res = await axiosWithToken.get(`${SERVER_URL}/api/v1/sales/getById/${saleId}`)
+                const res = await axiosWithToken.get<sale>(`${SERVER_URL}/api/v1/sales/getById/${saleId}`)
                 if (res.data) {
-                    setBillProducts(res.data.saleProducts.map((product: saleProduct) => ({
+                    const sale: sale = res.data
+                    setBillProducts(sale.saleProducts.map((product: saleProduct) => ({
                         id: product.productId,
                         barCode: product.barCode,
                         description: product.productDescription,
                         quantity: product.quantity,
-                        price: product.productPrice,
+                        price: !sale.discount ? product.productPrice : product.productPrice * (1-(sale.discountAmount/100)),
                         netPrice: Number((product.productPrice / 1.21).toFixed(2)),
                         iva: Number((product.productPrice - product.productPrice / 1.21).toFixed(2)),
                     })))
