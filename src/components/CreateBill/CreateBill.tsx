@@ -241,15 +241,26 @@ const CreateBill: React.FC<CreateBillProps> = ({ updateList, saleId }) => {
                 const res = await axiosWithToken.get<sale>(`${SERVER_URL}/api/v1/sales/getById/${saleId}`)
                 if (res.data) {
                     const sale: sale = res.data
-                    setBillProducts(sale.saleProducts.map((product: saleProduct) => ({
-                        id: product.productId,
-                        barCode: product.barCode,
-                        description: product.productDescription,
-                        quantity: product.quantity,
-                        price: !sale.discount ? product.productPrice : product.productPrice * (1-(sale.discountAmount/100)),
-                        netPrice: Number((product.productPrice / 1.21).toFixed(2)),
-                        iva: Number((product.productPrice - product.productPrice / 1.21).toFixed(2)),
-                    })))
+                    setBillProducts(
+                        sale.saleProducts.map((p: saleProduct) => {
+                            const finalPrice = !sale.discount
+                                ? p.productPrice
+                                : p.productPrice * (1 - sale.discountAmount / 100)
+
+                            const netUnit = Number((finalPrice / 1.21).toFixed(2))
+                            const ivaUnit = Number((finalPrice - netUnit).toFixed(2))
+
+                            return {
+                                id: p.productId,
+                                barCode: p.barCode,
+                                description: p.productDescription,
+                                quantity: p.quantity,
+                                price: Number(finalPrice.toFixed(2)),
+                                netPrice: netUnit,
+                                iva: ivaUnit,
+                            }
+                        })
+                    )
                 }
             } catch (error: any) {
                 handleError(error)
