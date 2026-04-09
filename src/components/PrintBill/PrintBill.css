@@ -12,3 +12,68 @@
 .pdf-template h1 {
     font-size: 16pt;
 }
+
+.pdf-template {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 8mm;
+  background: white;
+  color: black;
+  font-size: 12px;
+  box-sizing: border-box;
+}
+
+.bill-table {
+  width: 100%;
+  table-layout: fixed;
+  font-size: 11px;
+}
+
+.bill-table th,
+.bill-table td {
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  vertical-align: top;
+  padding: 4px;
+}
+
+.bill-table th:nth-child(1),
+.bill-table td:nth-child(1) {
+  width: 12%;
+}
+
+.bill-table th:nth-child(2),
+.bill-table td:nth-child(2) {
+  width: 33%;
+}
+
+.bill-table th:nth-child(3),
+.bill-table td:nth-child(3) {
+  width: 8%;
+}
+
+.bill-table th:nth-child(4),
+.bill-table td:nth-child(4) {
+  width: 12%;
+}
+
+.bill-table th:nth-child(5),
+.bill-table td:nth-child(5) {
+  width: 12%;
+}
+
+.bill-table th:nth-child(6),
+.bill-table td:nth-child(6) {
+  width: 10%;
+}
+
+.bill-table th:nth-child(7),
+.bill-table td:nth-child(7) {
+  width: 13%;
+}
+
+.description-cell {
+  white-space: normal;
+  word-break: break-word;
+}

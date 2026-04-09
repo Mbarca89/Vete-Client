@@ -1,11 +1,12 @@
 import "./PrintBill.css"
 import { Alert, Button, Col, Container, Row, Spinner, Table } from "react-bootstrap";
-import { afipResponse, bill, billFormValues, billProduct } from "../../types";
+import type { bill } from "../../types";
 import { useRef, useState, useEffect } from "react";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import handleError from "../../utils/HandleErrors";
 import { axiosWithToken } from "../../utils/axiosInstances";
+import { getIvaCondition } from "../../utils/ivaCondition";
 const SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface PrintBillProps {
@@ -22,7 +23,7 @@ const PrintBill: React.FC<PrintBillProps> = ({ billId }) => {
         numero: 0,
         tipoDocumento: 0,
         documento: 0,
-        nombre:"",
+        nombre: "",
         importeTotal: 0,
         importeNoGravado: 0,
         importeGravado: 0,
@@ -108,9 +109,9 @@ const PrintBill: React.FC<PrintBillProps> = ({ billId }) => {
         }
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         getBill()
-    },[])
+    }, [])
 
     return (
         <>
@@ -158,7 +159,7 @@ const PrintBill: React.FC<PrintBillProps> = ({ billId }) => {
                                 ))}
                             </div>}
                     </Row>
-                    <Container ref={pdfTemplateRef} className="pdf-template text-nowrap d-flex flex-column gap-1">
+                    <Container ref={pdfTemplateRef} className="pdf-template d-flex flex-column gap-1">
                         <Row className="border">
                             <Col className="border d-flex flex-column justify-content-between" xl={5} xs={5}>
                                 <h1 className="">VETERINARIA DEL PARQUE</h1>
@@ -195,12 +196,15 @@ const PrintBill: React.FC<PrintBillProps> = ({ billId }) => {
                                 <div className="">
                                     <p><b>{bill.tipo == "1" ? 'CUIT: ' : 'DNI: '}</b>{bill.numero ? bill.numero : ""}</p>
                                     <p><b>Nombre / Razón social: </b>{bill.nombre ? bill.nombre : ""}</p>
-                                    <p><b>Condición frente al IVA: </b>{bill.condicionIvaDescripcion ? bill.condicionIvaDescripcion : ""}</p>
+                                    <p>
+                                        <b>Condición frente al IVA: </b>
+                                        {getIvaCondition(Number(bill.condicionIvaDescripcion))}
+                                    </p>
                                 </div>
                             </Col>
                         </Row>
                         <Row className="mb-5">
-                            <Table striped bordered hover>
+                            <Table bordered size="sm" className="bill-table">
                                 <thead>
                                     <tr>
                                         <th className="col-2">Código</th>
@@ -215,7 +219,7 @@ const PrintBill: React.FC<PrintBillProps> = ({ billId }) => {
                                 <tbody>
                                     {bill.billProducts?.map((product, index) => <tr key={String(product.barCode)}>
                                         <td>{product.barCode}</td>
-                                        <td>{product.description}</td>
+                                        <td className="description-cell">{product.description}</td>
                                         <td>{product.quantity}</td>
                                         <td>{bill.tipo == "1" ? product.netPrice : product.price}</td>
                                         {bill.tipo == "1" && <td>{(product.netPrice * product.quantity).toFixed(2)}</td>}
@@ -229,10 +233,9 @@ const PrintBill: React.FC<PrintBillProps> = ({ billId }) => {
                         <Row className="mt-5 mb-5"></Row>
                         <Row className="border mt-5 p-2">
                             <div className='container d-flex flex-column justify-content-end align-items-end'>
-                                {bill.tipo == "1" && <h6>{`Subtotal: $${(bill.billProducts.reduce((total, product) => total + (product.netPrice), 0)).toFixed(2)}`}</h6>}
-                                {bill.tipo == "1" && <h6>{`Iva (21%): $${(bill.billProducts.reduce((total, product) => total + (product.iva), 0).toFixed(2))}`}</h6>}
-                                <h5>{`Importe Total: $${(bill.billProducts.reduce((total, product) => total + (product.quantity * product.price), 0)).toFixed(2)}`}</h5>
-                            </div>
+                                {bill.tipo == "1" && <h6>{`Subtotal: $${bill.importeGravado.toFixed(2)}`}</h6>}
+                                {bill.tipo == "1" && <h6>{`Iva (21%): $${bill.importeIva.toFixed(2)}`}</h6>}
+                                <h5>{`Importe Total: $${bill.importeTotal.toFixed(2)}`}</h5></div>
                         </Row>
                         <Row className="border p-5">
                             <Col className=" d-flex flex-row justify-content-between">
