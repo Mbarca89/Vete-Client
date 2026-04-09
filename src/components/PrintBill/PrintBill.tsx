@@ -198,7 +198,7 @@ const PrintBill: React.FC<PrintBillProps> = ({ billId }) => {
                                     <p><b>Nombre / Razón social: </b>{bill.nombre ? bill.nombre : ""}</p>
                                     <p>
                                         <b>Condición frente al IVA: </b>
-                                        {getIvaCondition(Number(bill.condicionIvaDescripcion))}
+                                        {bill.condicionIvaDescripcion}
                                     </p>
                                 </div>
                             </Col>
