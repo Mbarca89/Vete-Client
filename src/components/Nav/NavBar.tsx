@@ -43,15 +43,16 @@ const NavBar = () => {
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
                             <Nav.Link onClick={() => { navigate("/home"); handleNavLinkClick() }}>Inicio</Nav.Link>
-                            <NavDropdown title="Administrar" id="basic-nav-dropdown">
-                                <NavDropdown.Item onClick={() => { navigate("/users"); handleNavLinkClick() }}>Usuarios</NavDropdown.Item>
-                                <NavDropdown.Item onClick={() => { navigate("/reports"); handleNavLinkClick() }}>Reportes</NavDropdown.Item>
-                                <NavDropdown.Item onClick={() => { navigate("/graphs"); handleNavLinkClick() }}>Gráficos</NavDropdown.Item>
-                                <NavDropdown.Item onClick={() => { navigate("/payments"); handleNavLinkClick() }}>Pagos</NavDropdown.Item>
-                                <NavDropdown.Item onClick={() => { navigate("/providers"); handleNavLinkClick() }}>Proveedores</NavDropdown.Item>
-                                <NavDropdown.Item onClick={() => { navigate("/billing"); handleNavLinkClick() }}>Facturacion</NavDropdown.Item>
-                                <NavDropdown.Item onClick={() => { navigate("/webStore"); handleNavLinkClick() }}>Tienda Web</NavDropdown.Item>
-                            </NavDropdown>
+                            {user.role === "Administrador" && (
+                                <NavDropdown title="Administrar" id="basic-nav-dropdown">
+                                    <NavDropdown.Item onClick={() => { navigate("/users"); handleNavLinkClick() }}>Usuarios</NavDropdown.Item>
+                                    <NavDropdown.Item onClick={() => { navigate("/reports"); handleNavLinkClick() }}>Reportes</NavDropdown.Item>
+                                    <NavDropdown.Item onClick={() => { navigate("/graphs"); handleNavLinkClick() }}>Gráficos</NavDropdown.Item>
+                                    <NavDropdown.Item onClick={() => { navigate("/payments"); handleNavLinkClick() }}>Pagos</NavDropdown.Item>
+                                    <NavDropdown.Item onClick={() => { navigate("/providers"); handleNavLinkClick() }}>Proveedores</NavDropdown.Item>
+                                    <NavDropdown.Item onClick={() => { navigate("/billing"); handleNavLinkClick() }}>Facturacion</NavDropdown.Item>
+                                    <NavDropdown.Item onClick={() => { navigate("/webStore"); handleNavLinkClick() }}>Tienda Web</NavDropdown.Item>
+                                </NavDropdown>)}
                             <Nav.Link onClick={() => { navigate("/products"); handleNavLinkClick() }}>Productos</Nav.Link>
                             <Nav.Link onClick={() => { navigate("/clients"); handleNavLinkClick() }}>Clientes</Nav.Link>
                             <Nav.Link onClick={() => { navigate("/pets"); handleNavLinkClick() }}>Mascotas</Nav.Link>
